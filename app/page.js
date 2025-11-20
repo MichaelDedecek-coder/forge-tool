@@ -8,6 +8,7 @@ export default function Home() {
 
   const handleGenerate = async () => {
     setLoading(true);
+    setResult(null); // Clear previous results
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -18,9 +19,11 @@ export default function Home() {
       const data = await response.json();
       if (data.result) {
         setResult(data.result);
+      } else {
+        setResult("Error: Could not generate strategy. Please try again.");
       }
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      setResult("Connection error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -35,7 +38,7 @@ export default function Home() {
           <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-teal-400 mb-2">
             FORGE Strategy Generator
           </h1>
-          <p className="text-neutral-400">Powered by Michael Dědeček & Gemini Pro</p>
+          <p className="text-neutral-400">Powered by Michael Dědeček & Gemini</p>
         </div>
 
         {/* BODY */}
@@ -45,7 +48,7 @@ export default function Home() {
               <label className="block text-sm font-medium text-neutral-500 mb-2">Industry</label>
               <input 
                 type="text"
-                className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-4 focus:border-orange-500 outline-none transition-all text-black"
+                className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-4 focus:border-orange-500 outline-none transition-all text-white placeholder-neutral-600"
                 placeholder="e.g. Czech Manufacturing..."
                 value={formData.industry}
                 onChange={(e) => setFormData({...formData, industry: e.target.value})}
@@ -54,7 +57,7 @@ export default function Home() {
             <div>
               <label className="block text-sm font-medium text-neutral-500 mb-2">Main Challenge</label>
               <textarea 
-                className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-4 h-32 focus:border-orange-500 outline-none transition-all text-black"
+                className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-4 h-32 focus:border-orange-500 outline-none transition-all text-white placeholder-neutral-600"
                 placeholder="What is the biggest obstacle?"
                 value={formData.challenge}
                 onChange={(e) => setFormData({...formData, challenge: e.target.value})}
@@ -65,24 +68,24 @@ export default function Home() {
               disabled={loading || !formData.industry || !formData.challenge}
               className={`w-full py-4 rounded-lg font-bold transition-all ${loading ? 'bg-neutral-800 text-neutral-500' : 'bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400'}`}
             >
-              {loading ? "Consulting with AI..." : "Generate Strategy"}
+              {loading ? "Analyzing..." : "Generate Strategy"}
             </button>
           </div>
 
           {/* RESULTS */}
           <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-6 relative min-h-[300px] overflow-y-auto">
             {!result && !loading && (
-              <div className="absolute inset-0 flex items-center justify-center text-neutral-600">
-                <p>Results will appear here.</p>
+              <div className="absolute inset-0 flex items-center justify-center text-neutral-600 text-center p-4">
+                <p>Enter your details to generate a strategy.</p>
               </div>
             )}
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center text-orange-500">
-                <p className="animate-pulse">Analyzing patterns...</p>
+                <p className="animate-pulse font-bold">Thinking...</p>
               </div>
             )}
             {result && (
-              <div className="prose prose-invert prose-p:text-neutral-300 prose-headings:text-teal-400">
+              <div className="prose prose-invert prose-p:text-neutral-300 prose-strong:text-teal-400">
                 <div className="whitespace-pre-wrap">{result}</div>
               </div>
             )}

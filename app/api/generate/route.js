@@ -6,24 +6,23 @@ export async function POST(req) {
     const data = await req.json();
     const { industry, challenge } = data;
 
-    // This connects to your secure API Key in Vercel
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // We use the PRO model for strategic reasoning
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    // SWITCH TO FLASH for speed (prevents Vercel 10s timeout)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
-      Act as a senior business strategy consultant (Michael Dědeček's partner).
+      Act as a senior business strategy consultant.
       Client Industry: ${industry}
       Client Challenge: ${challenge}
       
-      Provide 3 distinct, high-value strategic angles or solutions to solve this challenge.
+      Provide 3 distinct, high-value strategic angles.
       Format:
-      1. [Bold Title]: Description
-      2. [Bold Title]: Description
-      3. [Bold Title]: Description
+      1. **[Strategy Name]**: [One sentence explanation]
+      2. **[Strategy Name]**: [One sentence explanation]
+      3. **[Strategy Name]**: [One sentence explanation]
       
-      Keep it professional, empathetic, and actionable.
+      Keep it punchy, professional, and under 150 words total.
     `;
 
     const result = await model.generateContent(prompt);
@@ -34,6 +33,6 @@ export async function POST(req) {
 
   } catch (error) {
     console.error("AI Error:", error);
-    return NextResponse.json({ error: "Failed to generate strategy" }, { status: 500 });
+    return NextResponse.json({ error: "Strategy generation failed." }, { status: 500 });
   }
 }
