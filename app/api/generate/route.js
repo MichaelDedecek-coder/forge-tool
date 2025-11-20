@@ -6,15 +6,14 @@ export async function POST(req) {
     const data = await req.json();
     const { industry, challenge } = data;
 
-    // Check if API Key exists
     if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ error: "API Key is missing on Vercel" }, { status: 500 });
+      return NextResponse.json({ error: "API Key is missing" }, { status: 500 });
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // USE SPECIFIC VERSION NUMBER (Most Reliable)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
+    // WE FOUND IT! Using the model listed in your curl command:
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
       Act as a senior business strategy consultant.
@@ -37,7 +36,7 @@ export async function POST(req) {
     return NextResponse.json({ result: text });
 
   } catch (error) {
-    console.error("AI Error Detailed:", error);
-    return NextResponse.json({ error: error.message || "Strategy generation failed." }, { status: 500 });
+    console.error("AI Error:", error);
+    return NextResponse.json({ error: error.message || "Failed" }, { status: 500 });
   }
 }
