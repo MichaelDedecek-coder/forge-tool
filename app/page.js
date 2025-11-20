@@ -44,19 +44,19 @@ export default function Home() {
 
           <div className="space-y-6">
             <div>
-              <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Industry / Business</label>
+              <label className="block text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Industry / Business</label>
               <input 
                 type="text"
-                className="w-full bg-neutral-900/50 border border-neutral-700 rounded-lg p-4 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-white placeholder-neutral-700"
+                className="w-full bg-neutral-900/50 border border-neutral-700 rounded-lg p-4 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-white placeholder-neutral-600"
                 placeholder="e.g. Local Bakery, CNC Manufacturing..."
                 value={formData.industry}
                 onChange={(e) => setFormData({...formData, industry: e.target.value})}
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Core Challenge</label>
+              <label className="block text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Core Challenge</label>
               <textarea 
-                className="w-full bg-neutral-900/50 border border-neutral-700 rounded-lg p-4 h-32 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-white placeholder-neutral-700 resize-none"
+                className="w-full bg-neutral-900/50 border border-neutral-700 rounded-lg p-4 h-32 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-white placeholder-neutral-600 resize-none"
                 placeholder="What is holding you back?"
                 value={formData.challenge}
                 onChange={(e) => setFormData({...formData, challenge: e.target.value})}
@@ -75,13 +75,13 @@ export default function Home() {
         {/* RIGHT SIDE: RESULTS */}
         <div className="w-full md:w-1/2 bg-neutral-900/30 p-8 relative min-h-[400px] flex flex-col">
           {!result && !loading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-700 select-none">
-              {/* The "System Ready" Icon */}
-              <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-500 select-none">
+              {/* The "System Ready" Icon - NOW BRIGHTER AND BIGGER */}
+              <svg className="w-20 h-20 mb-6 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
               </svg>
-              <p className="text-sm font-medium uppercase tracking-widest opacity-40">System Ready</p>
-              <p className="text-xs mt-2 opacity-30">Awaiting Input...</p>
+              <p className="text-lg font-medium uppercase tracking-widest text-neutral-400">System Ready</p>
+              <p className="text-sm mt-2 text-neutral-600">Awaiting Input...</p>
             </div>
           )}
           
