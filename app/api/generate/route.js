@@ -8,8 +8,8 @@ export async function POST(req) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // SWITCH TO FLASH for speed (prevents Vercel 10s timeout)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // USING THE MOST STABLE MODEL (gemini-pro) to fix the 404 error
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     const prompt = `
       Act as a senior business strategy consultant.
