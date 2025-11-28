@@ -16,7 +16,7 @@ export async function POST(req) {
     ];
     
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.7,
         maxOutputTokens: 300,
@@ -74,11 +74,17 @@ export async function POST(req) {
 
     const result = await model.generateContent(pepikPersona + "\n\nZákazník říká: " + message + "\n\nOdpověz jako Pepík:");
     const response = await result.response;
+    
+    console.log("Gemini full response:", JSON.stringify(response, null, 2));
+    console.log("Candidates:", JSON.stringify(response.candidates, null, 2));
+    
     const text = response.text();
+    
+    console.log("Extracted text:", text);
 
-    return NextResponse.json({ result: text });
+    return NextResponse.json({ result: text || "Pepík mlčí..." });
   } catch (error) {
-    console.error(error);
+    console.error("Error details:", error);
     return NextResponse.json({ error: "Pepík si odskočil na jedno. Zkus to znovu za chvíli!" }, { status: 500 });
   }
 }
