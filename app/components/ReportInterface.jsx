@@ -47,6 +47,11 @@ function KeyFindingCard({ metric }) {
 const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'];
 
 function ChartCard({ chart }) {
+  // SAFETY CHECK: Ensure dataKeys exists and has at least one item
+  const safeDataKeys = chart.dataKeys && chart.dataKeys.length > 0 
+    ? chart.dataKeys 
+    : [{ name: 'name', value: 'value' }]; // Fallback to prevent crash
+
   const renderChart = () => {
     switch (chart.type) {
       case 'bar':
@@ -54,7 +59,7 @@ function ChartCard({ chart }) {
           <BarChart data={chart.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
             <XAxis 
-              dataKey={chart.dataKeys[0].name} 
+              dataKey={safeDataKeys[0].name} 
               stroke="rgba(255,255,255,0.5)" 
               fontSize={12} 
               tickLine={false} 
@@ -71,7 +76,7 @@ function ChartCard({ chart }) {
               contentStyle={{ backgroundColor: '#1e1e2e', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
               itemStyle={{ color: '#fff' }}
             />
-            <Bar dataKey={chart.dataKeys[0].value} radius={[4, 4, 0, 0]}>
+            <Bar dataKey={safeDataKeys[0].value} radius={[4, 4, 0, 0]}>
               {chart.data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
@@ -89,7 +94,7 @@ function ChartCard({ chart }) {
               innerRadius={60}
               outerRadius={80}
               paddingAngle={5}
-              dataKey={chart.dataKeys[0].value}
+              dataKey={safeDataKeys[0].value}
             >
               {chart.data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -108,7 +113,7 @@ function ChartCard({ chart }) {
           <LineChart data={chart.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
             <XAxis 
-              dataKey={chart.dataKeys[0].name} 
+              dataKey={safeDataKeys[0].name} 
               stroke="rgba(255,255,255,0.5)" 
               fontSize={12} 
               tickLine={false} 
@@ -126,7 +131,7 @@ function ChartCard({ chart }) {
             />
             <Line 
               type="monotone" 
-              dataKey={chart.dataKeys[0].value} 
+              dataKey={safeDataKeys[0].value} 
               stroke={COLORS[0]} 
               strokeWidth={2}
               dot={{ fill: COLORS[0], r: 4 }}
