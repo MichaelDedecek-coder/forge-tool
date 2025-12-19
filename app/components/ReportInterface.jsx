@@ -1,15 +1,211 @@
 "use client";
 
-import React, { useState } from "react";
-import { KeyFindingCard } from "./report/KeyFindingCard";
-import { ChartCard } from "./report/ChartCard";
-import { InsightDetailCard } from "./report/InsightDetailCard";
-import { FileText, BarChart3, Lightbulb, Table as TableIcon } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { 
+  Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, 
+  ResponsiveContainer, Tooltip, XAxis, YAxis 
+} from "recharts";
+import { 
+  ArrowDown, ArrowUp, Minus, AlertTriangle, CheckCircle2, Lightbulb, 
+  FileText, BarChart3, Table as TableIcon 
+} from "lucide-react";
 
-export function ReportInterface({ data }) {
+// --- SUB-COMPONENTS (Consolidated) ---
+
+function KeyFindingCard({ metric }) {
+  return (
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition-colors">
+      <div className="pb-2">
+        <h3 className="text-sm font-medium text-slate-400">
+          {metric.label}
+        </h3>
+      </div>
+      <div>
+        <div className="text-2xl font-bold text-white">{metric.value}</div>
+        {metric.trend && (
+          <div className={`flex items-center text-xs mt-1 ${
+            metric.trend.direction === 'up' ? 'text-green-400' : 
+            metric.trend.direction === 'down' ? 'text-red-400' : 'text-slate-400'
+          }`}>
+            {metric.trend.direction === 'up' && <ArrowUp className="h-3 w-3 mr-1" />}
+            {metric.trend.direction === 'down' && <ArrowDown className="h-3 w-3 mr-1" />}
+            {metric.trend.direction === 'neutral' && <Minus className="h-3 w-3 mr-1" />}
+            <span className="font-medium">{metric.trend.value}</span>
+            <span className="ml-1 text-slate-500">{metric.trend.label}</span>
+          </div>
+        )}
+        {metric.description && (
+          <p className="text-xs text-slate-500 mt-2">
+            {metric.description}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'];
+
+function ChartCard({ chart }) {
+  const renderChart = () => {
+    switch (chart.type) {
+      case 'bar':
+        return (
+          <BarChart data={chart.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+            <XAxis 
+              dataKey={chart.dataKeys[0].name} 
+              stroke="rgba(255,255,255,0.5)" 
+              fontSize={12} 
+              tickLine={false} 
+              axisLine={false}
+            />
+            <YAxis 
+              stroke="rgba(255,255,255,0.5)" 
+              fontSize={12} 
+              tickLine={false} 
+              axisLine={false}
+              tickFormatter={(value) => `${value}`}
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#1e1e2e', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
+              itemStyle={{ color: '#fff' }}
+            />
+            <Bar dataKey={chart.dataKeys[0].value} radius={[4, 4, 0, 0]}>
+              {chart.data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        );
+      
+      case 'pie':
+        return (
+          <PieChart>
+            <Pie
+              data={chart.data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={5}
+              dataKey={chart.dataKeys[0].value}
+            >
+              {chart.data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#1e1e2e', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
+              itemStyle={{ color: '#fff' }}
+            />
+            <Legend />
+          </PieChart>
+        );
+
+      case 'line':
+        return (
+          <LineChart data={chart.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+            <XAxis 
+              dataKey={chart.dataKeys[0].name} 
+              stroke="rgba(255,255,255,0.5)" 
+              fontSize={12} 
+              tickLine={false} 
+              axisLine={false}
+            />
+            <YAxis 
+              stroke="rgba(255,255,255,0.5)" 
+              fontSize={12} 
+              tickLine={false} 
+              axisLine={false}
+            />
+            <Tooltip 
+              contentStyle={{ backgroundColor: '#1e1e2e', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
+              itemStyle={{ color: '#fff' }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey={chart.dataKeys[0].value} 
+              stroke={COLORS[0]} 
+              strokeWidth={2}
+              dot={{ fill: COLORS[0], r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+      <div className="mb-6">
+        <h3 className="text-lg font-medium text-white">{chart.title}</h3>
+      </div>
+      <div className="h-[300px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          {renderChart()}
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+function InsightDetailCard({ insight }) {
+  const getIcon = () => {
+    switch (insight.severity) {
+      case 'critical': return <AlertTriangle className="h-5 w-5 text-red-500" />;
+      case 'warning': return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+      case 'success': return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+      default: return <Lightbulb className="h-5 w-5 text-blue-500" />;
+    }
+  };
+
+  const getStyles = () => {
+    switch (insight.severity) {
+      case 'critical': return 'border-red-500/20 bg-red-500/5';
+      case 'warning': return 'border-yellow-500/20 bg-yellow-500/5';
+      case 'success': return 'border-green-500/20 bg-green-500/5';
+      default: return 'border-blue-500/20 bg-blue-500/5';
+    }
+  };
+
+  return (
+    <div className={`border rounded-xl p-6 ${getStyles()}`}>
+      <div className="flex flex-row items-start gap-4 pb-2">
+        <div className="mt-1">{getIcon()}</div>
+        <div className="space-y-1">
+          <h3 className="text-base font-semibold text-white">
+            {insight.title}
+          </h3>
+        </div>
+      </div>
+      <div className="pl-9">
+        <p className="text-sm text-slate-400 leading-relaxed">
+          {insight.content}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// --- MAIN COMPONENT ---
+
+export default function ReportInterface({ data }) {
   const [activeTab, setActiveTab] = useState("charts");
 
-  if (!data) return null;
+  // Debug logging
+  useEffect(() => {
+    console.log("[ReportInterface] Mounted with data:", data);
+  }, [data]);
+
+  if (!data) {
+    console.warn("[ReportInterface] No data provided!");
+    return null;
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 w-full max-w-7xl mx-auto">
@@ -28,7 +224,7 @@ export function ReportInterface({ data }) {
         </div>
       )}
 
-      {/* Custom Tabs Implementation (No shadcn dependency) */}
+      {/* Custom Tabs Implementation */}
       <div className="w-full">
         <div className="flex space-x-1 rounded-xl bg-slate-800/50 p-1 w-full md:w-auto inline-flex mb-6">
           <button

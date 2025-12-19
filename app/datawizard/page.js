@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
-import { ReportInterface } from "../components/ReportInterface";
+import ReportInterface from "../components/ReportInterface";
 import { markdownToReportJson } from "../lib/markdown-transformer";
 
 export default function Home() { 
