@@ -1,0 +1,901 @@
+Date,Product,Category,Units_Sold,Price_EUR,Revenue_EUR,Margin_Percent
+2025-11-01,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-01,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-01,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-01,LG 24" FHD Monitor,Monitors,6,169,1014,25
+2025-11-01,Logitech MX Keys Keyboard,Accessories,8,119,952,35
+2025-11-01,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-01,Logitech MX Master 3 Mouse,Accessories,7,99,693,38
+2025-11-01,Razer DeathAdder Mouse,Gaming,5,67,335,40
+2025-11-01,HyperX Cloud II Headset,Gaming,4,87,348,36
+2025-11-01,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-01,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-01,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-01,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-01,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-01,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-01,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-01,Anker 7-Port USB Hub,Accessories,12,35,420,45
+2025-11-01,WD 2TB External HDD,Storage,7,75,525,28
+2025-11-01,SanDisk 128GB Flash Drive,Storage,15,15,225,50
+2025-11-01,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-01,Anker 20000mAh Powerbank,Accessories,6,51,306,40
+2025-11-01,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-01,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-01,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-01,Corsair K70 RGB Keyboard,Gaming,3,171,513,32
+2025-11-01,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-01,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-01,HDMI 2.1 Cable 3m,Accessories,18,11,198,55
+2025-11-01,XXL Mouse Pad,Gaming,8,23,184,48
+2025-11-01,Electronics Cleaning Kit,Accessories,10,7,70,60
+2025-11-02,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-02,Lenovo IdeaPad 3 Laptop,Laptops,3,539,1617,16
+2025-11-02,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-02,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-02,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-02,Microsoft Ergonomic Keyboard,Accessories,4,75,300,32
+2025-11-02,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-02,Razer DeathAdder Mouse,Gaming,8,67,536,40
+2025-11-02,HyperX Cloud II Headset,Gaming,6,87,522,36
+2025-11-02,Secret Lab Gaming Chair,Gaming,2,519,1038,28
+2025-11-02,Samsung 1TB SSD,Components,7,115,805,30
+2025-11-02,Kingston 16GB DDR4 RAM,Components,5,59,295,33
+2025-11-02,NVIDIA RTX 4060 GPU,Components,3,399,1197,15
+2025-11-02,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-02,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-02,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-02,Anker 7-Port USB Hub,Accessories,10,35,350,45
+2025-11-02,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-02,SanDisk 128GB Flash Drive,Storage,12,15,180,50
+2025-11-02,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-02,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-02,Dell Inspiron 14 Laptop,Laptops,1,719,719,17
+2025-11-02,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-02,ASUS ProArt 27" Monitor,Monitors,0,639,0,19
+2025-11-02,Corsair K70 RGB Keyboard,Gaming,5,171,855,32
+2025-11-02,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-02,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-02,HDMI 2.1 Cable 3m,Accessories,14,11,154,55
+2025-11-02,XXL Mouse Pad,Gaming,10,23,230,48
+2025-11-02,Electronics Cleaning Kit,Accessories,8,7,56,60
+2025-11-03,ASUS VivoBook 15 Laptop,Laptops,5,639,3195,18
+2025-11-03,Lenovo IdeaPad 3 Laptop,Laptops,4,539,2156,16
+2025-11-03,Samsung 27" 4K Monitor,Monitors,6,359,2154,22
+2025-11-03,LG 24" FHD Monitor,Monitors,8,169,1352,25
+2025-11-03,Logitech MX Keys Keyboard,Accessories,5,119,595,35
+2025-11-03,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-03,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-03,Razer DeathAdder Mouse,Gaming,12,67,804,40
+2025-11-03,HyperX Cloud II Headset,Gaming,9,87,783,36
+2025-11-03,Secret Lab Gaming Chair,Gaming,3,519,1557,28
+2025-11-03,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-03,Kingston 16GB DDR4 RAM,Components,7,59,413,33
+2025-11-03,NVIDIA RTX 4060 GPU,Components,4,399,1596,15
+2025-11-03,HP LaserJet Printer,Printers,1,239,239,20
+2025-11-03,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-03,Logitech C920 Webcam,Accessories,3,79,237,42
+2025-11-03,Anker 7-Port USB Hub,Accessories,15,35,525,45
+2025-11-03,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-03,SanDisk 128GB Flash Drive,Storage,18,15,270,50
+2025-11-03,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-03,Anker 20000mAh Powerbank,Accessories,7,51,357,40
+2025-11-03,Dell Inspiron 14 Laptop,Laptops,3,719,2157,17
+2025-11-03,Lenovo Tab M10 Tablet,Tablets,4,219,876,22
+2025-11-03,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-03,Corsair K70 RGB Keyboard,Gaming,8,171,1368,32
+2025-11-03,Logitech Z333 Speakers,Accessories,5,63,315,38
+2025-11-03,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-03,HDMI 2.1 Cable 3m,Accessories,22,11,242,55
+2025-11-03,XXL Mouse Pad,Gaming,14,23,322,48
+2025-11-03,Electronics Cleaning Kit,Accessories,12,7,84,60
+2025-11-04,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-04,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-04,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-04,LG 24" FHD Monitor,Monitors,4,169,676,25
+2025-11-04,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-04,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-04,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-04,Razer DeathAdder Mouse,Gaming,4,67,268,40
+2025-11-04,HyperX Cloud II Headset,Gaming,3,87,261,36
+2025-11-04,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-04,Samsung 1TB SSD,Components,10,115,1150,30
+2025-11-04,Kingston 16GB DDR4 RAM,Components,8,59,472,33
+2025-11-04,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-04,HP LaserJet Printer,Printers,4,239,956,20
+2025-11-04,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-04,Logitech C920 Webcam,Accessories,6,79,474,42
+2025-11-04,Anker 7-Port USB Hub,Accessories,9,35,315,45
+2025-11-04,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-04,SanDisk 128GB Flash Drive,Storage,11,15,165,50
+2025-11-04,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-04,Anker 20000mAh Powerbank,Accessories,4,51,204,40
+2025-11-04,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-04,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-04,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-04,Corsair K70 RGB Keyboard,Gaming,2,171,342,32
+2025-11-04,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-04,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-04,HDMI 2.1 Cable 3m,Accessories,16,11,176,55
+2025-11-04,XXL Mouse Pad,Gaming,6,23,138,48
+2025-11-04,Electronics Cleaning Kit,Accessories,9,7,63,60
+2025-11-05,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-05,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-05,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-05,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-05,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-05,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-05,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-05,Razer DeathAdder Mouse,Gaming,5,67,335,40
+2025-11-05,HyperX Cloud II Headset,Gaming,4,87,348,36
+2025-11-05,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-05,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-05,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-05,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-05,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-05,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-05,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-05,Anker 7-Port USB Hub,Accessories,11,35,385,45
+2025-11-05,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-05,SanDisk 128GB Flash Drive,Storage,14,15,210,50
+2025-11-05,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-05,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-05,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-05,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-05,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-05,Corsair K70 RGB Keyboard,Gaming,3,171,513,32
+2025-11-05,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-05,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-05,HDMI 2.1 Cable 3m,Accessories,17,11,187,55
+2025-11-05,XXL Mouse Pad,Gaming,7,23,161,48
+2025-11-05,Electronics Cleaning Kit,Accessories,10,7,70,60
+2025-11-06,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-06,Lenovo IdeaPad 3 Laptop,Laptops,3,539,1617,16
+2025-11-06,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-06,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-06,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-06,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-06,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-06,Razer DeathAdder Mouse,Gaming,6,67,402,40
+2025-11-06,HyperX Cloud II Headset,Gaming,5,87,435,36
+2025-11-06,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-06,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-06,Kingston 16GB DDR4 RAM,Components,5,59,295,33
+2025-11-06,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-06,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-06,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-06,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-06,Anker 7-Port USB Hub,Accessories,10,35,350,45
+2025-11-06,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-06,SanDisk 128GB Flash Drive,Storage,13,15,195,50
+2025-11-06,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-06,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-06,Dell Inspiron 14 Laptop,Laptops,1,719,719,17
+2025-11-06,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-06,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-06,Corsair K70 RGB Keyboard,Gaming,4,171,684,32
+2025-11-06,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-06,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-06,HDMI 2.1 Cable 3m,Accessories,15,11,165,55
+2025-11-06,XXL Mouse Pad,Gaming,8,23,184,48
+2025-11-06,Electronics Cleaning Kit,Accessories,9,7,63,60
+2025-11-07,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-07,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-07,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-07,LG 24" FHD Monitor,Monitors,6,169,1014,25
+2025-11-07,Logitech MX Keys Keyboard,Accessories,8,119,952,35
+2025-11-07,Microsoft Ergonomic Keyboard,Accessories,4,75,300,32
+2025-11-07,Logitech MX Master 3 Mouse,Accessories,7,99,693,38
+2025-11-07,Razer DeathAdder Mouse,Gaming,7,67,469,40
+2025-11-07,HyperX Cloud II Headset,Gaming,6,87,522,36
+2025-11-07,Secret Lab Gaming Chair,Gaming,2,519,1038,28
+2025-11-07,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-07,Kingston 16GB DDR4 RAM,Components,7,59,413,33
+2025-11-07,NVIDIA RTX 4060 GPU,Components,3,399,1197,15
+2025-11-07,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-07,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-07,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-07,Anker 7-Port USB Hub,Accessories,12,35,420,45
+2025-11-07,WD 2TB External HDD,Storage,7,75,525,28
+2025-11-07,SanDisk 128GB Flash Drive,Storage,16,15,240,50
+2025-11-07,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-07,Anker 20000mAh Powerbank,Accessories,6,51,306,40
+2025-11-07,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-07,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-07,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-07,Corsair K70 RGB Keyboard,Gaming,5,171,855,32
+2025-11-07,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-07,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-07,HDMI 2.1 Cable 3m,Accessories,19,11,209,55
+2025-11-07,XXL Mouse Pad,Gaming,9,23,207,48
+2025-11-07,Electronics Cleaning Kit,Accessories,11,7,77,60
+2025-11-08,ASUS VivoBook 15 Laptop,Laptops,6,639,3834,18
+2025-11-08,Lenovo IdeaPad 3 Laptop,Laptops,5,539,2695,16
+2025-11-08,Samsung 27" 4K Monitor,Monitors,7,359,2513,22
+2025-11-08,LG 24" FHD Monitor,Monitors,9,169,1521,25
+2025-11-08,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-08,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-08,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-08,Razer DeathAdder Mouse,Gaming,14,67,938,40
+2025-11-08,HyperX Cloud II Headset,Gaming,11,87,957,36
+2025-11-08,Secret Lab Gaming Chair,Gaming,4,519,2076,28
+2025-11-08,Samsung 1TB SSD,Components,10,115,1150,30
+2025-11-08,Kingston 16GB DDR4 RAM,Components,8,59,472,33
+2025-11-08,NVIDIA RTX 4060 GPU,Components,5,399,1995,15
+2025-11-08,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-08,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-08,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-08,Anker 7-Port USB Hub,Accessories,14,35,490,45
+2025-11-08,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-08,SanDisk 128GB Flash Drive,Storage,20,15,300,50
+2025-11-08,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-08,Anker 20000mAh Powerbank,Accessories,8,51,408,40
+2025-11-08,Dell Inspiron 14 Laptop,Laptops,4,719,2876,17
+2025-11-08,Lenovo Tab M10 Tablet,Tablets,5,219,1095,22
+2025-11-08,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-08,Corsair K70 RGB Keyboard,Gaming,9,171,1539,32
+2025-11-08,Logitech Z333 Speakers,Accessories,6,63,378,38
+2025-11-08,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-08,HDMI 2.1 Cable 3m,Accessories,25,11,275,55
+2025-11-08,XXL Mouse Pad,Gaming,16,23,368,48
+2025-11-08,Electronics Cleaning Kit,Accessories,14,7,98,60
+2025-11-09,ASUS VivoBook 15 Laptop,Laptops,7,639,4473,18
+2025-11-09,Lenovo IdeaPad 3 Laptop,Laptops,6,539,3234,16
+2025-11-09,Samsung 27" 4K Monitor,Monitors,8,359,2872,22
+2025-11-09,LG 24" FHD Monitor,Monitors,10,169,1690,25
+2025-11-09,Logitech MX Keys Keyboard,Accessories,5,119,595,35
+2025-11-09,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-09,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-09,Razer DeathAdder Mouse,Gaming,16,67,1072,40
+2025-11-09,HyperX Cloud II Headset,Gaming,13,87,1131,36
+2025-11-09,Secret Lab Gaming Chair,Gaming,5,519,2595,28
+2025-11-09,Samsung 1TB SSD,Components,11,115,1265,30
+2025-11-09,Kingston 16GB DDR4 RAM,Components,9,59,531,33
+2025-11-09,NVIDIA RTX 4060 GPU,Components,6,399,2394,15
+2025-11-09,HP LaserJet Printer,Printers,1,239,239,20
+2025-11-09,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-09,Logitech C920 Webcam,Accessories,3,79,237,42
+2025-11-09,Anker 7-Port USB Hub,Accessories,16,35,560,45
+2025-11-09,WD 2TB External HDD,Storage,7,75,525,28
+2025-11-09,SanDisk 128GB Flash Drive,Storage,22,15,330,50
+2025-11-09,ASUS AX3000 Router,Networking,6,131,786,26
+2025-11-09,Anker 20000mAh Powerbank,Accessories,9,51,459,40
+2025-11-09,Dell Inspiron 14 Laptop,Laptops,5,719,3595,17
+2025-11-09,Lenovo Tab M10 Tablet,Tablets,6,219,1314,22
+2025-11-09,ASUS ProArt 27" Monitor,Monitors,3,639,1917,19
+2025-11-09,Corsair K70 RGB Keyboard,Gaming,11,171,1881,32
+2025-11-09,Logitech Z333 Speakers,Accessories,7,63,441,38
+2025-11-09,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-09,HDMI 2.1 Cable 3m,Accessories,28,11,308,55
+2025-11-09,XXL Mouse Pad,Gaming,18,23,414,48
+2025-11-09,Electronics Cleaning Kit,Accessories,15,7,105,60
+2025-11-10,ASUS VivoBook 15 Laptop,Laptops,6,639,3834,18
+2025-11-10,Lenovo IdeaPad 3 Laptop,Laptops,5,539,2695,16
+2025-11-10,Samsung 27" 4K Monitor,Monitors,7,359,2513,22
+2025-11-10,LG 24" FHD Monitor,Monitors,9,169,1521,25
+2025-11-10,Logitech MX Keys Keyboard,Accessories,5,119,595,35
+2025-11-10,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-10,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-10,Razer DeathAdder Mouse,Gaming,15,67,1005,40
+2025-11-10,HyperX Cloud II Headset,Gaming,12,87,1044,36
+2025-11-10,Secret Lab Gaming Chair,Gaming,4,519,2076,28
+2025-11-10,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-10,Kingston 16GB DDR4 RAM,Components,7,59,413,33
+2025-11-10,NVIDIA RTX 4060 GPU,Components,5,399,1995,15
+2025-11-10,HP LaserJet Printer,Printers,1,239,239,20
+2025-11-10,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-10,Logitech C920 Webcam,Accessories,3,79,237,42
+2025-11-10,Anker 7-Port USB Hub,Accessories,15,35,525,45
+2025-11-10,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-10,SanDisk 128GB Flash Drive,Storage,20,15,300,50
+2025-11-10,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-10,Anker 20000mAh Powerbank,Accessories,8,51,408,40
+2025-11-10,Dell Inspiron 14 Laptop,Laptops,4,719,2876,17
+2025-11-10,Lenovo Tab M10 Tablet,Tablets,5,219,1095,22
+2025-11-10,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-10,Corsair K70 RGB Keyboard,Gaming,10,171,1710,32
+2025-11-10,Logitech Z333 Speakers,Accessories,6,63,378,38
+2025-11-10,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-10,HDMI 2.1 Cable 3m,Accessories,26,11,286,55
+2025-11-10,XXL Mouse Pad,Gaming,17,23,391,48
+2025-11-10,Electronics Cleaning Kit,Accessories,14,7,98,60
+2025-11-11,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-11,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-11,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-11,LG 24" FHD Monitor,Monitors,4,169,676,25
+2025-11-11,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-11,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-11,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-11,Razer DeathAdder Mouse,Gaming,4,67,268,40
+2025-11-11,HyperX Cloud II Headset,Gaming,3,87,261,36
+2025-11-11,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-11,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-11,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-11,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-11,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-11,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-11,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-11,Anker 7-Port USB Hub,Accessories,9,35,315,45
+2025-11-11,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-11,SanDisk 128GB Flash Drive,Storage,12,15,180,50
+2025-11-11,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-11,Anker 20000mAh Powerbank,Accessories,4,51,204,40
+2025-11-11,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-11,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-11,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-11,Corsair K70 RGB Keyboard,Gaming,2,171,342,32
+2025-11-11,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-11,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-11,HDMI 2.1 Cable 3m,Accessories,14,11,154,55
+2025-11-11,XXL Mouse Pad,Gaming,5,23,115,48
+2025-11-11,Electronics Cleaning Kit,Accessories,8,7,56,60
+2025-11-12,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-12,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-12,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-12,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-12,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-12,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-12,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-12,Razer DeathAdder Mouse,Gaming,5,67,335,40
+2025-11-12,HyperX Cloud II Headset,Gaming,4,87,348,36
+2025-11-12,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-12,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-12,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-12,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-12,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-12,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-12,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-12,Anker 7-Port USB Hub,Accessories,10,35,350,45
+2025-11-12,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-12,SanDisk 128GB Flash Drive,Storage,14,15,210,50
+2025-11-12,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-12,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-12,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-12,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-12,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-12,Corsair K70 RGB Keyboard,Gaming,3,171,513,32
+2025-11-12,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-12,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-12,HDMI 2.1 Cable 3m,Accessories,16,11,176,55
+2025-11-12,XXL Mouse Pad,Gaming,7,23,161,48
+2025-11-12,Electronics Cleaning Kit,Accessories,9,7,63,60
+2025-11-13,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-13,Lenovo IdeaPad 3 Laptop,Laptops,3,539,1617,16
+2025-11-13,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-13,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-13,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-13,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-13,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-13,Razer DeathAdder Mouse,Gaming,6,67,402,40
+2025-11-13,HyperX Cloud II Headset,Gaming,5,87,435,36
+2025-11-13,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-13,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-13,Kingston 16GB DDR4 RAM,Components,5,59,295,33
+2025-11-13,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-13,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-13,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-13,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-13,Anker 7-Port USB Hub,Accessories,11,35,385,45
+2025-11-13,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-13,SanDisk 128GB Flash Drive,Storage,13,15,195,50
+2025-11-13,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-13,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-13,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-13,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-13,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-13,Corsair K70 RGB Keyboard,Gaming,4,171,684,32
+2025-11-13,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-13,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-13,HDMI 2.1 Cable 3m,Accessories,15,11,165,55
+2025-11-13,XXL Mouse Pad,Gaming,8,23,184,48
+2025-11-13,Electronics Cleaning Kit,Accessories,10,7,70,60
+2025-11-14,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-14,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-14,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-14,LG 24" FHD Monitor,Monitors,6,169,1014,25
+2025-11-14,Logitech MX Keys Keyboard,Accessories,8,119,952,35
+2025-11-14,Microsoft Ergonomic Keyboard,Accessories,4,75,300,32
+2025-11-14,Logitech MX Master 3 Mouse,Accessories,7,99,693,38
+2025-11-14,Razer DeathAdder Mouse,Gaming,7,67,469,40
+2025-11-14,HyperX Cloud II Headset,Gaming,6,87,522,36
+2025-11-14,Secret Lab Gaming Chair,Gaming,2,519,1038,28
+2025-11-14,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-14,Kingston 16GB DDR4 RAM,Components,7,59,413,33
+2025-11-14,NVIDIA RTX 4060 GPU,Components,3,399,1197,15
+2025-11-14,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-14,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-14,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-14,Anker 7-Port USB Hub,Accessories,12,35,420,45
+2025-11-14,WD 2TB External HDD,Storage,7,75,525,28
+2025-11-14,SanDisk 128GB Flash Drive,Storage,15,15,225,50
+2025-11-14,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-14,Anker 20000mAh Powerbank,Accessories,6,51,306,40
+2025-11-14,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-14,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-14,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-14,Corsair K70 RGB Keyboard,Gaming,5,171,855,32
+2025-11-14,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-14,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-14,HDMI 2.1 Cable 3m,Accessories,18,11,198,55
+2025-11-14,XXL Mouse Pad,Gaming,9,23,207,48
+2025-11-14,Electronics Cleaning Kit,Accessories,11,7,77,60
+2025-11-15,ASUS VivoBook 15 Laptop,Laptops,6,639,3834,18
+2025-11-15,Lenovo IdeaPad 3 Laptop,Laptops,5,539,2695,16
+2025-11-15,Samsung 27" 4K Monitor,Monitors,7,359,2513,22
+2025-11-15,LG 24" FHD Monitor,Monitors,9,169,1521,25
+2025-11-15,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-15,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-15,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-15,Razer DeathAdder Mouse,Gaming,14,67,938,40
+2025-11-15,HyperX Cloud II Headset,Gaming,11,87,957,36
+2025-11-15,Secret Lab Gaming Chair,Gaming,4,519,2076,28
+2025-11-15,Samsung 1TB SSD,Components,10,115,1150,30
+2025-11-15,Kingston 16GB DDR4 RAM,Components,8,59,472,33
+2025-11-15,NVIDIA RTX 4060 GPU,Components,5,399,1995,15
+2025-11-15,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-15,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-15,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-15,Anker 7-Port USB Hub,Accessories,14,35,490,45
+2025-11-15,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-15,SanDisk 128GB Flash Drive,Storage,19,15,285,50
+2025-11-15,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-15,Anker 20000mAh Powerbank,Accessories,8,51,408,40
+2025-11-15,Dell Inspiron 14 Laptop,Laptops,4,719,2876,17
+2025-11-15,Lenovo Tab M10 Tablet,Tablets,5,219,1095,22
+2025-11-15,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-15,Corsair K70 RGB Keyboard,Gaming,9,171,1539,32
+2025-11-15,Logitech Z333 Speakers,Accessories,6,63,378,38
+2025-11-15,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-15,HDMI 2.1 Cable 3m,Accessories,24,11,264,55
+2025-11-15,XXL Mouse Pad,Gaming,15,23,345,48
+2025-11-15,Electronics Cleaning Kit,Accessories,13,7,91,60
+2025-11-16,ASUS VivoBook 15 Laptop,Laptops,7,639,4473,18
+2025-11-16,Lenovo IdeaPad 3 Laptop,Laptops,6,539,3234,16
+2025-11-16,Samsung 27" 4K Monitor,Monitors,8,359,2872,22
+2025-11-16,LG 24" FHD Monitor,Monitors,10,169,1690,25
+2025-11-16,Logitech MX Keys Keyboard,Accessories,5,119,595,35
+2025-11-16,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-16,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-16,Razer DeathAdder Mouse,Gaming,16,67,1072,40
+2025-11-16,HyperX Cloud II Headset,Gaming,13,87,1131,36
+2025-11-16,Secret Lab Gaming Chair,Gaming,5,519,2595,28
+2025-11-16,Samsung 1TB SSD,Components,11,115,1265,30
+2025-11-16,Kingston 16GB DDR4 RAM,Components,9,59,531,33
+2025-11-16,NVIDIA RTX 4060 GPU,Components,6,399,2394,15
+2025-11-16,HP LaserJet Printer,Printers,1,239,239,20
+2025-11-16,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-16,Logitech C920 Webcam,Accessories,3,79,237,42
+2025-11-16,Anker 7-Port USB Hub,Accessories,16,35,560,45
+2025-11-16,WD 2TB External HDD,Storage,7,75,525,28
+2025-11-16,SanDisk 128GB Flash Drive,Storage,21,15,315,50
+2025-11-16,ASUS AX3000 Router,Networking,6,131,786,26
+2025-11-16,Anker 20000mAh Powerbank,Accessories,9,51,459,40
+2025-11-16,Dell Inspiron 14 Laptop,Laptops,5,719,3595,17
+2025-11-16,Lenovo Tab M10 Tablet,Tablets,6,219,1314,22
+2025-11-16,ASUS ProArt 27" Monitor,Monitors,3,639,1917,19
+2025-11-16,Corsair K70 RGB Keyboard,Gaming,11,171,1881,32
+2025-11-16,Logitech Z333 Speakers,Accessories,7,63,441,38
+2025-11-16,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-16,HDMI 2.1 Cable 3m,Accessories,27,11,297,55
+2025-11-16,XXL Mouse Pad,Gaming,17,23,391,48
+2025-11-16,Electronics Cleaning Kit,Accessories,15,7,105,60
+2025-11-17,ASUS VivoBook 15 Laptop,Laptops,6,639,3834,18
+2025-11-17,Lenovo IdeaPad 3 Laptop,Laptops,5,539,2695,16
+2025-11-17,Samsung 27" 4K Monitor,Monitors,7,359,2513,22
+2025-11-17,LG 24" FHD Monitor,Monitors,9,169,1521,25
+2025-11-17,Logitech MX Keys Keyboard,Accessories,5,119,595,35
+2025-11-17,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-17,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-17,Razer DeathAdder Mouse,Gaming,15,67,1005,40
+2025-11-17,HyperX Cloud II Headset,Gaming,12,87,1044,36
+2025-11-17,Secret Lab Gaming Chair,Gaming,4,519,2076,28
+2025-11-17,Samsung 1TB SSD,Components,10,115,1150,30
+2025-11-17,Kingston 16GB DDR4 RAM,Components,8,59,472,33
+2025-11-17,NVIDIA RTX 4060 GPU,Components,5,399,1995,15
+2025-11-17,HP LaserJet Printer,Printers,1,239,239,20
+2025-11-17,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-17,Logitech C920 Webcam,Accessories,3,79,237,42
+2025-11-17,Anker 7-Port USB Hub,Accessories,15,35,525,45
+2025-11-17,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-17,SanDisk 128GB Flash Drive,Storage,20,15,300,50
+2025-11-17,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-17,Anker 20000mAh Powerbank,Accessories,8,51,408,40
+2025-11-17,Dell Inspiron 14 Laptop,Laptops,4,719,2876,17
+2025-11-17,Lenovo Tab M10 Tablet,Tablets,5,219,1095,22
+2025-11-17,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-17,Corsair K70 RGB Keyboard,Gaming,10,171,1710,32
+2025-11-17,Logitech Z333 Speakers,Accessories,6,63,378,38
+2025-11-17,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-17,HDMI 2.1 Cable 3m,Accessories,25,11,275,55
+2025-11-17,XXL Mouse Pad,Gaming,16,23,368,48
+2025-11-17,Electronics Cleaning Kit,Accessories,14,7,98,60
+2025-11-18,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-18,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-18,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-18,LG 24" FHD Monitor,Monitors,4,169,676,25
+2025-11-18,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-18,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-18,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-18,Razer DeathAdder Mouse,Gaming,4,67,268,40
+2025-11-18,HyperX Cloud II Headset,Gaming,3,87,261,36
+2025-11-18,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-18,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-18,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-18,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-18,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-18,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-18,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-18,Anker 7-Port USB Hub,Accessories,9,35,315,45
+2025-11-18,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-18,SanDisk 128GB Flash Drive,Storage,12,15,180,50
+2025-11-18,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-18,Anker 20000mAh Powerbank,Accessories,4,51,204,40
+2025-11-18,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-18,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-18,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-18,Corsair K70 RGB Keyboard,Gaming,2,171,342,32
+2025-11-18,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-18,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-18,HDMI 2.1 Cable 3m,Accessories,14,11,154,55
+2025-11-18,XXL Mouse Pad,Gaming,5,23,115,48
+2025-11-18,Electronics Cleaning Kit,Accessories,8,7,56,60
+2025-11-19,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-19,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-19,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-19,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-19,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-19,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-19,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-19,Razer DeathAdder Mouse,Gaming,5,67,335,40
+2025-11-19,HyperX Cloud II Headset,Gaming,4,87,348,36
+2025-11-19,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-19,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-19,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-19,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-19,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-19,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-19,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-19,Anker 7-Port USB Hub,Accessories,10,35,350,45
+2025-11-19,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-19,SanDisk 128GB Flash Drive,Storage,14,15,210,50
+2025-11-19,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-19,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-19,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-19,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-19,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-19,Corsair K70 RGB Keyboard,Gaming,3,171,513,32
+2025-11-19,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-19,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-19,HDMI 2.1 Cable 3m,Accessories,16,11,176,55
+2025-11-19,XXL Mouse Pad,Gaming,7,23,161,48
+2025-11-19,Electronics Cleaning Kit,Accessories,9,7,63,60
+2025-11-20,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-20,Lenovo IdeaPad 3 Laptop,Laptops,3,539,1617,16
+2025-11-20,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-20,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-20,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-20,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-20,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-20,Razer DeathAdder Mouse,Gaming,6,67,402,40
+2025-11-20,HyperX Cloud II Headset,Gaming,5,87,435,36
+2025-11-20,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-20,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-20,Kingston 16GB DDR4 RAM,Components,5,59,295,33
+2025-11-20,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-20,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-20,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-20,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-20,Anker 7-Port USB Hub,Accessories,11,35,385,45
+2025-11-20,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-20,SanDisk 128GB Flash Drive,Storage,13,15,195,50
+2025-11-20,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-20,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-20,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-20,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-20,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-20,Corsair K70 RGB Keyboard,Gaming,4,171,684,32
+2025-11-20,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-20,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-20,HDMI 2.1 Cable 3m,Accessories,15,11,165,55
+2025-11-20,XXL Mouse Pad,Gaming,8,23,184,48
+2025-11-20,Electronics Cleaning Kit,Accessories,10,7,70,60
+2025-11-21,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-21,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-21,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-21,LG 24" FHD Monitor,Monitors,6,169,1014,25
+2025-11-21,Logitech MX Keys Keyboard,Accessories,8,119,952,35
+2025-11-21,Microsoft Ergonomic Keyboard,Accessories,4,75,300,32
+2025-11-21,Logitech MX Master 3 Mouse,Accessories,7,99,693,38
+2025-11-21,Razer DeathAdder Mouse,Gaming,7,67,469,40
+2025-11-21,HyperX Cloud II Headset,Gaming,6,87,522,36
+2025-11-21,Secret Lab Gaming Chair,Gaming,2,519,1038,28
+2025-11-21,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-21,Kingston 16GB DDR4 RAM,Components,7,59,413,33
+2025-11-21,NVIDIA RTX 4060 GPU,Components,3,399,1197,15
+2025-11-21,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-21,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-21,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-21,Anker 7-Port USB Hub,Accessories,12,35,420,45
+2025-11-21,WD 2TB External HDD,Storage,7,75,525,28
+2025-11-21,SanDisk 128GB Flash Drive,Storage,15,15,225,50
+2025-11-21,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-21,Anker 20000mAh Powerbank,Accessories,6,51,306,40
+2025-11-21,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-21,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-21,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-21,Corsair K70 RGB Keyboard,Gaming,5,171,855,32
+2025-11-21,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-21,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-21,HDMI 2.1 Cable 3m,Accessories,18,11,198,55
+2025-11-21,XXL Mouse Pad,Gaming,9,23,207,48
+2025-11-21,Electronics Cleaning Kit,Accessories,11,7,77,60
+2025-11-22,ASUS VivoBook 15 Laptop,Laptops,6,639,3834,18
+2025-11-22,Lenovo IdeaPad 3 Laptop,Laptops,5,539,2695,16
+2025-11-22,Samsung 27" 4K Monitor,Monitors,7,359,2513,22
+2025-11-22,LG 24" FHD Monitor,Monitors,9,169,1521,25
+2025-11-22,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-22,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-22,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-22,Razer DeathAdder Mouse,Gaming,14,67,938,40
+2025-11-22,HyperX Cloud II Headset,Gaming,11,87,957,36
+2025-11-22,Secret Lab Gaming Chair,Gaming,4,519,2076,28
+2025-11-22,Samsung 1TB SSD,Components,10,115,1150,30
+2025-11-22,Kingston 16GB DDR4 RAM,Components,8,59,472,33
+2025-11-22,NVIDIA RTX 4060 GPU,Components,5,399,1995,15
+2025-11-22,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-22,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-22,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-22,Anker 7-Port USB Hub,Accessories,14,35,490,45
+2025-11-22,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-22,SanDisk 128GB Flash Drive,Storage,19,15,285,50
+2025-11-22,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-22,Anker 20000mAh Powerbank,Accessories,8,51,408,40
+2025-11-22,Dell Inspiron 14 Laptop,Laptops,4,719,2876,17
+2025-11-22,Lenovo Tab M10 Tablet,Tablets,5,219,1095,22
+2025-11-22,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-22,Corsair K70 RGB Keyboard,Gaming,9,171,1539,32
+2025-11-22,Logitech Z333 Speakers,Accessories,6,63,378,38
+2025-11-22,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-22,HDMI 2.1 Cable 3m,Accessories,24,11,264,55
+2025-11-22,XXL Mouse Pad,Gaming,15,23,345,48
+2025-11-22,Electronics Cleaning Kit,Accessories,13,7,91,60
+2025-11-23,ASUS VivoBook 15 Laptop,Laptops,7,639,4473,18
+2025-11-23,Lenovo IdeaPad 3 Laptop,Laptops,6,539,3234,16
+2025-11-23,Samsung 27" 4K Monitor,Monitors,8,359,2872,22
+2025-11-23,LG 24" FHD Monitor,Monitors,10,169,1690,25
+2025-11-23,Logitech MX Keys Keyboard,Accessories,5,119,595,35
+2025-11-23,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-23,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-23,Razer DeathAdder Mouse,Gaming,16,67,1072,40
+2025-11-23,HyperX Cloud II Headset,Gaming,13,87,1131,36
+2025-11-23,Secret Lab Gaming Chair,Gaming,5,519,2595,28
+2025-11-23,Samsung 1TB SSD,Components,11,115,1265,30
+2025-11-23,Kingston 16GB DDR4 RAM,Components,9,59,531,33
+2025-11-23,NVIDIA RTX 4060 GPU,Components,6,399,2394,15
+2025-11-23,HP LaserJet Printer,Printers,1,239,239,20
+2025-11-23,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-23,Logitech C920 Webcam,Accessories,3,79,237,42
+2025-11-23,Anker 7-Port USB Hub,Accessories,16,35,560,45
+2025-11-23,WD 2TB External HDD,Storage,7,75,525,28
+2025-11-23,SanDisk 128GB Flash Drive,Storage,21,15,315,50
+2025-11-23,ASUS AX3000 Router,Networking,6,131,786,26
+2025-11-23,Anker 20000mAh Powerbank,Accessories,9,51,459,40
+2025-11-23,Dell Inspiron 14 Laptop,Laptops,5,719,3595,17
+2025-11-23,Lenovo Tab M10 Tablet,Tablets,6,219,1314,22
+2025-11-23,ASUS ProArt 27" Monitor,Monitors,3,639,1917,19
+2025-11-23,Corsair K70 RGB Keyboard,Gaming,11,171,1881,32
+2025-11-23,Logitech Z333 Speakers,Accessories,7,63,441,38
+2025-11-23,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-23,HDMI 2.1 Cable 3m,Accessories,27,11,297,55
+2025-11-23,XXL Mouse Pad,Gaming,17,23,391,48
+2025-11-23,Electronics Cleaning Kit,Accessories,15,7,105,60
+2025-11-24,ASUS VivoBook 15 Laptop,Laptops,6,639,3834,18
+2025-11-24,Lenovo IdeaPad 3 Laptop,Laptops,5,539,2695,16
+2025-11-24,Samsung 27" 4K Monitor,Monitors,7,359,2513,22
+2025-11-24,LG 24" FHD Monitor,Monitors,9,169,1521,25
+2025-11-24,Logitech MX Keys Keyboard,Accessories,5,119,595,35
+2025-11-24,Microsoft Ergonomic Keyboard,Accessories,2,75,150,32
+2025-11-24,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-24,Razer DeathAdder Mouse,Gaming,15,67,1005,40
+2025-11-24,HyperX Cloud II Headset,Gaming,12,87,1044,36
+2025-11-24,Secret Lab Gaming Chair,Gaming,4,519,2076,28
+2025-11-24,Samsung 1TB SSD,Components,10,115,1150,30
+2025-11-24,Kingston 16GB DDR4 RAM,Components,8,59,472,33
+2025-11-24,NVIDIA RTX 4060 GPU,Components,5,399,1995,15
+2025-11-24,HP LaserJet Printer,Printers,1,239,239,20
+2025-11-24,Epson EcoTank Printer,Printers,1,299,299,18
+2025-11-24,Logitech C920 Webcam,Accessories,3,79,237,42
+2025-11-24,Anker 7-Port USB Hub,Accessories,15,35,525,45
+2025-11-24,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-24,SanDisk 128GB Flash Drive,Storage,20,15,300,50
+2025-11-24,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-24,Anker 20000mAh Powerbank,Accessories,8,51,408,40
+2025-11-24,Dell Inspiron 14 Laptop,Laptops,4,719,2876,17
+2025-11-24,Lenovo Tab M10 Tablet,Tablets,5,219,1095,22
+2025-11-24,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-24,Corsair K70 RGB Keyboard,Gaming,10,171,1710,32
+2025-11-24,Logitech Z333 Speakers,Accessories,6,63,378,38
+2025-11-24,APC 1500VA UPS,Networking,3,199,597,24
+2025-11-24,HDMI 2.1 Cable 3m,Accessories,25,11,275,55
+2025-11-24,XXL Mouse Pad,Gaming,16,23,368,48
+2025-11-24,Electronics Cleaning Kit,Accessories,14,7,98,60
+2025-11-25,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-25,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-25,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-25,LG 24" FHD Monitor,Monitors,4,169,676,25
+2025-11-25,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-25,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-25,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-25,Razer DeathAdder Mouse,Gaming,4,67,268,40
+2025-11-25,HyperX Cloud II Headset,Gaming,3,87,261,36
+2025-11-25,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-25,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-25,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-25,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-25,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-25,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-25,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-25,Anker 7-Port USB Hub,Accessories,9,35,315,45
+2025-11-25,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-25,SanDisk 128GB Flash Drive,Storage,12,15,180,50
+2025-11-25,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-25,Anker 20000mAh Powerbank,Accessories,4,51,204,40
+2025-11-25,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-25,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-25,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-25,Corsair K70 RGB Keyboard,Gaming,2,171,342,32
+2025-11-25,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-25,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-25,HDMI 2.1 Cable 3m,Accessories,14,11,154,55
+2025-11-25,XXL Mouse Pad,Gaming,5,23,115,48
+2025-11-25,Electronics Cleaning Kit,Accessories,8,7,56,60
+2025-11-26,ASUS VivoBook 15 Laptop,Laptops,3,639,1917,18
+2025-11-26,Lenovo IdeaPad 3 Laptop,Laptops,2,539,1078,16
+2025-11-26,Samsung 27" 4K Monitor,Monitors,4,359,1436,22
+2025-11-26,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-26,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-26,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-26,Logitech MX Master 3 Mouse,Accessories,6,99,594,38
+2025-11-26,Razer DeathAdder Mouse,Gaming,5,67,335,40
+2025-11-26,HyperX Cloud II Headset,Gaming,4,87,348,36
+2025-11-26,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-26,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-26,Kingston 16GB DDR4 RAM,Components,6,59,354,33
+2025-11-26,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-26,HP LaserJet Printer,Printers,3,239,717,20
+2025-11-26,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-26,Logitech C920 Webcam,Accessories,5,79,395,42
+2025-11-26,Anker 7-Port USB Hub,Accessories,10,35,350,45
+2025-11-26,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-26,SanDisk 128GB Flash Drive,Storage,14,15,210,50
+2025-11-26,ASUS AX3000 Router,Networking,4,131,524,26
+2025-11-26,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-26,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-26,Lenovo Tab M10 Tablet,Tablets,3,219,657,22
+2025-11-26,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-26,Corsair K70 RGB Keyboard,Gaming,3,171,513,32
+2025-11-26,Logitech Z333 Speakers,Accessories,4,63,252,38
+2025-11-26,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-26,HDMI 2.1 Cable 3m,Accessories,16,11,176,55
+2025-11-26,XXL Mouse Pad,Gaming,7,23,161,48
+2025-11-26,Electronics Cleaning Kit,Accessories,9,7,63,60
+2025-11-27,ASUS VivoBook 15 Laptop,Laptops,2,639,1278,18
+2025-11-27,Lenovo IdeaPad 3 Laptop,Laptops,3,539,1617,16
+2025-11-27,Samsung 27" 4K Monitor,Monitors,3,359,1077,22
+2025-11-27,LG 24" FHD Monitor,Monitors,5,169,845,25
+2025-11-27,Logitech MX Keys Keyboard,Accessories,7,119,833,35
+2025-11-27,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-27,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-27,Razer DeathAdder Mouse,Gaming,6,67,402,40
+2025-11-27,HyperX Cloud II Headset,Gaming,5,87,435,36
+2025-11-27,Secret Lab Gaming Chair,Gaming,1,519,519,28
+2025-11-27,Samsung 1TB SSD,Components,8,115,920,30
+2025-11-27,Kingston 16GB DDR4 RAM,Components,5,59,295,33
+2025-11-27,NVIDIA RTX 4060 GPU,Components,2,399,798,15
+2025-11-27,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-27,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-27,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-27,Anker 7-Port USB Hub,Accessories,11,35,385,45
+2025-11-27,WD 2TB External HDD,Storage,5,75,375,28
+2025-11-27,SanDisk 128GB Flash Drive,Storage,13,15,195,50
+2025-11-27,ASUS AX3000 Router,Networking,3,131,393,26
+2025-11-27,Anker 20000mAh Powerbank,Accessories,5,51,255,40
+2025-11-27,Dell Inspiron 14 Laptop,Laptops,2,719,1438,17
+2025-11-27,Lenovo Tab M10 Tablet,Tablets,2,219,438,22
+2025-11-27,ASUS ProArt 27" Monitor,Monitors,1,639,639,19
+2025-11-27,Corsair K70 RGB Keyboard,Gaming,4,171,684,32
+2025-11-27,Logitech Z333 Speakers,Accessories,3,63,189,38
+2025-11-27,APC 1500VA UPS,Networking,1,199,199,24
+2025-11-27,HDMI 2.1 Cable 3m,Accessories,15,11,165,55
+2025-11-27,XXL Mouse Pad,Gaming,8,23,184,48
+2025-11-27,Electronics Cleaning Kit,Accessories,10,7,70,60
+2025-11-28,ASUS VivoBook 15 Laptop,Laptops,8,599,4792,18
+2025-11-28,Lenovo IdeaPad 3 Laptop,Laptops,7,499,3493,16
+2025-11-28,Samsung 27" 4K Monitor,Monitors,10,319,3190,22
+2025-11-28,LG 24" FHD Monitor,Monitors,12,149,1788,25
+2025-11-28,Logitech MX Keys Keyboard,Accessories,10,107,1070,35
+2025-11-28,Microsoft Ergonomic Keyboard,Accessories,5,67,335,32
+2025-11-28,Logitech MX Master 3 Mouse,Accessories,8,87,696,38
+2025-11-28,Razer DeathAdder Mouse,Gaming,18,59,1062,40
+2025-11-28,HyperX Cloud II Headset,Gaming,15,75,1125,36
+2025-11-28,Secret Lab Gaming Chair,Gaming,6,459,2754,28
+2025-11-28,Samsung 1TB SSD,Components,14,103,1442,30
+2025-11-28,Kingston 16GB DDR4 RAM,Components,11,51,561,33
+2025-11-28,NVIDIA RTX 4060 GPU,Components,8,359,2872,15
+2025-11-28,HP LaserJet Printer,Printers,4,219,876,20
+2025-11-28,Epson EcoTank Printer,Printers,3,279,837,18
+2025-11-28,Logitech C920 Webcam,Accessories,7,71,497,42
+2025-11-28,Anker 7-Port USB Hub,Accessories,18,31,558,45
+2025-11-28,WD 2TB External HDD,Storage,9,67,603,28
+2025-11-28,SanDisk 128GB Flash Drive,Storage,25,11,275,50
+2025-11-28,ASUS AX3000 Router,Networking,7,119,833,26
+2025-11-28,Anker 20000mAh Powerbank,Accessories,10,43,430,40
+2025-11-28,Dell Inspiron 14 Laptop,Laptops,6,659,3954,17
+2025-11-28,Lenovo Tab M10 Tablet,Tablets,7,199,1393,22
+2025-11-28,ASUS ProArt 27" Monitor,Monitors,4,579,2316,19
+2025-11-28,Corsair K70 RGB Keyboard,Gaming,12,151,1812,32
+2025-11-28,Logitech Z333 Speakers,Accessories,8,55,440,38
+2025-11-28,APC 1500VA UPS,Networking,4,179,716,24
+2025-11-28,HDMI 2.1 Cable 3m,Accessories,35,7,245,55
+2025-11-28,XXL Mouse Pad,Gaming,20,19,380,48
+2025-11-28,Electronics Cleaning Kit,Accessories,18,5,90,60
+2025-11-29,ASUS VivoBook 15 Laptop,Laptops,10,599,5990,18
+2025-11-29,Lenovo IdeaPad 3 Laptop,Laptops,9,499,4491,16
+2025-11-29,Samsung 27" 4K Monitor,Monitors,12,319,3828,22
+2025-11-29,LG 24" FHD Monitor,Monitors,14,149,2086,25
+2025-11-29,Logitech MX Keys Keyboard,Accessories,8,107,856,35
+2025-11-29,Microsoft Ergonomic Keyboard,Accessories,4,67,268,32
+2025-11-29,Logitech MX Master 3 Mouse,Accessories,7,87,609,38
+2025-11-29,Razer DeathAdder Mouse,Gaming,22,59,1298,40
+2025-11-29,HyperX Cloud II Headset,Gaming,18,75,1350,36
+2025-11-29,Secret Lab Gaming Chair,Gaming,8,459,3672,28
+2025-11-29,Samsung 1TB SSD,Components,16,103,1648,30
+2025-11-29,Kingston 16GB DDR4 RAM,Components,13,51,663,33
+2025-11-29,NVIDIA RTX 4060 GPU,Components,10,359,3590,15
+2025-11-29,HP LaserJet Printer,Printers,3,219,657,20
+2025-11-29,Epson EcoTank Printer,Printers,2,279,558,18
+2025-11-29,Logitech C920 Webcam,Accessories,6,71,426,42
+2025-11-29,Anker 7-Port USB Hub,Accessories,20,31,620,45
+2025-11-29,WD 2TB External HDD,Storage,10,67,670,28
+2025-11-29,SanDisk 128GB Flash Drive,Storage,28,11,308,50
+2025-11-29,ASUS AX3000 Router,Networking,8,119,952,26
+2025-11-29,Anker 20000mAh Powerbank,Accessories,12,43,516,40
+2025-11-29,Dell Inspiron 14 Laptop,Laptops,8,659,5272,17
+2025-11-29,Lenovo Tab M10 Tablet,Tablets,9,199,1791,22
+2025-11-29,ASUS ProArt 27" Monitor,Monitors,5,579,2895,19
+2025-11-29,Corsair K70 RGB Keyboard,Gaming,14,151,2114,32
+2025-11-29,Logitech Z333 Speakers,Accessories,9,55,495,38
+2025-11-29,APC 1500VA UPS,Networking,5,179,895,24
+2025-11-29,HDMI 2.1 Cable 3m,Accessories,40,7,280,55
+2025-11-29,XXL Mouse Pad,Gaming,24,19,456,48
+2025-11-29,Electronics Cleaning Kit,Accessories,20,5,100,60
+2025-11-30,ASUS VivoBook 15 Laptop,Laptops,4,639,2556,18
+2025-11-30,Lenovo IdeaPad 3 Laptop,Laptops,4,539,2156,16
+2025-11-30,Samsung 27" 4K Monitor,Monitors,5,359,1795,22
+2025-11-30,LG 24" FHD Monitor,Monitors,7,169,1183,25
+2025-11-30,Logitech MX Keys Keyboard,Accessories,6,119,714,35
+2025-11-30,Microsoft Ergonomic Keyboard,Accessories,3,75,225,32
+2025-11-30,Logitech MX Master 3 Mouse,Accessories,5,99,495,38
+2025-11-30,Razer DeathAdder Mouse,Gaming,10,67,670,40
+2025-11-30,HyperX Cloud II Headset,Gaming,8,87,696,36
+2025-11-30,Secret Lab Gaming Chair,Gaming,3,519,1557,28
+2025-11-30,Samsung 1TB SSD,Components,9,115,1035,30
+2025-11-30,Kingston 16GB DDR4 RAM,Components,7,59,413,33
+2025-11-30,NVIDIA RTX 4060 GPU,Components,4,399,1596,15
+2025-11-30,HP LaserJet Printer,Printers,2,239,478,20
+2025-11-30,Epson EcoTank Printer,Printers,2,299,598,18
+2025-11-30,Logitech C920 Webcam,Accessories,4,79,316,42
+2025-11-30,Anker 7-Port USB Hub,Accessories,12,35,420,45
+2025-11-30,WD 2TB External HDD,Storage,6,75,450,28
+2025-11-30,SanDisk 128GB Flash Drive,Storage,16,15,240,50
+2025-11-30,ASUS AX3000 Router,Networking,5,131,655,26
+2025-11-30,Anker 20000mAh Powerbank,Accessories,7,51,357,40
+2025-11-30,Dell Inspiron 14 Laptop,Laptops,3,719,2157,17
+2025-11-30,Lenovo Tab M10 Tablet,Tablets,4,219,876,22
+2025-11-30,ASUS ProArt 27" Monitor,Monitors,2,639,1278,19
+2025-11-30,Corsair K70 RGB Keyboard,Gaming,7,171,1197,32
+2025-11-30,Logitech Z333 Speakers,Accessories,5,63,315,38
+2025-11-30,APC 1500VA UPS,Networking,2,199,398,24
+2025-11-30,HDMI 2.1 Cable 3m,Accessories,20,11,220,55
+2025-11-30,XXL Mouse Pad,Gaming,12,23,276,48
+2025-11-30,Electronics Cleaning Kit,Accessories,11,7,77,60
