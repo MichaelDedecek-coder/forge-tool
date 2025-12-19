@@ -15,8 +15,16 @@ export default function Home() {
   const [csvData, setCsvData] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [result, setResult] = useState(null);
+  const [parsedReport, setParsedReport] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [language, setLanguage] = useState("cs"); 
+  const [language, setLanguage] = useState("cs");
+  const [debugLog, setDebugLog] = useState([]);
+
+  // --- DEBUG HELPER ---
+  const addLog = (msg) => {
+    console.log(`[DataWizard Debug] ${msg}`);
+    setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()} - ${msg}`]);
+  };
 
   // --- SECURITY CHECK ---
   const handlePinSubmit = (e) => {
@@ -35,6 +43,7 @@ export default function Home() {
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     setFileName(file.name);
+    addLog(`File selected: ${file.name}`);
     
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -44,6 +53,7 @@ export default function Home() {
       const worksheet = workbook.Sheets[firstSheetName];
       const csvText = XLSX.utils.sheet_to_csv(worksheet);
       setCsvData(csvText);
+      addLog(`File parsed. Length: ${csvText.length} chars`);
     };
     reader.readAsBinaryString(file);
   }, []);
@@ -60,12 +70,15 @@ export default function Home() {
     if (!csvData) return alert("Please upload a file first!");
     setLoading(true);
     setResult(null);
+    setParsedReport(null);
+    addLog("Starting analysis...");
     
     const question = language === "cs" 
       ? "Analyzuj tato data. Řekni mi nejdůležitější trendy, součty a odlehlé hodnoty."
       : "Analyze this data. Tell me the most important trends, totals, or outliers.";
 
     try {
+      addLog("Calling /api/datawizard...");
       const res = await fetch("/api/datawizard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -76,8 +89,19 @@ export default function Home() {
         }),
       });
       const data = await res.json();
-      setResult(data);
+      addLog(`API response received. Result length: ${data.result?.length || 0}`);
+      
+      setResult(data.result);
+      
+      // Parse the markdown into structured data
+      addLog("Parsing markdown to report...");
+      const reportData = markdownToReportJson(data.result);
+      addLog(`Parse complete: Title="${reportData.title}", Charts=${reportData.charts?.length}, Metrics=${reportData.metrics?.length}`);
+      
+      setParsedReport(reportData);
+      
     } catch (e) {
+      addLog(`ERROR: ${e.message}`);
       alert("Error: " + e.message);
     }
     setLoading(false);
@@ -86,7 +110,7 @@ export default function Home() {
   const downloadReport = () => {
     if (!result) return;
     const element = document.createElement("a");
-    const file = new Blob([result.result], {type: 'text/plain'});
+    const file = new Blob([result], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
     element.download = `DataWizard_Report_${new Date().toISOString().slice(0,10)}.txt`;
     document.body.appendChild(element);
@@ -205,8 +229,31 @@ export default function Home() {
           </button>
       )}
 
-      {/* RESULTS - MANUS V4 VISUALIZATION */}
-      {result && (
+      {/* DEBUG LOGS */}
+      {debugLog.length > 0 && (
+        <div style={{ 
+          marginTop: "20px", 
+          width: "100%", 
+          maxWidth: "600px", 
+          background: "#000", 
+          border: "1px solid #333", 
+          borderRadius: "8px", 
+          padding: "15px",
+          fontFamily: "monospace",
+          fontSize: "12px",
+          color: "#10b981",
+          maxHeight: "150px",
+          overflowY: "auto"
+        }}>
+          <p style={{ color: "#888", marginBottom: "10px", fontWeight: "bold" }}>🔧 Debug Log:</p>
+          {debugLog.map((log, i) => (
+            <div key={i} style={{ marginBottom: "4px" }}>{log}</div>
+          ))}
+        </div>
+      )}
+
+      {/* RESULTS - VISUALIZATION OR FALLBACK */}
+      {parsedReport ? (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
           <div style={{ background: "#1e293b", padding: "30px", borderRadius: "12px", border: "1px solid #334155" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -219,12 +266,22 @@ export default function Home() {
                 </button>
             </div>
             
-            {/* MANUS V4: Interactive Report Interface */}
-            <ReportInterface data={markdownToReportJson(result.result)} />
+            {/* MANUS V6: ReportInterface with parsed data */}
+            <ReportInterface data={parsedReport} />
             
           </div>
         </div>
-      )}
+      ) : result ? (
+        // FALLBACK: Show raw text if parsing failed
+        <div style={{ marginTop: "40px", width: "100%", maxWidth: "900px" }}>
+          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "12px", border: "1px solid #334155" }}>
+            <h3 style={{ marginTop: 0, color: "#f59e0b" }}>⚠️ Raw Output (Parsing Failed)</h3>
+            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "#94a3b8" }}>
+              {result}
+            </pre>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
