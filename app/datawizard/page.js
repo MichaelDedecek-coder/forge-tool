@@ -93,7 +93,7 @@ export default function Home() {
     element.click();
   };
 
-  // --- 🔒 THE LOCK SCREEN (Updated with Email) ---
+  // --- 🔒 THE LOCK SCREEN ---
   if (!isAuthenticated) {
     return (
       <div style={{ 
@@ -118,7 +118,6 @@ export default function Home() {
           </form>
           {authError && <p style={{ color: "#ef4444", marginTop: "15px" }}>{authError}</p>}
           
-          {/* --- NEW LEAD GEN SECTION --- */}
           <div style={{ marginTop: "40px", borderTop: "1px solid #333", paddingTop: "20px" }}>
             <p style={{ fontSize: "14px", color: "#888", marginBottom: "5px" }}>
               Don't have a PIN? / Nemáte PIN?
@@ -130,7 +129,6 @@ export default function Home() {
               michael@agentforge.tech
             </a>
           </div>
-
         </div>
       </div>
     );
@@ -138,10 +136,10 @@ export default function Home() {
 
   // --- 🔓 THE APP (Main Interface) ---
   return (
-    <div style={{ padding: "40px", fontFamily: "sans-serif", backgroundColor: "#111", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+    <div style={{ padding: "40px", fontFamily: "sans-serif", backgroundColor: "#0f172a", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
       
       {/* LANGUAGE TOGGLE */}
-      <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", gap: "10px", background: "#222", padding: "5px", borderRadius: "20px" }}>
+      <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", gap: "10px", background: "#1e293b", padding: "5px", borderRadius: "20px" }}>
         <button 
             onClick={() => setLanguage("cs")}
             style={{ 
@@ -158,17 +156,19 @@ export default function Home() {
         >EN 🇬🇧</button>
       </div>
 
-      <h1 style={{ color: "#3b82f6", marginBottom: "10px" }}>🧙‍♂️ DataWizard</h1>
-      <p style={{ color: "#888", marginBottom: "30px" }}>
+      <h1 style={{ color: "#3b82f6", marginBottom: "10px", fontSize: "2.5rem" }}>
+        <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold" }}>Wizard</span>
+      </h1>
+      <p style={{ color: "#64748b", marginBottom: "30px" }}>
           {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
       </p>
       
       {/* DROP ZONE */}
       <div {...getRootProps()} style={{ 
           width: "100%", maxWidth: "600px", padding: "40px", 
-          border: "2px dashed #444", borderRadius: "12px", 
+          border: "2px dashed #334155", borderRadius: "12px", 
           textAlign: "center", cursor: "pointer",
-          backgroundColor: isDragActive ? "#222" : "#1a1a1a",
+          backgroundColor: isDragActive ? "#1e293b" : "#0f172a",
           transition: "all 0.2s"
       }}>
         <input {...getInputProps()} />
@@ -176,13 +176,13 @@ export default function Home() {
             <div>
                 <div style={{ fontSize: "40px", marginBottom: "10px" }}>📄</div>
                 <p style={{ fontSize: "18px", color: "#10b981" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
-                <p style={{ fontSize: "12px", color: "#555" }}>{language === "cs" ? "Klikněte na tlačítko níže" : "Click button below"}</p>
+                <p style={{ fontSize: "12px", color: "#475569" }}>{language === "cs" ? "Klikněte na tlačítko níže" : "Click button below"}</p>
             </div>
         ) : (
             <div>
                 <div style={{ fontSize: "40px", marginBottom: "10px" }}>📥</div>
-                <p style={{ color: "#aaa" }}>{language === "cs" ? "Přetáhněte soubor sem" : "Drag & drop a file here"}</p>
-                <p style={{ fontSize: "12px", color: "#555", marginTop: "10px" }}>(CSV or Excel)</p>
+                <p style={{ color: "#94a3b8" }}>{language === "cs" ? "Přetáhněte soubor sem" : "Drag & drop a file here"}</p>
+                <p style={{ fontSize: "12px", color: "#475569", marginTop: "10px" }}>(CSV or Excel)</p>
             </div>
         )}
       </div>
@@ -194,9 +194,9 @@ export default function Home() {
             disabled={loading}
             style={{ 
                 marginTop: "30px", padding: "15px 40px", fontSize: "18px", 
-                background: loading ? "#555" : "linear-gradient(90deg, #3b82f6, #8b5cf6)", 
+                background: loading ? "#475569" : "#10b981", 
                 color: "white", border: "none", borderRadius: "30px", cursor: "pointer",
-                fontWeight: "bold", boxShadow: "0 4px 15px rgba(59, 130, 246, 0.4)"
+                fontWeight: "bold", boxShadow: "0 4px 15px rgba(16, 185, 129, 0.4)"
             }}
           >
             {loading 
@@ -205,35 +205,23 @@ export default function Home() {
           </button>
       )}
 
-      {/* RESULTS - NEW VISUALIZATION INTERFACE */}
+      {/* RESULTS - MANUS V4 VISUALIZATION */}
       {result && (
-        <div style={{ marginTop: "40px", width: "100%", maxWidth: "900px" }}>
-          <div style={{ background: "#1f2937", padding: "30px", borderRadius: "12px", border: "1px solid #374151" }}>
+        <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
+          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "12px", border: "1px solid #334155" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                 <h3 style={{ marginTop: 0, color: "#10b981" }}>📊 {language === "cs" ? "Analýza DataWizard" : "Wizard Analysis"}</h3>
                 <button 
                     onClick={downloadReport}
-                    style={{ background: "#374151", color: "#fff", border: "1px solid #555", padding: "5px 15px", borderRadius: "5px", cursor: "pointer" }}
+                    style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "8px 16px", borderRadius: "8px", cursor: "pointer" }}
                 >
                     {language === "cs" ? "⬇️ Stáhnout Report" : "⬇️ Download Report"}
                 </button>
             </div>
             
-            {/* NEW: Interactive Report Interface */}
-            <ReportInterface 
-              data={markdownToReportJson(result.result)} 
-              language={language} 
-            />
+            {/* MANUS V4: Interactive Report Interface */}
+            <ReportInterface data={markdownToReportJson(result.result)} />
             
-            {/* FALLBACK: Raw text (collapsible) */}
-            <details style={{ marginTop: "20px" }}>
-              <summary style={{ cursor: "pointer", color: "#888", fontSize: "14px" }}>
-                {language === "cs" ? "📝 Zobrazit textový výstup" : "📝 Show raw text output"}
-              </summary>
-              <pre style={{ fontSize: "14px", marginTop: "10px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "#aaa", background: "#111", padding: "15px", borderRadius: "8px" }}>
-                {result.result}
-              </pre>
-            </details>
           </div>
         </div>
       )}

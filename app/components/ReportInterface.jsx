@@ -1,271 +1,150 @@
 "use client";
+
 import React, { useState } from "react";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { TrendingUp, TrendingDown, Lightbulb, BarChart3 } from "lucide-react";
+import { KeyFindingCard } from "./report/KeyFindingCard";
+import { ChartCard } from "./report/ChartCard";
+import { InsightDetailCard } from "./report/InsightDetailCard";
+import { FileText, BarChart3, Lightbulb, Table as TableIcon } from "lucide-react";
 
-// Color palette for charts
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+export function ReportInterface({ data }) {
+  const [activeTab, setActiveTab] = useState("charts");
 
-// === SUB-COMPONENTS ===
-
-function KeyMetricCard({ label, value, trend }) {
-  const isPositive = trend && (trend.includes("+") || trend.toLowerCase().includes("up"));
-  const isNegative = trend && (trend.includes("-") || trend.toLowerCase().includes("down"));
+  if (!data) return null;
 
   return (
-    <div style={{
-      background: "#1e293b",
-      borderRadius: "12px",
-      padding: "20px",
-      border: "1px solid #334155",
-      minWidth: "150px",
-      flex: "1"
-    }}>
-      <p style={{ color: "#94a3b8", fontSize: "14px", marginBottom: "8px" }}>{label}</p>
-      <p style={{ color: "#fff", fontSize: "24px", fontWeight: "bold", marginBottom: "4px" }}>{value}</p>
-      {trend && (
-        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          {isPositive && <TrendingUp size={16} color="#10b981" />}
-          {isNegative && <TrendingDown size={16} color="#ef4444" />}
-          <span style={{ 
-            color: isPositive ? "#10b981" : isNegative ? "#ef4444" : "#94a3b8", 
-            fontSize: "14px" 
-          }}>
-            {trend}
-          </span>
+    <div className="space-y-8 animate-in fade-in duration-500 w-full max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight text-white">{data.title}</h1>
+        <p className="text-slate-400 text-lg">{data.summary}</p>
+      </div>
+
+      {/* Key Metrics Grid */}
+      {data.metrics && data.metrics.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {data.metrics.map((metric, index) => (
+            <KeyFindingCard key={index} metric={metric} />
+          ))}
         </div>
       )}
-    </div>
-  );
-}
 
-function ChartRenderer({ chart }) {
-  const { chartType, data, title, dataKeys } = chart;
-
-  if (!data || data.length === 0) return null;
-
-  // Extract key names from data
-  const keys = Object.keys(data[0] || {});
-  const categoryKey = dataKeys?.[0]?.name || keys[0];
-  const valueKey = dataKeys?.[0]?.value || keys[1];
-
-  return (
-    <div style={{
-      background: "#1e293b",
-      borderRadius: "12px",
-      padding: "20px",
-      border: "1px solid #334155",
-      marginBottom: "20px"
-    }}>
-      <h4 style={{ color: "#fff", marginBottom: "15px", display: "flex", alignItems: "center", gap: "8px" }}>
-        <BarChart3 size={18} color="#3b82f6" />
-        {title}
-      </h4>
-      <ResponsiveContainer width="100%" height={300}>
-        {chartType === "bar" && (
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-            <XAxis dataKey={categoryKey} stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
-            <YAxis stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
-            <Tooltip 
-              contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px" }}
-              labelStyle={{ color: "#fff" }}
-            />
-            <Legend />
-            <Bar dataKey={valueKey} fill="#3b82f6" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        )}
-        {chartType === "line" && (
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-            <XAxis dataKey={categoryKey} stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
-            <YAxis stroke="#94a3b8" tick={{ fill: "#94a3b8" }} />
-            <Tooltip 
-              contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px" }}
-              labelStyle={{ color: "#fff" }}
-            />
-            <Legend />
-            <Line type="monotone" dataKey={valueKey} stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6" }} />
-          </LineChart>
-        )}
-        {chartType === "pie" && (
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey={valueKey}
-              nameKey={categoryKey}
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip 
-              contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px" }}
-            />
-            <Legend />
-          </PieChart>
-        )}
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-function InsightCard({ title, description }) {
-  return (
-    <div style={{
-      background: "#1e293b",
-      borderRadius: "12px",
-      padding: "16px",
-      border: "1px solid #334155",
-      marginBottom: "12px"
-    }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
-        <Lightbulb size={20} color="#f59e0b" style={{ marginTop: "2px", flexShrink: 0 }} />
-        <div>
-          <h4 style={{ color: "#fff", fontSize: "16px", marginBottom: "6px" }}>{title}</h4>
-          <p style={{ color: "#94a3b8", fontSize: "14px", lineHeight: "1.5" }}>{description}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// === MAIN COMPONENT ===
-
-export function ReportInterface({ data, language = "en" }) {
-  const [activeTab, setActiveTab] = useState("overview");
-
-  // Handle case where data is null/undefined or parsing failed
-  if (!data || (!data.title && !data.metrics?.length && !data.charts?.length && !data.insights?.length)) {
-    return (
-      <div style={{ color: "#94a3b8", textAlign: "center", padding: "40px" }}>
-        <p>{language === "cs" ? "Žádná strukturovaná data k zobrazení." : "No structured data to display."}</p>
-      </div>
-    );
-  }
-
-  const { title, summary, metrics, charts, insights } = data;
-
-  const tabs = [
-    { id: "overview", label: language === "cs" ? "Přehled" : "Overview" },
-    { id: "charts", label: language === "cs" ? "Grafy" : "Charts" },
-    { id: "insights", label: language === "cs" ? "Poznatky" : "Insights" },
-  ];
-
-  return (
-    <div>
-      {/* Title & Summary */}
-      {title && (
-        <h2 style={{ color: "#fff", fontSize: "24px", marginBottom: "10px" }}>{title}</h2>
-      )}
-      {summary && (
-        <p style={{ color: "#94a3b8", fontSize: "16px", lineHeight: "1.6", marginBottom: "20px" }}>{summary}</p>
-      )}
-
-      {/* Tabs */}
-      <div style={{ 
-        display: "flex", 
-        gap: "10px", 
-        marginBottom: "20px",
-        borderBottom: "1px solid #334155",
-        paddingBottom: "10px"
-      }}>
-        {tabs.map((tab) => (
+      {/* Custom Tabs Implementation (No shadcn dependency) */}
+      <div className="w-full">
+        <div className="flex space-x-1 rounded-xl bg-slate-800/50 p-1 w-full md:w-auto inline-flex mb-6">
           <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              background: activeTab === tab.id ? "#3b82f6" : "transparent",
-              color: activeTab === tab.id ? "#fff" : "#94a3b8",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontWeight: activeTab === tab.id ? "bold" : "normal",
-              transition: "all 0.2s"
-            }}
+            onClick={() => setActiveTab("charts")}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              activeTab === "charts" 
+                ? "bg-blue-600 text-white shadow-sm" 
+                : "text-slate-400 hover:text-white hover:bg-white/5"
+            }`}
           >
-            {tab.label}
+            <BarChart3 className="h-4 w-4" />
+            Visuals
           </button>
-        ))}
+          <button
+            onClick={() => setActiveTab("insights")}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              activeTab === "insights" 
+                ? "bg-blue-600 text-white shadow-sm" 
+                : "text-slate-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <Lightbulb className="h-4 w-4" />
+            Insights
+          </button>
+          <button
+            onClick={() => setActiveTab("raw")}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              activeTab === "raw" 
+                ? "bg-blue-600 text-white shadow-sm" 
+                : "text-slate-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <FileText className="h-4 w-4" />
+            Raw
+          </button>
+        </div>
+
+        {/* Charts Tab Content */}
+        {activeTab === "charts" && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {data.charts && data.charts.map((chart, index) => (
+                <ChartCard key={index} chart={chart} />
+              ))}
+              {(!data.charts || data.charts.length === 0) && (
+                <div className="col-span-full p-12 text-center border border-dashed border-slate-700 rounded-xl">
+                  <p className="text-slate-500">No charts generated for this query.</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Tables Section */}
+            {data.tables && data.tables.length > 0 && (
+              <div className="space-y-6 mt-8">
+                {data.tables.map((table, index) => (
+                  <div key={index} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+                    <div className="px-6 py-4 border-b border-white/10">
+                      <h3 className="flex items-center gap-2 text-lg font-medium text-white">
+                        <TableIcon className="h-5 w-5 text-slate-400" />
+                        {table.title}
+                      </h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm text-left">
+                        <thead className="text-xs text-slate-400 uppercase bg-white/5">
+                          <tr>
+                            {table.headers.map((header, i) => (
+                              <th key={i} className="px-6 py-3">{header}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {table.rows.map((row, i) => (
+                            <tr key={i} className="hover:bg-white/5 transition-colors">
+                              {row.map((cell, j) => (
+                                <td key={j} className="px-6 py-4 font-medium text-slate-300">{cell}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Insights Tab Content */}
+        {activeTab === "insights" && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="grid grid-cols-1 gap-4">
+              {data.insights && data.insights.map((insight, index) => (
+                <InsightDetailCard key={index} insight={insight} />
+              ))}
+              {(!data.insights || data.insights.length === 0) && (
+                <div className="p-12 text-center border border-dashed border-slate-700 rounded-xl">
+                  <p className="text-slate-500">No specific insights extracted.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Raw Markdown Tab Content */}
+        {activeTab === "raw" && (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
+              <pre className="whitespace-pre-wrap font-mono text-sm text-slate-300 overflow-auto max-h-[600px]">
+                {data.rawMarkdown}
+              </pre>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Tab Content */}
-      {activeTab === "overview" && (
-        <div>
-          {/* Metrics */}
-          {metrics && metrics.length > 0 && (
-            <div style={{ display: "flex", gap: "15px", flexWrap: "wrap", marginBottom: "20px" }}>
-              {metrics.map((metric, idx) => (
-                <KeyMetricCard key={idx} label={metric.label} value={metric.value} trend={metric.trend} />
-              ))}
-            </div>
-          )}
-
-          {/* First Chart (preview) */}
-          {charts && charts.length > 0 && (
-            <ChartRenderer chart={charts[0]} />
-          )}
-
-          {/* First 2 Insights (preview) */}
-          {insights && insights.length > 0 && (
-            <div>
-              <h3 style={{ color: "#fff", fontSize: "18px", marginBottom: "15px" }}>
-                {language === "cs" ? "Klíčové poznatky" : "Key Insights"}
-              </h3>
-              {insights.slice(0, 2).map((insight, idx) => (
-                <InsightCard key={idx} title={insight.title} description={insight.description} />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeTab === "charts" && (
-        <div>
-          {charts && charts.length > 0 ? (
-            charts.map((chart, idx) => (
-              <ChartRenderer key={idx} chart={chart} />
-            ))
-          ) : (
-            <p style={{ color: "#94a3b8", textAlign: "center", padding: "40px" }}>
-              {language === "cs" ? "Žádné grafy k dispozici." : "No charts available."}
-            </p>
-          )}
-        </div>
-      )}
-
-      {activeTab === "insights" && (
-        <div>
-          {insights && insights.length > 0 ? (
-            insights.map((insight, idx) => (
-              <InsightCard key={idx} title={insight.title} description={insight.description} />
-            ))
-          ) : (
-            <p style={{ color: "#94a3b8", textAlign: "center", padding: "40px" }}>
-              {language === "cs" ? "Žádné poznatky k dispozici." : "No insights available."}
-            </p>
-          )}
-        </div>
-      )}
     </div>
   );
 }
