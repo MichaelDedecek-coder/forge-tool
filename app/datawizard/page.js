@@ -93,12 +93,30 @@ export default function Home() {
       
       setResult(data.result);
       
-      // Parse the markdown into structured data
-      addLog("Parsing markdown to report...");
-      const reportData = markdownToReportJson(data.result);
-      addLog(`Parse complete: Title="${reportData.title}", Charts=${reportData.charts?.length}, Metrics=${reportData.metrics?.length}`);
-      
-      setParsedReport(reportData);
+ // Parse the markdown into structured data
+addLog("Parsing markdown to report...");
+addLog(`Raw result type: ${typeof data.result}, length: ${data.result?.length}`);
+
+// Check if markdownToReportJson function exists
+addLog(`Parser function exists: ${typeof markdownToReportJson}`);
+
+const reportData = markdownToReportJson(data.result);
+
+// Detailed debug output
+addLog(`Parse complete:`);
+addLog(`  - Title: "${reportData?.title}"`);
+addLog(`  - Charts: ${reportData?.charts?.length || 0}`);
+addLog(`  - Metrics: ${reportData?.metrics?.length || 0}`);
+addLog(`  - Has rawMarkdown: ${!!reportData?.rawMarkdown}`);
+
+if (reportData?.charts?.length > 0) {
+  addLog(`  - First chart type: ${reportData.charts[0]?.chartType}`);
+  addLog(`  - First chart data points: ${reportData.charts[0]?.data?.length || 0}`);
+} else {
+  addLog(`  ⚠️ NO CHARTS EXTRACTED! Check parser regex.`);
+}
+
+setParsedReport(reportData);
       
     } catch (e) {
       addLog(`ERROR: ${e.message}`);
