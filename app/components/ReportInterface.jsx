@@ -52,8 +52,19 @@ function ChartCard({ chart }) {
     ? chart.dataKeys 
     : [{ name: 'name', value: 'value' }]; // Fallback to prevent crash
 
+  // FIX: Use chartType (from Gemini output) or type as fallback
+  const chartType = chart.chartType || chart.type;
+
+  // Debug logging
+  console.log("[ChartCard] Rendering chart:", { 
+    title: chart.title, 
+    chartType: chartType, 
+    dataPoints: chart.data?.length,
+    dataKeys: safeDataKeys 
+  });
+
   const renderChart = () => {
-    switch (chart.type) {
+    switch (chartType) {
       case 'bar':
         return (
           <BarChart data={chart.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -95,6 +106,7 @@ function ChartCard({ chart }) {
               outerRadius={80}
               paddingAngle={5}
               dataKey={safeDataKeys[0].value}
+              nameKey={safeDataKeys[0].name}
             >
               {chart.data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -141,7 +153,12 @@ function ChartCard({ chart }) {
         );
 
       default:
-        return null;
+        console.warn("[ChartCard] Unknown chart type:", chartType);
+        return (
+          <div className="flex items-center justify-center h-full text-slate-500">
+            <p>Unknown chart type: {chartType || 'undefined'}</p>
+          </div>
+        );
     }
   };
 
@@ -150,7 +167,7 @@ function ChartCard({ chart }) {
       <div className="mb-6">
         <h3 className="text-lg font-medium text-white">{chart.title}</h3>
       </div>
-      <div className="h-[300px] w-full">
+      <div style={{ width: '100%', height: '300px' }}>
         <ResponsiveContainer width="100%" height="100%">
           {renderChart()}
         </ResponsiveContainer>
@@ -205,6 +222,9 @@ export default function ReportInterface({ data }) {
   // Debug logging
   useEffect(() => {
     console.log("[ReportInterface] Mounted with data:", data);
+    if (data?.charts) {
+      console.log("[ReportInterface] Charts array:", data.charts);
+    }
   }, [data]);
 
   if (!data) {
