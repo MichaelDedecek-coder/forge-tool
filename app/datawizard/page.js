@@ -6,37 +6,17 @@ import ReportInterface from "../components/ReportInterface";
 import { markdownToReportJson } from "../lib/markdown-transformer";
 
 export default function Home() { 
-  // --- AUTH STATE ---
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [pinInput, setPinInput] = useState("");
-  const [authError, setAuthError] = useState("");
-  
-  // --- APP STATE ---
+  // --- APP STATE (OPEN ACCESS - NO PIN) ---
   const [csvData, setCsvData] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [result, setResult] = useState(null);
   const [parsedReport, setParsedReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState("cs");
-  const [debugLog, setDebugLog] = useState([]);
 
-  // --- DEBUG HELPER ---
+  // --- DEBUG HELPER (console only) ---
   const addLog = (msg) => {
-    console.log(`[DataWizard Debug] ${msg}`);
-    setDebugLog(prev => [...prev, `${new Date().toLocaleTimeString()} - ${msg}`]);
-  };
-
-  // --- SECURITY CHECK ---
-  const handlePinSubmit = (e) => {
-    e.preventDefault();
-    const SECRET_PIN = "4863"; 
-    
-    if (pinInput === SECRET_PIN) {
-      setIsAuthenticated(true);
-    } else {
-      setAuthError("❌ Incorrect PIN / Nesprávný PIN");
-      setPinInput("");
-    }
+    console.log(`[DataWizard] ${msg}`);
   };
 
   // Handle File Drop
@@ -67,7 +47,7 @@ export default function Home() {
   });
 
   async function runAnalysis() {
-    if (!csvData) return alert("Please upload a file first!");
+    if (!csvData) return alert(language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!");
     setLoading(true);
     setResult(null);
     setParsedReport(null);
@@ -93,30 +73,12 @@ export default function Home() {
       
       setResult(data.result);
       
- // Parse the markdown into structured data
-addLog("Parsing markdown to report...");
-addLog(`Raw result type: ${typeof data.result}, length: ${data.result?.length}`);
+      // Parse the markdown into structured data
+      addLog("Parsing markdown to report...");
+      const reportData = markdownToReportJson(data.result);
+      addLog(`Parse complete: Charts=${reportData?.charts?.length || 0}, Metrics=${reportData?.metrics?.length || 0}`);
 
-// Check if markdownToReportJson function exists
-addLog(`Parser function exists: ${typeof markdownToReportJson}`);
-
-const reportData = markdownToReportJson(data.result);
-
-// Detailed debug output
-addLog(`Parse complete:`);
-addLog(`  - Title: "${reportData?.title}"`);
-addLog(`  - Charts: ${reportData?.charts?.length || 0}`);
-addLog(`  - Metrics: ${reportData?.metrics?.length || 0}`);
-addLog(`  - Has rawMarkdown: ${!!reportData?.rawMarkdown}`);
-
-if (reportData?.charts?.length > 0) {
-  addLog(`  - First chart type: ${reportData.charts[0]?.chartType}`);
-  addLog(`  - First chart data points: ${reportData.charts[0]?.data?.length || 0}`);
-} else {
-  addLog(`  ⚠️ NO CHARTS EXTRACTED! Check parser regex.`);
-}
-
-setParsedReport(reportData);
+      setParsedReport(reportData);
       
     } catch (e) {
       addLog(`ERROR: ${e.message}`);
@@ -135,171 +97,139 @@ setParsedReport(reportData);
     element.click();
   };
 
-  // --- 🔒 THE LOCK SCREEN ---
-  if (!isAuthenticated) {
-    return (
-      <div style={{ 
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", 
-        height: "100vh", backgroundColor: "#050505", color: "white", fontFamily: "sans-serif" 
-      }}>
-        <div style={{ padding: "40px", background: "#111", borderRadius: "12px", border: "1px solid #333", textAlign: "center", maxWidth: "400px", width: "90%" }}>
-          <h1 style={{ fontSize: "40px", marginBottom: "20px" }}>🧙‍♂️</h1>
-          <h2 style={{ marginBottom: "20px" }}>DataWizard Access</h2>
-          <form onSubmit={handlePinSubmit}>
-            <input 
-              type="password" 
-              value={pinInput}
-              onChange={(e) => setPinInput(e.target.value)}
-              placeholder="Enter PIN"
-              style={{ padding: "10px", borderRadius: "5px", border: "1px solid #444", background: "#222", color: "white", fontSize: "16px", marginBottom: "10px", width: "100%" }}
-              autoFocus
-            />
-            <button type="submit" style={{ width: "100%", padding: "10px", background: "#3b82f6", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}>
-              Unlock / Odemknout
-            </button>
-          </form>
-          {authError && <p style={{ color: "#ef4444", marginTop: "15px" }}>{authError}</p>}
-          
-          <div style={{ marginTop: "40px", borderTop: "1px solid #333", paddingTop: "20px" }}>
-            <p style={{ fontSize: "14px", color: "#888", marginBottom: "5px" }}>
-              Don't have a PIN? / Nemáte PIN?
-            </p>
-            <a 
-              href="mailto:michael@agentforge.tech?subject=Request%20DataWizard%20Access"
-              style={{ color: "#3b82f6", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}
-            >
-              michael@agentforge.tech
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // --- 🔓 THE APP (Main Interface) ---
+  // --- CLEAN UI - INSTANT ACCESS ---
   return (
     <div style={{ padding: "40px", fontFamily: "sans-serif", backgroundColor: "#0f172a", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
       
+      {/* BACK TO HOME */}
+      <button 
+        onClick={() => window.location.href = '/'}
+        style={{ 
+          position: "absolute", top: "20px", left: "20px", 
+          background: "none", border: "1px solid rgba(255,255,255,0.2)", 
+          color: "rgba(255,255,255,0.7)", padding: "8px 16px", 
+          borderRadius: "8px", cursor: "pointer", fontSize: "14px"
+        }}
+      >
+        ← {language === "cs" ? "Zpět" : "Back"}
+      </button>
+
       {/* LANGUAGE TOGGLE */}
-      <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", gap: "10px", background: "#1e293b", padding: "5px", borderRadius: "20px" }}>
+      <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", gap: "4px", background: "#1e293b", padding: "4px", borderRadius: "20px" }}>
         <button 
             onClick={() => setLanguage("cs")}
             style={{ 
                 background: language === "cs" ? "#3b82f6" : "transparent", 
-                color: "white", border: "none", padding: "5px 15px", borderRadius: "15px", cursor: "pointer", fontWeight: "bold"
+                color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
             }}
         >CZ 🇨🇿</button>
         <button 
             onClick={() => setLanguage("en")}
             style={{ 
                 background: language === "en" ? "#3b82f6" : "transparent", 
-                color: "white", border: "none", padding: "5px 15px", borderRadius: "15px", cursor: "pointer", fontWeight: "bold"
+                color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
             }}
         >EN 🇬🇧</button>
       </div>
 
-      <h1 style={{ color: "#3b82f6", marginBottom: "10px", fontSize: "2.5rem" }}>
-        <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold" }}>Wizard</span>
-      </h1>
-      <p style={{ color: "#64748b", marginBottom: "30px" }}>
-          {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
-      </p>
+      {/* HEADER */}
+      <div style={{ marginTop: "40px", textAlign: "center" }}>
+        <h1 style={{ marginBottom: "10px", fontSize: "2.2rem" }}>
+          <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold", color: "white" }}>Wizard</span>
+        </h1>
+        <p style={{ color: "#64748b", marginBottom: "30px" }}>
+            {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
+        </p>
+      </div>
       
       {/* DROP ZONE */}
       <div {...getRootProps()} style={{ 
-          width: "100%", maxWidth: "600px", padding: "40px", 
-          border: "2px dashed #334155", borderRadius: "12px", 
+          width: "100%", maxWidth: "550px", padding: "50px 40px", 
+          border: "2px dashed #334155", borderRadius: "16px", 
           textAlign: "center", cursor: "pointer",
-          backgroundColor: isDragActive ? "#1e293b" : "#0f172a",
+          backgroundColor: isDragActive ? "#1e293b" : "transparent",
           transition: "all 0.2s"
       }}>
         <input {...getInputProps()} />
         {fileName ? (
             <div>
-                <div style={{ fontSize: "40px", marginBottom: "10px" }}>📄</div>
-                <p style={{ fontSize: "18px", color: "#10b981" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
-                <p style={{ fontSize: "12px", color: "#475569" }}>{language === "cs" ? "Klikněte na tlačítko níže" : "Click button below"}</p>
+                <div style={{ fontSize: "48px", marginBottom: "15px" }}>📄</div>
+                <p style={{ fontSize: "18px", color: "#10b981", fontWeight: "600" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
+                <p style={{ fontSize: "13px", color: "#475569", marginTop: "8px" }}>{language === "cs" ? "Klikněte na tlačítko níže pro analýzu" : "Click the button below to analyze"}</p>
             </div>
         ) : (
             <div>
-                <div style={{ fontSize: "40px", marginBottom: "10px" }}>📥</div>
-                <p style={{ color: "#94a3b8" }}>{language === "cs" ? "Přetáhněte soubor sem" : "Drag & drop a file here"}</p>
-                <p style={{ fontSize: "12px", color: "#475569", marginTop: "10px" }}>(CSV or Excel)</p>
+                <div style={{ fontSize: "48px", marginBottom: "15px" }}>📥</div>
+                <p style={{ color: "#94a3b8", fontSize: "16px" }}>{language === "cs" ? "Přetáhněte soubor sem nebo klikněte" : "Drag & drop a file here, or click"}</p>
+                <p style={{ fontSize: "13px", color: "#475569", marginTop: "10px" }}>CSV, Excel (.xlsx)</p>
             </div>
         )}
       </div>
 
-      {/* ACTION BUTTON */}
+      {/* ANALYZE BUTTON */}
       {fileName && (
           <button 
             onClick={runAnalysis} 
             disabled={loading}
             style={{ 
-                marginTop: "30px", padding: "15px 40px", fontSize: "18px", 
-                background: loading ? "#475569" : "#10b981", 
-                color: "white", border: "none", borderRadius: "30px", cursor: "pointer",
-                fontWeight: "bold", boxShadow: "0 4px 15px rgba(16, 185, 129, 0.4)"
+                marginTop: "25px", padding: "16px 50px", fontSize: "17px", 
+                background: loading ? "#475569" : "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)", 
+                color: "white", border: "none", borderRadius: "30px", cursor: loading ? "not-allowed" : "pointer",
+                fontWeight: "bold", boxShadow: "0 4px 20px rgba(16, 185, 129, 0.3)",
+                transition: "all 0.2s"
             }}
           >
             {loading 
                 ? (language === "cs" ? "✨ Analyzuji..." : "✨ Analyzing...") 
-                : (language === "cs" ? "✨ Získat Insight" : "✨ Auto-Discover Insights")}
+                : (language === "cs" ? "✨ Analyzovat" : "✨ Analyze")}
           </button>
       )}
 
-      {/* DEBUG LOGS */}
-      {debugLog.length > 0 && (
-        <div style={{ 
-          marginTop: "20px", 
-          width: "100%", 
-          maxWidth: "600px", 
-          background: "#000", 
-          border: "1px solid #333", 
-          borderRadius: "8px", 
-          padding: "15px",
-          fontFamily: "monospace",
-          fontSize: "12px",
-          color: "#10b981",
-          maxHeight: "150px",
-          overflowY: "auto"
-        }}>
-          <p style={{ color: "#888", marginBottom: "10px", fontWeight: "bold" }}>🔧 Debug Log:</p>
-          {debugLog.map((log, i) => (
-            <div key={i} style={{ marginBottom: "4px" }}>{log}</div>
-          ))}
+      {/* RESULTS */}
+      {parsedReport && (
+        <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
+          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
+                <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
+                <button 
+                    onClick={downloadReport}
+                    style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
+                >
+                    {language === "cs" ? "⬇️ Stáhnout" : "⬇️ Download"}
+                </button>
+            </div>
+            <ReportInterface data={parsedReport} />
+          </div>
         </div>
       )}
 
-      {/* RESULTS - VISUALIZATION OR FALLBACK */}
-      {parsedReport ? (
-        <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
-          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "12px", border: "1px solid #334155" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                <h3 style={{ marginTop: 0, color: "#10b981" }}>📊 {language === "cs" ? "Analýza DataWizard" : "Wizard Analysis"}</h3>
-                <button 
-                    onClick={downloadReport}
-                    style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "8px 16px", borderRadius: "8px", cursor: "pointer" }}
-                >
-                    {language === "cs" ? "⬇️ Stáhnout Report" : "⬇️ Download Report"}
-                </button>
-            </div>
-            
-            {/* MANUS V6: ReportInterface with parsed data */}
-            <ReportInterface data={parsedReport} />
-            
-          </div>
-        </div>
-      ) : result ? (
-        // FALLBACK: Show raw text if parsing failed
+      {/* FALLBACK: Raw output if parsing failed */}
+      {result && !parsedReport && (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "900px" }}>
-          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "12px", border: "1px solid #334155" }}>
-            <h3 style={{ marginTop: 0, color: "#f59e0b" }}>⚠️ Raw Output (Parsing Failed)</h3>
+          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
+            <h3 style={{ marginTop: 0, color: "#f59e0b" }}>⚠️ {language === "cs" ? "Textový výstup" : "Text Output"}</h3>
             <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "#94a3b8" }}>
               {result}
             </pre>
           </div>
         </div>
-      ) : null}
+      )}
+
+      {/* FOOTER - CONTACT FOR FEEDBACK */}
+      <div style={{ marginTop: "60px", textAlign: "center", color: "#475569", fontSize: "14px", paddingBottom: "20px" }}>
+        <p style={{ marginBottom: "8px" }}>
+          {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
+        </p>
+        <a 
+          href="mailto:michael@forgecreative.cz?subject=DataWizard%20Feedback"
+          style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: "600" }}
+        >
+          michael@forgecreative.cz
+        </a>
+        <p style={{ marginTop: "20px", fontSize: "12px", color: "#334155" }}>
+          FORGE CREATIVE | AI Job Agency
+        </p>
+      </div>
     </div>
   );
 }
