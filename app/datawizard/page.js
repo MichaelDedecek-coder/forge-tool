@@ -70,12 +70,25 @@ export default function Home() {
       });
       const data = await res.json();
       addLog(`API response received. Result length: ${data.result?.length || 0}`);
-      
+
+      // V9: Log first 1000 chars of the response for debugging
+      console.log("[DataWizard V9] API Response preview:", data.result?.substring(0, 1000));
+
       setResult(data.result);
-      
+
       // Parse the markdown into structured data
       addLog("Parsing markdown to report...");
+      console.log("[DataWizard V9] === STARTING PARSE ===");
       const reportData = markdownToReportJson(data.result);
+      console.log("[DataWizard V9] === PARSE COMPLETE ===");
+      console.log("[DataWizard V9] Parsed report structure:", {
+        title: reportData?.title,
+        summary: reportData?.summary?.substring(0, 100),
+        metricsCount: reportData?.metrics?.length || 0,
+        chartsCount: reportData?.charts?.length || 0,
+        insightsCount: reportData?.insights?.length || 0,
+        charts: reportData?.charts
+      });
       addLog(`Parse complete: Charts=${reportData?.charts?.length || 0}, Metrics=${reportData?.metrics?.length || 0}`);
 
       setParsedReport(reportData);
