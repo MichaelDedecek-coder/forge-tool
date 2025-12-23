@@ -47,21 +47,66 @@ function KeyFindingCard({ metric }) {
 const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'];
 
 function ChartCard({ chart }) {
-  // SAFETY CHECK: Ensure dataKeys exists and has at least one item
-  const safeDataKeys = chart.dataKeys && chart.dataKeys.length > 0 
-    ? chart.dataKeys 
-    : [{ name: 'name', value: 'value' }]; // Fallback to prevent crash
-
-  // FIX: Use chartType (from Gemini output) or type as fallback
-  const chartType = chart.chartType || chart.type;
-
-  // Debug logging
-  console.log("[ChartCard] Rendering chart:", { 
-    title: chart.title, 
-    chartType: chartType, 
-    dataPoints: chart.data?.length,
-    dataKeys: safeDataKeys 
+  // ENHANCED V9: Comprehensive validation and logging
+  console.log("[ChartCard V9] Received chart prop:", {
+    title: chart?.title,
+    chartType: chart?.chartType,
+    type: chart?.type,
+    dataLength: chart?.data?.length,
+    dataKeysLength: chart?.dataKeys?.length,
+    fullChart: chart
   });
+
+  // Validate chart object
+  if (!chart) {
+    console.error("[ChartCard V9] ✗ Chart is null or undefined!");
+    return (
+      <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
+        <p className="text-red-400">Error: Chart data is missing</p>
+      </div>
+    );
+  }
+
+  // Extract chartType with fallback chain
+  const chartType = chart.chartType || chart.type || 'bar';
+  console.log("[ChartCard V9] Using chartType:", chartType);
+
+  // Validate and normalize dataKeys
+  let safeDataKeys = chart.dataKeys && Array.isArray(chart.dataKeys) && chart.dataKeys.length > 0
+    ? chart.dataKeys
+    : null;
+
+  // If no dataKeys, try to infer from data
+  if (!safeDataKeys && chart.data && Array.isArray(chart.data) && chart.data.length > 0) {
+    console.warn("[ChartCard V9] No dataKeys provided, inferring from first data row...");
+    const keys = Object.keys(chart.data[0]);
+    if (keys.length >= 2) {
+      safeDataKeys = [{ name: keys[0], value: keys[1] }];
+      console.log("[ChartCard V9] Inferred dataKeys:", safeDataKeys);
+    } else if (keys.length === 1) {
+      safeDataKeys = [{ name: 'index', value: keys[0] }];
+      console.log("[ChartCard V9] Inferred single-column dataKeys:", safeDataKeys);
+    }
+  }
+
+  // Final fallback
+  if (!safeDataKeys) {
+    console.error("[ChartCard V9] ✗ Could not determine dataKeys!");
+    safeDataKeys = [{ name: 'name', value: 'value' }];
+  }
+
+  // Validate data array
+  if (!chart.data || !Array.isArray(chart.data) || chart.data.length === 0) {
+    console.warn("[ChartCard V9] ⚠ Chart has no data!");
+    return (
+      <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
+        <h3 className="text-lg font-medium text-white mb-2">{chart.title || "Chart"}</h3>
+        <p className="text-yellow-400 text-sm">No data available for visualization</p>
+      </div>
+    );
+  }
+
+  console.log("[ChartCard V9] ✓ Validation complete. Rendering", chartType, "chart with", chart.data.length, "data points");
 
   const renderChart = () => {
     switch (chartType) {
