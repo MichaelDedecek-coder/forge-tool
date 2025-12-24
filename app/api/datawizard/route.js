@@ -83,42 +83,51 @@ export async function POST(req) {
 
     // 3. EXECUTION (With Auto-Retry)
     console.log("🚀 DataWizard: Executing in Sandbox...");
-    const sandbox = await Sandbox.create({ apiKey: process.env.E2B_API_KEY });
+    let sandbox = null;
+    let fullOutput = "";
 
-    // 4. UPLOAD DATA
-    await sandbox.files.write("dataset.csv", dynamicData);
+    try {
+      sandbox = await Sandbox.create({ apiKey: process.env.E2B_API_KEY });
 
-    // 5. RUN CODE (ATTEMPT 1)
-    let execution = await sandbox.runCode(pythonCode);
-    
-    // --- 🛡️ AUTO-RETRY LOGIC ---
-    // If output is empty (Cold Start issue), wait 1s and try again.
-    if (execution.logs.stdout.length === 0 && execution.logs.stderr.length === 0) {
-        console.log("⚠️ Empty output detected (Cold Start?). Retrying execution in 1s...");
-        await new Promise(r => setTimeout(r, 1000)); 
-        execution = await sandbox.runCode(pythonCode);
-        console.log("🔄 Retry complete.");
+      // 4. UPLOAD DATA
+      await sandbox.files.write("dataset.csv", dynamicData);
+
+      // 5. RUN CODE (ATTEMPT 1)
+      let execution = await sandbox.runCode(pythonCode);
+
+      // --- 🛡️ AUTO-RETRY LOGIC ---
+      // If output is empty (Cold Start issue), wait 1s and try again.
+      if (execution.logs.stdout.length === 0 && execution.logs.stderr.length === 0) {
+          console.log("⚠️ Empty output detected (Cold Start?). Retrying execution in 1s...");
+          await new Promise(r => setTimeout(r, 1000));
+          execution = await sandbox.runCode(pythonCode);
+          console.log("🔄 Retry complete.");
+      }
+      // -----------------------------
+
+      // 6. CAPTURE OUTPUT
+      const stdout = execution.logs.stdout.join("\n");
+      const stderr = execution.logs.stderr.join("\n");
+      fullOutput = stdout + "\n" + stderr;
+
+      console.log("📊 FINAL OUTPUT:", fullOutput);
+    } finally {
+      // Ensure sandbox is ALWAYS terminated, even if errors occur
+      if (sandbox) {
+        console.log("🧹 Cleaning up sandbox session...");
+        await sandbox.kill();
+      }
     }
-    // -----------------------------
-
-    await sandbox.kill();
-
-    // 6. CAPTURE OUTPUT
-    const stdout = execution.logs.stdout.join("\n");
-    const stderr = execution.logs.stderr.join("\n");
-    const fullOutput = stdout + "\n" + stderr;
-
-    console.log("📊 FINAL OUTPUT:", fullOutput);
 
     // 7. FINAL REPORT (Structured for Visualization - V3)
     const formatterPrompt = `
     You are DataWizard, a professional Data Analyst Reporter.
-    
+
     Here is the RAW OUTPUT from a verified Python calculation:
     """
     ${fullOutput}
     """
-    
+
     INSTRUCTIONS:
     You MUST output your response in a specific Markdown format that includes structured JSON blocks for charts.
     Use ${language === 'cs' ? 'CZECH' : 'ENGLISH'} language for all text.
@@ -158,8 +167,8 @@ export async function POST(req) {
     `;
 
     const finalResponse = await model.generateContent(formatterPrompt);
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       question: userQuestion,
       generated_code: pythonCode,
       result: finalResponse.response.text(),
