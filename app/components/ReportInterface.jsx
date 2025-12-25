@@ -296,13 +296,25 @@ export default function ReportInterface({ data, printMode = false }) {
       </div>
 
       {/* Key Metrics Grid */}
+      <div style={{ background: 'orange', padding: '10px', border: '5px solid red' }}>
+        <p style={{ color: 'black', fontSize: '20px', fontWeight: 'bold' }}>
+          🔍 METRICS SECTION START - Count: {data.metrics?.length || 0}
+        </p>
+      </div>
+
       {data.metrics && data.metrics.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ background: 'pink', padding: '20px' }}>
           {data.metrics.map((metric, index) => (
             <KeyFindingCard key={index} metric={metric} />
           ))}
         </div>
       )}
+
+      <div style={{ background: 'lime', padding: '10px', border: '5px solid blue' }}>
+        <p style={{ color: 'black', fontSize: '20px', fontWeight: 'bold' }}>
+          🔍 METRICS SECTION END
+        </p>
+      </div>
 
       {/* Custom Tabs Implementation */}
       <div className="w-full">
