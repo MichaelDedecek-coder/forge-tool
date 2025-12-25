@@ -96,38 +96,91 @@ export default function PrintPage() {
             font-family: 'Georgia', 'Times New Roman', serif;
           }
 
-          /* Hide everything except report */
+          /* GEMINI'S SILVER BULLET FIX - Force color rendering globally */
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
 
-          /* Ensure main layout containers are visible */
+          /* CRITICAL FIX #1: Reset app layout to remove overflow clipping */
+          html,
+          body,
+          #__next,
+          main,
+          .layout-wrapper {
+            display: block !important;
+            position: static !important;
+            overflow: visible !important;
+            transform: none !important;
+            filter: none !important;
+          }
+
+          /* CRITICAL FIX #2: Strip transforms and filters from all containers */
+          div,
+          section,
+          article {
+            transform: none !important;
+            filter: none !important;
+            perspective: none !important;
+            will-change: auto !important;
+          }
+
+          /* CRITICAL FIX #3: Ensure main layout containers are visible */
           .space-y-8,
           .w-full,
           .max-w-7xl {
             display: block !important;
             opacity: 1 !important;
             visibility: visible !important;
+            position: relative !important;
+            overflow: visible !important;
           }
 
-          /* Grid layouts */
+          /* CRITICAL FIX #4: Grid layouts - force visibility and strip transforms */
           .grid {
             display: grid !important;
             opacity: 1 !important;
             visibility: visible !important;
+            position: relative !important;
+            overflow: visible !important;
+            transform: none !important;
+            filter: none !important;
           }
 
           /* Metric cards grid - 2x2 for print */
           .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 12pt !important;
+            display: grid !important;
+            position: relative !important;
+            overflow: visible !important;
           }
 
           /* Charts grid - 1 column for print */
           .grid-cols-1.lg\\:grid-cols-2 {
             grid-template-columns: 1fr !important;
             gap: 16pt !important;
+            display: grid !important;
+            position: relative !important;
+            overflow: visible !important;
+          }
+
+          /* CRITICAL FIX #5: Force metric cards and charts to be visible */
+          .bg-white\\/5,
+          .backdrop-blur-sm,
+          .recharts-wrapper,
+          .recharts-surface,
+          [data-chart-id],
+          .chart-container {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            overflow: visible !important;
+            transform: none !important;
+            filter: none !important;
+            break-inside: avoid-page !important;
+            page-break-inside: avoid !important;
           }
 
           /* Hide tab navigation container */
