@@ -79,17 +79,47 @@ export default function PrintPage() {
             print-color-adjust: exact !important;
           }
 
-          /* Hide tabs */
+          /* Hide tabs and navigation */
+          button,
           .flex.space-x-1,
-          button[class*="rounded"],
-          div[class*="inline-flex"] {
+          [role="tablist"],
+          div[class*="inline-flex"] button {
             display: none !important;
           }
 
           /* Show all tab content */
-          div[class*="animate-in"] {
+          div[class*="animate-in"],
+          div[class*="fade-in"],
+          div[class*="slide-in"] {
             display: block !important;
             opacity: 1 !important;
+            transform: none !important;
+          }
+
+          /* Force ALL text to be visible */
+          *,
+          div,
+          span,
+          p,
+          h1, h2, h3, h4, h5, h6 {
+            color: #1e293b !important;
+          }
+
+          /* Specific overrides for metric values */
+          .text-2xl,
+          div[class*="text-2xl"],
+          div[class*="font-bold"] {
+            color: #0f172a !important;
+            font-size: 20pt !important;
+            font-weight: bold !important;
+          }
+
+          /* Labels */
+          .text-sm,
+          .text-xs,
+          div[class*="text-sm"] {
+            color: #64748b !important;
+            font-size: 9pt !important;
           }
 
           /* Typography */
