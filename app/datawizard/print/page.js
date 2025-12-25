@@ -152,7 +152,27 @@ export default function PrintPage() {
             overflow: visible !important;
           }
 
-          /* 5. CRITICAL: Kill Glassmorphism (backdrop-blur, bg-opacity) - Force Solid Backgrounds */
+          /* 5. ABSOLUTE NUCLEAR: Direct targeting of metric cards with simple class */
+          .print-metric-card {
+            background: #ffffff !important;
+            border: 5px solid #FF0000 !important; /* HUGE RED BORDER - IMPOSSIBLE TO MISS */
+            backdrop-filter: none !important;
+            filter: none !important;
+            box-shadow: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: block !important;
+            width: 100% !important;
+            min-height: 100px !important;
+            margin-bottom: 1rem !important;
+            padding: 1.5rem !important;
+            page-break-inside: avoid !important;
+            position: relative !important;
+            overflow: visible !important;
+            transform: none !important;
+          }
+
+          /* 6. CRITICAL: Kill Glassmorphism on all other elements */
           [class*="backdrop-blur"],
           [class*="bg-opacity"],
           [class*="bg-white/"],
@@ -162,7 +182,7 @@ export default function PrintPage() {
             background: #ffffff !important;
             backdrop-filter: none !important;
             filter: none !important;
-            border: 2px solid #000000 !important; /* Thick black border for proof of life */
+            border: 2px solid #000000 !important;
             opacity: 1 !important;
             visibility: visible !important;
             display: block !important;
@@ -172,7 +192,19 @@ export default function PrintPage() {
             page-break-inside: avoid !important;
           }
 
-          /* 6. Force metric card text to high-contrast black */
+          /* 7. Force metric card text to high-contrast black */
+          .print-metric-card,
+          .print-metric-card *,
+          .print-metric-card div,
+          .print-metric-card h3,
+          .print-metric-card p,
+          .print-metric-card span {
+            color: #000000 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+
+          /* 8. Force other card text to black */
           .bg-white\\/5 *,
           [class*="backdrop-blur"] *,
           [class*="bg-white\\/"] * {
