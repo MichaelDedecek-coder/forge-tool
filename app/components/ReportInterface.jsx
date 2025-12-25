@@ -13,6 +13,14 @@ import {
 // --- SUB-COMPONENTS (Consolidated) ---
 
 function KeyFindingCard({ metric }) {
+  // DEBUG: Log metric data
+  console.log("[KeyFindingCard] Rendering metric:", {
+    label: metric.label,
+    value: metric.value,
+    hasValue: !!metric.value,
+    valueLength: metric.value?.length
+  });
+
   return (
     <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition-colors">
       <div className="pb-2">
@@ -21,7 +29,9 @@ function KeyFindingCard({ metric }) {
         </h3>
       </div>
       <div>
-        <div className="text-2xl font-bold text-white">{metric.value}</div>
+        <div className="text-2xl font-bold text-white" style={{ color: '#0f172a' }}>
+          {metric.value || '[NO VALUE]'}
+        </div>
         {metric.trend && (
           <div className={`flex items-center text-xs mt-1 ${
             metric.trend.direction === 'up' ? 'text-green-400' : 
