@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "app/api/export-pdf/route.js": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  },
+  "buildCommand": "npm run build"
+}
