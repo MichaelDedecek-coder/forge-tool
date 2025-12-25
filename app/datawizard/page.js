@@ -114,12 +114,10 @@ export default function Home() {
     if (!parsedReport) return;
 
     try {
-      // Store report data in localStorage for print page
-      localStorage.setItem("datawizard_print_data", JSON.stringify(parsedReport));
-      localStorage.setItem("datawizard_print_language", language);
+      // CROSS-ORIGIN SOLUTION: Use postMessage instead of localStorage
+      // This works even if domains are different (forgecreative.cz vs vercel.app)
 
-      // CRITICAL: Use current origin to prevent cross-origin localStorage issues
-      // This ensures print page opens on same domain (e.g., forgecreative.cz)
+      // Open print window
       const printUrl = `${window.location.origin}/datawizard/print`;
       const printWindow = window.open(printUrl, "_blank");
 
@@ -127,7 +125,32 @@ export default function Home() {
         alert(language === "cs"
           ? "Povolte vyskakovací okna pro tisk PDF"
           : "Please allow pop-ups to open print preview");
+        return;
       }
+
+      // Listen for "ready" message from print window
+      const handleMessage = (event) => {
+        // Security: verify message is from print window
+        if (event.data?.type === "PRINT_PAGE_READY") {
+          addLog("Print window ready, sending data...");
+
+          // Send report data to print window
+          printWindow.postMessage({
+            type: "DATAWIZARD_PRINT_DATA",
+            data: parsedReport,
+            language: language
+          }, "*"); // Use "*" to allow any origin (print window might be on different domain)
+
+          // Clean up listener
+          window.removeEventListener("message", handleMessage);
+        }
+      };
+
+      window.addEventListener("message", handleMessage);
+
+      // Fallback: Also try localStorage (works if same origin)
+      localStorage.setItem("datawizard_print_data", JSON.stringify(parsedReport));
+      localStorage.setItem("datawizard_print_language", language);
 
       addLog("Opening print preview...");
     } catch (error) {
