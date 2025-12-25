@@ -8,29 +8,69 @@ export default function PrintPage() {
   const [language, setLanguage] = useState("en");
 
   useEffect(() => {
-    // Get report data from localStorage
-    const storedData = localStorage.getItem("datawizard_print_data");
-    const storedLang = localStorage.getItem("datawizard_print_language");
+    console.log("[PrintPage] Initializing...");
+    let dataReceived = false;
 
-    if (storedData) {
-      try {
-        const parsed = JSON.parse(storedData);
-        console.log("[PrintPage] Loaded report data:", parsed);
-        console.log("[PrintPage] Has metrics?", parsed?.metrics?.length);
-        console.log("[PrintPage] Has charts?", parsed?.charts?.length);
-        console.log("[PrintPage] Has insights?", parsed?.insights?.length);
-        setReportData(parsed);
-        setLanguage(storedLang || "en");
+    // CROSS-ORIGIN SOLUTION: Listen for postMessage from parent window
+    const handleMessage = (event) => {
+      console.log("[PrintPage] Received message:", event.data?.type);
 
-        // Auto-trigger print dialog after content loads (increased delay for charts)
+      if (event.data?.type === "DATAWIZARD_PRINT_DATA" && !dataReceived) {
+        dataReceived = true;
+        console.log("[PrintPage] Received data via postMessage");
+        console.log("[PrintPage] Has metrics?", event.data.data?.metrics?.length);
+        console.log("[PrintPage] Has charts?", event.data.data?.charts?.length);
+
+        setReportData(event.data.data);
+        setLanguage(event.data.language || "en");
+
+        // Auto-trigger print dialog
         setTimeout(() => {
           console.log("[PrintPage] Triggering print dialog");
           window.print();
         }, 2500);
-      } catch (error) {
-        console.error("Failed to parse report data:", error);
+
+        // Clean up
+        window.removeEventListener("message", handleMessage);
       }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    // Send "ready" message to parent window (if opened via window.open)
+    if (window.opener) {
+      console.log("[PrintPage] Sending READY message to parent");
+      window.opener.postMessage({ type: "PRINT_PAGE_READY" }, "*");
     }
+
+    // FALLBACK: Try localStorage (works if same origin)
+    setTimeout(() => {
+      if (!dataReceived) {
+        console.log("[PrintPage] Trying localStorage fallback...");
+        const storedData = localStorage.getItem("datawizard_print_data");
+        const storedLang = localStorage.getItem("datawizard_print_language");
+
+        if (storedData) {
+          try {
+            const parsed = JSON.parse(storedData);
+            console.log("[PrintPage] Loaded from localStorage");
+            setReportData(parsed);
+            setLanguage(storedLang || "en");
+            dataReceived = true;
+
+            setTimeout(() => {
+              window.print();
+            }, 2500);
+          } catch (error) {
+            console.error("Failed to parse localStorage data:", error);
+          }
+        }
+      }
+    }, 1000); // Wait 1s for postMessage before trying localStorage
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
   }, []);
 
   if (!reportData) {
