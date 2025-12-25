@@ -317,12 +317,43 @@ export default function ReportInterface({ data, printMode = false }) {
       </div>
 
       {/* Key Metrics Grid - FORCED RENDER FOR DEBUG */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ background: 'pink', padding: '20px', display: 'grid !important' }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ background: 'pink', padding: '20px' }}>
         <p style={{ color: 'black', fontSize: '16px', gridColumn: '1 / -1' }}>
           DEBUG: Rendering {data.metrics?.length || 0} metrics. Condition check: metrics={String(!!data.metrics)} length={data.metrics?.length} pass={String(data.metrics && data.metrics.length > 0)}
         </p>
         {data.metrics && data.metrics.map((metric, index) => (
-          <KeyFindingCard key={index} metric={metric} />
+          printMode ? (
+            // SIMPLIFIED PRINT-ONLY VERSION - NO TAILWIND, PURE INLINE STYLES
+            <div
+              key={index}
+              style={{
+                background: '#ffffff',
+                border: '5px solid #FF0000',
+                padding: '24px',
+                marginBottom: '16px',
+                pageBreakInside: 'avoid',
+                minHeight: '120px'
+              }}
+            >
+              <h3 style={{
+                color: '#000000',
+                fontSize: '14px',
+                fontWeight: '500',
+                marginBottom: '12px'
+              }}>
+                {metric.label}
+              </h3>
+              <div style={{
+                color: '#000000',
+                fontSize: '24px',
+                fontWeight: 'bold'
+              }}>
+                {metric.value || '[NO VALUE]'}
+              </div>
+            </div>
+          ) : (
+            <KeyFindingCard key={index} metric={metric} />
+          )
         ))}
       </div>
 
