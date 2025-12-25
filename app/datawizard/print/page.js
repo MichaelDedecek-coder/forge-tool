@@ -15,13 +15,18 @@ export default function PrintPage() {
     if (storedData) {
       try {
         const parsed = JSON.parse(storedData);
+        console.log("[PrintPage] Loaded report data:", parsed);
+        console.log("[PrintPage] Has metrics?", parsed?.metrics?.length);
+        console.log("[PrintPage] Has charts?", parsed?.charts?.length);
+        console.log("[PrintPage] Has insights?", parsed?.insights?.length);
         setReportData(parsed);
         setLanguage(storedLang || "en");
 
-        // Auto-trigger print dialog after content loads
+        // Auto-trigger print dialog after content loads (increased delay for charts)
         setTimeout(() => {
+          console.log("[PrintPage] Triggering print dialog");
           window.print();
-        }, 1000);
+        }, 2500);
       } catch (error) {
         console.error("Failed to parse report data:", error);
       }
@@ -77,6 +82,25 @@ export default function PrintPage() {
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+          }
+
+          /* CRITICAL FIX: Force metrics grid and all sections to display */
+          .grid,
+          div.grid,
+          .space-y-8,
+          div[class*="grid"],
+          div[class*="space-y"] {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+
+          /* Grid layout for metrics */
+          .grid.grid-cols-1,
+          div[class*="grid-cols"] {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 12pt !important;
           }
 
           /* Hide tab navigation container */
@@ -220,7 +244,16 @@ export default function PrintPage() {
             font-weight: bold !important;
           }
 
-          /* Charts */
+          /* Charts - CRITICAL: Ensure charts and SVGs are visible */
+          .recharts-wrapper,
+          .recharts-surface,
+          svg,
+          svg * {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+
           svg {
             max-width: 100%;
             page-break-inside: avoid;
