@@ -310,57 +310,53 @@ export default function ReportInterface({ data, printMode = false }) {
       </div>
 
       {/* Key Metrics Grid */}
-      <div style={{ background: 'orange', padding: '10px', border: '5px solid red' }}>
-        <p style={{ color: 'black', fontSize: '20px', fontWeight: 'bold' }}>
-          🔍 METRICS SECTION START - Count: {data.metrics?.length || 0}
-        </p>
-      </div>
-
-      {/* Key Metrics Grid - FORCED RENDER FOR DEBUG */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" style={{ background: 'pink', padding: '20px' }}>
-        <p style={{ color: 'black', fontSize: '16px', gridColumn: '1 / -1' }}>
-          DEBUG: Rendering {data.metrics?.length || 0} metrics. Condition check: metrics={String(!!data.metrics)} length={data.metrics?.length} pass={String(data.metrics && data.metrics.length > 0)}
-        </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {data.metrics && data.metrics.map((metric, index) => (
           printMode ? (
-            // SIMPLIFIED PRINT-ONLY VERSION - NO TAILWIND, PURE INLINE STYLES
+            // PRINT VERSION: Clean, professional cards with subtle styling
             <div
               key={index}
               style={{
-                background: '#ffffff',
-                border: '5px solid #FF0000',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
                 padding: '24px',
-                marginBottom: '16px',
+                marginBottom: '12px',
                 pageBreakInside: 'avoid',
-                minHeight: '120px'
+                borderRadius: '8px'
               }}
             >
               <h3 style={{
-                color: '#000000',
-                fontSize: '14px',
+                color: '#64748b',
+                fontSize: '13px',
                 fontWeight: '500',
-                marginBottom: '12px'
+                marginBottom: '12px',
+                textTransform: 'capitalize'
               }}>
                 {metric.label}
               </h3>
               <div style={{
-                color: '#000000',
+                color: '#0f172a',
                 fontSize: '24px',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                lineHeight: '1.2'
               }}>
-                {metric.value || '[NO VALUE]'}
+                {metric.value || 'N/A'}
               </div>
+              {metric.description && (
+                <p style={{
+                  color: '#64748b',
+                  fontSize: '12px',
+                  marginTop: '8px',
+                  lineHeight: '1.4'
+                }}>
+                  {metric.description}
+                </p>
+              )}
             </div>
           ) : (
             <KeyFindingCard key={index} metric={metric} />
           )
         ))}
-      </div>
-
-      <div style={{ background: 'lime', padding: '10px', border: '5px solid blue' }}>
-        <p style={{ color: 'black', fontSize: '20px', fontWeight: 'bold' }}>
-          🔍 METRICS SECTION END
-        </p>
       </div>
 
       {/* Custom Tabs Implementation */}

@@ -55,24 +55,6 @@ export default function PrintPage() {
 
   return (
     <>
-      {/* DEBUG: Show data status */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        right: 0,
-        background: 'yellow',
-        padding: '10px',
-        zIndex: 9999,
-        fontSize: '12px',
-        border: '2px solid red'
-      }} className="no-print">
-        <strong>DEBUG DATA:</strong><br/>
-        Metrics: {reportData?.metrics?.length || 0}<br/>
-        Charts: {reportData?.charts?.length || 0}<br/>
-        Insights: {reportData?.insights?.length || 0}<br/>
-        Has data: {reportData ? 'YES' : 'NO'}
-      </div>
-
       <style jsx global>{`
         /* Print-specific styles */
         @media screen {
