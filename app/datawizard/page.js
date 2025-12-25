@@ -110,6 +110,42 @@ export default function Home() {
     element.click();
   };
 
+  const downloadPDF = async () => {
+    if (!parsedReport) return;
+
+    try {
+      addLog("Generating PDF...");
+      const response = await fetch("/api/export-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportData: parsedReport,
+          fileName: fileName ? fileName.replace(/\.(csv|xlsx)$/i, '') : 'DataWizard_Report',
+          language: language
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("PDF generation failed");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${fileName ? fileName.replace(/\.(csv|xlsx)$/i, '') : 'DataWizard_Report'}_${new Date().toISOString().slice(0,10)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      addLog("PDF downloaded successfully!");
+    } catch (error) {
+      addLog(`PDF Error: ${error.message}`);
+      alert(language === "cs" ? "Chyba při generování PDF" : "PDF generation error");
+    }
+  };
+
   // --- CLEAN UI - INSTANT ACCESS ---
   return (
     <div style={{ padding: "40px", fontFamily: "sans-serif", backgroundColor: "#0f172a", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
@@ -204,12 +240,20 @@ export default function Home() {
           <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
                 <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
-                <button 
-                    onClick={downloadReport}
-                    style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
-                >
-                    {language === "cs" ? "⬇️ Stáhnout" : "⬇️ Download"}
-                </button>
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                        onClick={downloadPDF}
+                        style={{ background: "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)", color: "#fff", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px", fontWeight: "600", boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)" }}
+                    >
+                        {language === "cs" ? "📄 Stáhnout PDF" : "📄 Download PDF"}
+                    </button>
+                    <button
+                        onClick={downloadReport}
+                        style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
+                    >
+                        {language === "cs" ? "📝 Stáhnout TXT" : "📝 Download TXT"}
+                    </button>
+                </div>
             </div>
             <ReportInterface data={parsedReport} />
           </div>

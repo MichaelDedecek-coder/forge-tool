@@ -1,0 +1,349 @@
+/* ========================================
+   DataWizard Print CSS - Professional PDF Export
+   "Insurance" Fallback for Browser Print (Cmd+P)
+   ======================================== */
+
+@media print {
+  /* === PAGE SETUP === */
+  @page {
+    size: A4;
+    margin: 2cm 1.5cm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* === RESET BACKGROUNDS === */
+  body {
+    background: white !important;
+    color: #1e293b !important;
+    font-family: 'Georgia', 'Times New Roman', serif !important;
+  }
+
+  /* === HIDE UI ELEMENTS === */
+
+  /* Hide navigation, back buttons, language toggles */
+  button:not(.no-print-hide),
+  nav,
+  [style*="position: absolute"][style*="top"],
+  input[type="file"],
+  .dropzone,
+  [class*="drop"] {
+    display: none !important;
+  }
+
+  /* Hide file upload zone */
+  [role="button"],
+  [aria-label*="drag"],
+  [aria-label*="drop"] {
+    display: none !important;
+  }
+
+  /* Hide any buttons in the header area */
+  div[style*="position: absolute"] {
+    display: none !important;
+  }
+
+  /* === REPORT CONTAINER === */
+
+  /* Main report wrapper */
+  div[style*="background: #1e293b"],
+  div[style*="backgroundColor: #0f172a"],
+  .bg-slate-900,
+  .bg-slate-950 {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Report content container */
+  .space-y-8,
+  .animate-in {
+    background: white !important;
+  }
+
+  /* === TYPOGRAPHY === */
+
+  /* Main title */
+  h1 {
+    color: #0f172a !important;
+    font-size: 24pt !important;
+    font-weight: bold !important;
+    margin-bottom: 12pt !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Summary text */
+  h1 + p,
+  .text-slate-400 {
+    color: #475569 !important;
+    font-size: 11pt !important;
+    margin-bottom: 18pt !important;
+  }
+
+  /* Section headings */
+  h2, h3 {
+    color: #1e293b !important;
+    page-break-after: avoid !important;
+    margin-top: 16pt !important;
+    font-weight: 600 !important;
+  }
+
+  h2 {
+    font-size: 16pt !important;
+  }
+
+  h3 {
+    font-size: 13pt !important;
+  }
+
+  /* === KEY METRICS CARDS === */
+
+  /* Metrics grid */
+  .grid {
+    display: grid !important;
+    gap: 12pt !important;
+    margin-bottom: 18pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Individual metric cards */
+  .bg-white\/5,
+  .backdrop-blur-sm {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6pt !important;
+    padding: 12pt !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Metric values */
+  .text-2xl {
+    color: #0f172a !important;
+    font-size: 20pt !important;
+    font-weight: bold !important;
+  }
+
+  /* Metric labels */
+  .text-sm,
+  .text-xs {
+    color: #64748b !important;
+    font-size: 9pt !important;
+  }
+
+  /* Trend indicators */
+  .text-green-400,
+  .text-red-400 {
+    color: #0f172a !important;
+  }
+
+  /* === TABS (Hide, Show All Content) === */
+
+  /* Hide tab navigation */
+  .flex.space-x-1,
+  div[class*="rounded-xl bg-slate"] {
+    display: none !important;
+  }
+
+  /* Show all tab content */
+  .animate-in.fade-in {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  /* === CHARTS === */
+
+  /* Chart containers */
+  .bg-white\/5.border {
+    background: white !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 4pt !important;
+    padding: 14pt !important;
+    margin-bottom: 14pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Chart titles */
+  .text-lg.font-medium {
+    color: #1e293b !important;
+    font-size: 12pt !important;
+    margin-bottom: 10pt !important;
+  }
+
+  /* Recharts SVG - Ensure high quality */
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Chart axis text */
+  svg text {
+    fill: #475569 !important;
+    font-size: 8pt !important;
+  }
+
+  /* === INSIGHTS === */
+
+  /* Insight cards */
+  .border.rounded-xl {
+    background: white !important;
+    border: 1px solid #cbd5e1 !important;
+    border-left-width: 3pt !important;
+    padding: 12pt !important;
+    margin-bottom: 10pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Severity colors for left border */
+  .border-red-500\/20 {
+    border-left-color: #ef4444 !important;
+  }
+
+  .border-yellow-500\/20 {
+    border-left-color: #f59e0b !important;
+  }
+
+  .border-green-500\/20 {
+    border-left-color: #10b981 !important;
+  }
+
+  .border-blue-500\/20 {
+    border-left-color: #3b82f6 !important;
+  }
+
+  /* Insight text */
+  .text-base.font-semibold {
+    color: #1e293b !important;
+    font-size: 11pt !important;
+  }
+
+  .text-slate-400 {
+    color: #475569 !important;
+    font-size: 10pt !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Hide icons in print (optional, or style them) */
+  svg.h-5,
+  svg.lucide {
+    display: none !important;
+  }
+
+  /* === TABLES === */
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 14pt !important;
+    page-break-inside: auto !important;
+  }
+
+  thead {
+    background: #f1f5f9 !important;
+  }
+
+  th {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+    font-size: 9pt !important;
+    padding: 8pt !important;
+    border: 1px solid #cbd5e1 !important;
+    text-align: left !important;
+  }
+
+  td {
+    color: #334155 !important;
+    font-size: 9pt !important;
+    padding: 6pt 8pt !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #f8fafc !important;
+  }
+
+  /* === RAW MARKDOWN SECTION === */
+
+  pre {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4pt !important;
+    padding: 10pt !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 8pt !important;
+    color: #334155 !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    page-break-inside: auto !important;
+  }
+
+  /* === FOOTER BRANDING === */
+
+  /* Add footer to every page */
+  @page {
+    @bottom-center {
+      content: "Generated by DataWizard AI | forgecreative.cz/datawizard";
+      font-size: 8pt;
+      color: #94a3b8;
+      font-family: sans-serif;
+    }
+  }
+
+  /* Manual footer if @page doesn't work */
+  body::after {
+    content: "Generated by DataWizard AI | Trusted Intelligence for European SMEs | forgecreative.cz/datawizard";
+    display: block;
+    text-align: center;
+    margin-top: 30pt;
+    padding-top: 10pt;
+    border-top: 1px solid #cbd5e1;
+    font-size: 8pt;
+    color: #94a3b8;
+    page-break-before: avoid;
+  }
+
+  /* === PAGE BREAKS === */
+
+  /* Avoid breaking inside these elements */
+  .grid > div,
+  .space-y-6 > div,
+  .space-y-4 > div {
+    page-break-inside: avoid !important;
+  }
+
+  /* Force page break before insights section if needed */
+  .space-y-4.animate-in {
+    page-break-before: auto !important;
+  }
+
+  /* === GENERAL CLEANUP === */
+
+  /* Remove shadows, animations, transitions */
+  * {
+    box-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Ensure white background everywhere */
+  div[style*="background"],
+  div[class*="bg-"] {
+    background: white !important;
+  }
+
+  /* Clean up spacing */
+  .space-y-8 {
+    margin-top: 0 !important;
+  }
+
+  /* Remove hover effects */
+  *:hover {
+    background: inherit !important;
+    border-color: inherit !important;
+  }
+}
