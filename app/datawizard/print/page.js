@@ -96,33 +96,35 @@ export default function PrintPage() {
             font-family: 'Georgia', 'Times New Roman', serif;
           }
 
-          /* GEMINI'S SILVER BULLET FIX - Force color rendering globally */
+          /* GEMINI'S NUCLEAR OPTION - Kill ALL filters and force simple layout */
+
+          /* 1. Force everything to be visible and standard */
+          html, body {
+            background: white !important;
+            color: black !important;
+            overflow: visible !important;
+            height: auto !important;
+          }
+
+          /* 2. CRITICAL: Kill ALL filters globally (backdrop-blur is the silent killer) */
           * {
+            backdrop-filter: none !important;
+            filter: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            transition: none !important;
+            transform: none !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
 
-          /* CRITICAL FIX #1: Reset app layout to remove overflow clipping */
-          html,
-          body,
+          /* 3. Reset app layout containers */
           #__next,
           main,
           .layout-wrapper {
             display: block !important;
             position: static !important;
             overflow: visible !important;
-            transform: none !important;
-            filter: none !important;
-          }
-
-          /* CRITICAL FIX #2: Strip transforms and filters from all containers */
-          div,
-          section,
-          article {
-            transform: none !important;
-            filter: none !important;
-            perspective: none !important;
-            will-change: auto !important;
           }
 
           /* CRITICAL FIX #3: Ensure main layout containers are visible */
@@ -136,38 +138,49 @@ export default function PrintPage() {
             overflow: visible !important;
           }
 
-          /* CRITICAL FIX #4: Grid layouts - force visibility and strip transforms */
-          .grid {
-            display: grid !important;
+          /* 4. NUCLEAR: Kill Grid & Flex - Use Simple Block Layout */
+          .grid,
+          [class*="grid-cols"],
+          .grid-cols-1,
+          .md\\:grid-cols-2,
+          .lg\\:grid-cols-4,
+          .lg\\:grid-cols-2 {
+            display: block !important;
+            width: 100% !important;
             opacity: 1 !important;
             visibility: visible !important;
-            position: relative !important;
-            overflow: visible !important;
-            transform: none !important;
-            filter: none !important;
-          }
-
-          /* Metric cards grid - 2x2 for print */
-          .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 12pt !important;
-            display: grid !important;
-            position: relative !important;
             overflow: visible !important;
           }
 
-          /* Charts grid - 1 column for print */
-          .grid-cols-1.lg\\:grid-cols-2 {
-            grid-template-columns: 1fr !important;
-            gap: 16pt !important;
-            display: grid !important;
-            position: relative !important;
-            overflow: visible !important;
-          }
-
-          /* CRITICAL FIX #5: Force metric cards and charts to be visible */
-          .bg-white\\/5,
+          /* 5. CRITICAL: Kill Glassmorphism (backdrop-blur, bg-opacity) - Force Solid Backgrounds */
+          [class*="backdrop-blur"],
+          [class*="bg-opacity"],
+          [class*="bg-white/"],
           .backdrop-blur-sm,
+          .bg-white\\/5,
+          div[class*="bg-white\\/"] {
+            background: #ffffff !important;
+            backdrop-filter: none !important;
+            filter: none !important;
+            border: 2px solid #000000 !important; /* Thick black border for proof of life */
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: block !important;
+            width: 100% !important;
+            margin-bottom: 1rem !important;
+            padding: 1rem !important;
+            page-break-inside: avoid !important;
+          }
+
+          /* 6. Force metric card text to high-contrast black */
+          .bg-white\\/5 *,
+          [class*="backdrop-blur"] *,
+          [class*="bg-white\\/"] * {
+            color: black !important;
+            opacity: 1 !important;
+          }
+
+          /* 7. Charts - force visibility */
           .recharts-wrapper,
           .recharts-surface,
           [data-chart-id],
@@ -175,11 +188,7 @@ export default function PrintPage() {
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
-            position: relative !important;
             overflow: visible !important;
-            transform: none !important;
-            filter: none !important;
-            break-inside: avoid-page !important;
             page-break-inside: avoid !important;
           }
 
