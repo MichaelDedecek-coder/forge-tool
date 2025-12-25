@@ -110,39 +110,27 @@ export default function Home() {
     element.click();
   };
 
-  const downloadPDF = async () => {
+  const downloadPDF = () => {
     if (!parsedReport) return;
 
     try {
-      addLog("Generating PDF...");
-      const response = await fetch("/api/export-pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reportData: parsedReport,
-          fileName: fileName ? fileName.replace(/\.(csv|xlsx)$/i, '') : 'DataWizard_Report',
-          language: language
-        }),
-      });
+      // Store report data in localStorage for print page
+      localStorage.setItem("datawizard_print_data", JSON.stringify(parsedReport));
+      localStorage.setItem("datawizard_print_language", language);
 
-      if (!response.ok) {
-        throw new Error("PDF generation failed");
+      // Open print page in new window
+      const printWindow = window.open("/datawizard/print", "_blank");
+
+      if (!printWindow) {
+        alert(language === "cs"
+          ? "Povolte vyskakovací okna pro tisk PDF"
+          : "Please allow pop-ups to open print preview");
       }
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${fileName ? fileName.replace(/\.(csv|xlsx)$/i, '') : 'DataWizard_Report'}_${new Date().toISOString().slice(0,10)}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      addLog("PDF downloaded successfully!");
+      addLog("Opening print preview...");
     } catch (error) {
-      addLog(`PDF Error: ${error.message}`);
-      alert(language === "cs" ? "Chyba při generování PDF" : "PDF generation error");
+      addLog(`Error: ${error.message}`);
+      alert(language === "cs" ? "Chyba při otevírání náhledu tisku" : "Error opening print preview");
     }
   };
 
