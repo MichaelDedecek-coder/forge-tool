@@ -261,7 +261,7 @@ function InsightDetailCard({ insight }) {
 
 // --- MAIN COMPONENT ---
 
-export default function ReportInterface({ data }) {
+export default function ReportInterface({ data, printMode = false }) {
   const [activeTab, setActiveTab] = useState("charts");
 
   // Debug logging
@@ -296,44 +296,47 @@ export default function ReportInterface({ data }) {
 
       {/* Custom Tabs Implementation */}
       <div className="w-full">
-        <div className="flex space-x-1 rounded-xl bg-slate-800/50 p-1 w-full md:w-auto inline-flex mb-6">
-          <button
-            onClick={() => setActiveTab("charts")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === "charts" 
-                ? "bg-blue-600 text-white shadow-sm" 
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <BarChart3 className="h-4 w-4" />
-            Visuals
-          </button>
-          <button
-            onClick={() => setActiveTab("insights")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === "insights" 
-                ? "bg-blue-600 text-white shadow-sm" 
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <Lightbulb className="h-4 w-4" />
-            Insights
-          </button>
-          <button
-            onClick={() => setActiveTab("raw")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === "raw" 
-                ? "bg-blue-600 text-white shadow-sm" 
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <FileText className="h-4 w-4" />
-            Raw
-          </button>
-        </div>
+        {/* Hide tabs in print mode */}
+        {!printMode && (
+          <div className="flex space-x-1 rounded-xl bg-slate-800/50 p-1 w-full md:w-auto inline-flex mb-6">
+            <button
+              onClick={() => setActiveTab("charts")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                activeTab === "charts"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <BarChart3 className="h-4 w-4" />
+              Visuals
+            </button>
+            <button
+              onClick={() => setActiveTab("insights")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                activeTab === "insights"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <Lightbulb className="h-4 w-4" />
+              Insights
+            </button>
+            <button
+              onClick={() => setActiveTab("raw")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                activeTab === "raw"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Raw
+            </button>
+          </div>
+        )}
 
         {/* Charts Tab Content */}
-        {activeTab === "charts" && (
+        {(printMode || activeTab === "charts") && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {data.charts && data.charts.map((chart, index) => (
@@ -385,7 +388,7 @@ export default function ReportInterface({ data }) {
         )}
 
         {/* Insights Tab Content */}
-        {activeTab === "insights" && (
+        {(printMode || activeTab === "insights") && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="grid grid-cols-1 gap-4">
               {data.insights && data.insights.map((insight, index) => (
@@ -401,7 +404,7 @@ export default function ReportInterface({ data }) {
         )}
 
         {/* Raw Markdown Tab Content */}
-        {activeTab === "raw" && (
+        {(printMode || activeTab === "raw") && (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
               <pre className="whitespace-pre-wrap font-mono text-sm text-slate-300 overflow-auto max-h-[600px]">

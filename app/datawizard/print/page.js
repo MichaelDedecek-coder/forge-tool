@@ -79,21 +79,43 @@ export default function PrintPage() {
             print-color-adjust: exact !important;
           }
 
-          /* Hide tabs and navigation */
-          button,
-          .flex.space-x-1,
-          [role="tablist"],
-          div[class*="inline-flex"] button {
+          /* Hide tab navigation container */
+          div.flex.space-x-1,
+          div.rounded-xl.bg-slate-800\\/50,
+          div[class*="bg-slate-800"],
+          .inline-flex.mb-6 {
             display: none !important;
           }
 
-          /* Show all tab content */
-          div[class*="animate-in"],
-          div[class*="fade-in"],
-          div[class*="slide-in"] {
+          /* Hide ALL buttons */
+          button {
+            display: none !important;
+          }
+
+          /* CRITICAL: Show ALL tab content panels regardless of React state */
+          div.space-y-6.animate-in,
+          div.space-y-4.animate-in,
+          div.animate-in {
             display: block !important;
             opacity: 1 !important;
             transform: none !important;
+            animation: none !important;
+            margin-bottom: 24pt !important;
+            page-break-before: auto !important;
+          }
+
+          /* Force visibility of all sections */
+          .animate-in.fade-in,
+          .slide-in-from-bottom-2 {
+            display: block !important;
+            visibility: visible !important;
+          }
+
+          /* Section headers in print */
+          div.animate-in:before {
+            display: block;
+            margin-bottom: 12pt;
+            page-break-after: avoid;
           }
 
           /* Force ALL text to be visible */
@@ -313,7 +335,7 @@ export default function PrintPage() {
 
       <div className="print-body">
         <div className="print-container">
-          <ReportInterface data={reportData} />
+          <ReportInterface data={reportData} printMode={true} />
         </div>
       </div>
     </>
