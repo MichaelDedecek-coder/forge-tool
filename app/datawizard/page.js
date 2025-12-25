@@ -118,8 +118,10 @@ export default function Home() {
       localStorage.setItem("datawizard_print_data", JSON.stringify(parsedReport));
       localStorage.setItem("datawizard_print_language", language);
 
-      // Open print page in new window
-      const printWindow = window.open("/datawizard/print", "_blank");
+      // CRITICAL: Use current origin to prevent cross-origin localStorage issues
+      // This ensures print page opens on same domain (e.g., forgecreative.cz)
+      const printUrl = `${window.location.origin}/datawizard/print`;
+      const printWindow = window.open(printUrl, "_blank");
 
       if (!printWindow) {
         alert(language === "cs"
