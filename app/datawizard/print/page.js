@@ -130,10 +130,19 @@ export default function PrintPage() {
           /* Specific overrides for metric values */
           .text-2xl,
           div[class*="text-2xl"],
-          div[class*="font-bold"] {
+          div[class*="font-bold"],
+          .text-white,
+          div.text-white,
+          span.text-white {
             color: #0f172a !important;
             font-size: 20pt !important;
             font-weight: bold !important;
+          }
+
+          /* Target metric cards specifically */
+          .bg-white\/5 .text-2xl,
+          .bg-white\/5 div[class*="font-bold"] {
+            color: #0f172a !important;
           }
 
           /* Labels */
@@ -189,8 +198,14 @@ export default function PrintPage() {
             border-left: 4px solid #0ea5e9 !important;
           }
 
-          /* Text colors */
-          .text-white {
+          /* Text colors - FORCE ALL WHITE TEXT TO DARK */
+          .text-white,
+          div.text-white,
+          span.text-white,
+          p.text-white,
+          h1.text-white,
+          h2.text-white,
+          h3.text-white {
             color: #0f172a !important;
           }
 
@@ -202,6 +217,7 @@ export default function PrintPage() {
           .text-2xl {
             color: #0f172a !important;
             font-size: 20pt !important;
+            font-weight: bold !important;
           }
 
           /* Charts */
