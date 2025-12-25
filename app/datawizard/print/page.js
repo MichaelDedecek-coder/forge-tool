@@ -79,6 +79,19 @@ export default function PrintPage() {
             print-color-adjust: exact !important;
           }
 
+          /* Hide tabs */
+          .flex.space-x-1,
+          button[class*="rounded"],
+          div[class*="inline-flex"] {
+            display: none !important;
+          }
+
+          /* Show all tab content */
+          div[class*="animate-in"] {
+            display: block !important;
+            opacity: 1 !important;
+          }
+
           /* Typography */
           h1 {
             color: #0f172a;
