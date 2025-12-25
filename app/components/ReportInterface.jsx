@@ -22,14 +22,28 @@ function KeyFindingCard({ metric }) {
   });
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition-colors">
+    <div
+      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition-colors"
+      style={{
+        // FORCE VISIBILITY IN PRINT
+        display: 'block',
+        visibility: 'visible',
+        opacity: 1,
+        pageBreakInside: 'avoid',
+        background: '#f8fafc',
+        border: '1px solid #cbd5e1',
+        padding: '1.5rem',
+        borderRadius: '0.75rem',
+        marginBottom: '1rem'
+      }}
+    >
       <div className="pb-2">
-        <h3 className="text-sm font-medium text-slate-400">
+        <h3 className="text-sm font-medium text-slate-400" style={{ color: '#64748b', fontSize: '0.875rem' }}>
           {metric.label}
         </h3>
       </div>
       <div>
-        <div className="text-2xl font-bold text-white" style={{ color: '#0f172a' }}>
+        <div className="text-2xl font-bold text-white" style={{ color: '#0f172a', fontSize: '1.5rem', fontWeight: 'bold' }}>
           {metric.value || '[NO VALUE]'}
         </div>
         {metric.trend && (
