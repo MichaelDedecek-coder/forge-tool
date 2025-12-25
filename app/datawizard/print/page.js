@@ -242,6 +242,23 @@ export default function PrintPage() {
             border: 1px solid #bfdbfe !important;
           }
 
+          /* NUCLEAR: Force ALL content inside metric cards to be dark */
+          .bg-white\\/5 *,
+          .bg-white\\/5 div,
+          .bg-white\\/5 span,
+          .bg-white\\/5 p,
+          .bg-white\\/5 h1,
+          .bg-white\\/5 h2,
+          .bg-white\\/5 h3 {
+            color: #0f172a !important;
+          }
+
+          /* Metric card labels */
+          .bg-white\\/5 .text-sm,
+          .bg-white\\/5 .text-slate-400 {
+            color: #64748b !important;
+          }
+
           /* Text colors - FORCE ALL WHITE TEXT TO DARK */
           .text-white,
           div.text-white,
