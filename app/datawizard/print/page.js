@@ -84,23 +84,32 @@ export default function PrintPage() {
             print-color-adjust: exact !important;
           }
 
-          /* CRITICAL FIX: Force metrics grid and all sections to display */
-          .grid,
-          div.grid,
+          /* Ensure main layout containers are visible */
           .space-y-8,
-          div[class*="grid"],
-          div[class*="space-y"] {
+          .w-full,
+          .max-w-7xl {
             display: block !important;
             opacity: 1 !important;
             visibility: visible !important;
           }
 
-          /* Grid layout for metrics */
-          .grid.grid-cols-1,
-          div[class*="grid-cols"] {
+          /* Grid layouts */
+          .grid {
             display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+          }
+
+          /* Metric cards grid - 2x2 for print */
+          .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+            grid-template-columns: repeat(2, 1fr) !important;
             gap: 12pt !important;
+          }
+
+          /* Charts grid - 1 column for print */
+          .grid-cols-1.lg\\:grid-cols-2 {
+            grid-template-columns: 1fr !important;
+            gap: 16pt !important;
           }
 
           /* Hide tab navigation container */
@@ -142,13 +151,9 @@ export default function PrintPage() {
             page-break-after: avoid;
           }
 
-          /* Force ALL text to be visible */
-          *,
-          div,
-          span,
-          p,
-          h1, h2, h3, h4, h5, h6 {
-            color: #1e293b !important;
+          /* Default text colors for print */
+          body, div, span, p {
+            color: #1e293b;
           }
 
           /* Specific overrides for metric values */
@@ -204,22 +209,37 @@ export default function PrintPage() {
             line-height: 1.6;
           }
 
-          /* Remove dark backgrounds */
-          .bg-white\\/5,
-          .backdrop-blur-sm,
-          .bg-slate-900,
-          .bg-slate-950,
-          div[style*="background"],
-          div[class*="bg-"] {
+          /* Clean backgrounds for specific dark elements ONLY */
+          body {
             background: white !important;
-            border: 1px solid #e2e8f0 !important;
           }
 
-          /* Clean metric cards */
-          .bg-white\\/5 {
+          /* Metric cards - keep them visible */
+          .bg-white\\/5,
+          .backdrop-blur-sm {
             background: #f8fafc !important;
             border: 1px solid #cbd5e1 !important;
-            border-left: 4px solid #0ea5e9 !important;
+          }
+
+          /* Insight cards - preserve their colored backgrounds but lighten */
+          .bg-red-500\\/5 {
+            background: #fee2e2 !important;
+            border: 1px solid #fecaca !important;
+          }
+
+          .bg-yellow-500\\/5 {
+            background: #fef3c7 !important;
+            border: 1px solid #fde68a !important;
+          }
+
+          .bg-green-500\\/5 {
+            background: #d1fae5 !important;
+            border: 1px solid #a7f3d0 !important;
+          }
+
+          .bg-blue-500\\/5 {
+            background: #dbeafe !important;
+            border: 1px solid #bfdbfe !important;
           }
 
           /* Text colors - FORCE ALL WHITE TEXT TO DARK */
