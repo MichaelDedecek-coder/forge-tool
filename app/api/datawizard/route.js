@@ -2,8 +2,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
 
-// Allow up to 60 seconds for calculation on Vercel
-export const maxDuration = 60;
+// Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
+export const maxDuration = 120;
 
 export async function POST(req) {
   try {
