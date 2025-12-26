@@ -5,13 +5,15 @@ import * as XLSX from "xlsx";
 import ReportInterface from "../components/ReportInterface";
 import { markdownToReportJson } from "../lib/markdown-transformer";
 
-export default function Home() { 
+export default function Home() {
   // --- APP STATE (OPEN ACCESS - NO PIN) ---
   const [csvData, setCsvData] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [result, setResult] = useState(null);
   const [parsedReport, setParsedReport] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState("");
+  const [rowCount, setRowCount] = useState(0);
   const [language, setLanguage] = useState("cs");
 
   // --- DEBUG HELPER (console only) ---
@@ -24,7 +26,7 @@ export default function Home() {
     const file = acceptedFiles[0];
     setFileName(file.name);
     addLog(`File selected: ${file.name}`);
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const binaryStr = e.target.result;
@@ -32,8 +34,14 @@ export default function Home() {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       const csvText = XLSX.utils.sheet_to_csv(worksheet);
+
+      // Count rows (excluding header)
+      const rows = csvText.split('\n').filter(row => row.trim());
+      const totalRows = rows.length - 1;
+
       setCsvData(csvText);
-      addLog(`File parsed. Length: ${csvText.length} chars`);
+      setRowCount(totalRows);
+      addLog(`File parsed. ${totalRows.toLocaleString()} rows detected`);
     };
     reader.readAsBinaryString(file);
   }, []);
@@ -51,21 +59,40 @@ export default function Home() {
     setLoading(true);
     setResult(null);
     setParsedReport(null);
+
+    // PROGRESSIVE LOADING STAGES
+    setLoadingStage(language === "cs"
+      ? `Načítám ${rowCount.toLocaleString()} řádků...`
+      : `Reading ${rowCount.toLocaleString()} rows...`);
     addLog("Starting analysis...");
-    
-    const question = language === "cs" 
+
+    const question = language === "cs"
       ? "Analyzuj tato data. Řekni mi nejdůležitější trendy, součty a odlehlé hodnoty."
       : "Analyze this data. Tell me the most important trends, totals, or outliers.";
 
     try {
+      // Stage 2: Statistical Aggregation
+      setTimeout(() => {
+        setLoadingStage(language === "cs"
+          ? "Provádím statistickou agregaci..."
+          : "Performing statistical aggregation...");
+      }, 1000);
+
+      // Stage 3: AI Insights
+      setTimeout(() => {
+        setLoadingStage(language === "cs"
+          ? "Generuji AI analýzu..."
+          : "Generating AI insights...");
+      }, 3000);
+
       addLog("Calling /api/datawizard...");
       const res = await fetch("/api/datawizard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            message: question, 
+        body: JSON.stringify({
+            message: question,
             csvData: csvData,
-            language: language 
+            language: language
         }),
       });
       const data = await res.json();
@@ -98,6 +125,7 @@ export default function Home() {
       alert("Error: " + e.message);
     }
     setLoading(false);
+    setLoadingStage("");
   }
 
   const downloadReport = () => {
@@ -217,6 +245,9 @@ export default function Home() {
             <div>
                 <div style={{ fontSize: "48px", marginBottom: "15px" }}>📄</div>
                 <p style={{ fontSize: "18px", color: "#10b981", fontWeight: "600" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
+                <p style={{ fontSize: "15px", color: "#0ea5e9", marginTop: "8px", fontWeight: "600" }}>
+                  {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"}
+                </p>
                 <p style={{ fontSize: "13px", color: "#475569", marginTop: "8px" }}>{language === "cs" ? "Klikněte na tlačítko níže pro analýzu" : "Click the button below to analyze"}</p>
             </div>
         ) : (
@@ -241,8 +272,8 @@ export default function Home() {
                 transition: "all 0.2s"
             }}
           >
-            {loading 
-                ? (language === "cs" ? "✨ Analyzuji..." : "✨ Analyzing...") 
+            {loading
+                ? `✨ ${loadingStage}`
                 : (language === "cs" ? "✨ Analyzovat" : "✨ Analyze")}
           </button>
       )}
