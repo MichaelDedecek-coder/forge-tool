@@ -1,6 +1,51 @@
 "use client";
 
+import { useState } from 'react';
+
 export default function LandingPage() {
+  const [language, setLanguage] = useState('en');
+
+  const content = {
+    en: {
+      headline1: "8 hours in Excel.",
+      headline2: "Done in 30 seconds.",
+      subheadline: "DataWizard AI is your friendly data analyst. We turn messy spreadsheets into clear insights so you can focus on growing your business, not fighting formulas.",
+      noDashboards: "✨ No dashboards.",
+      noSetup: "🚀 No setup.",
+      justInsights: "👇 Just insights.",
+      uploadBtn: "Upload a file ✨",
+      seeBtn: "See the magic ▶",
+      testimonial: "Finally understand my numbers.",
+      testimonialAuthor: "— Jana, Prague",
+      howItWorks: "How it works",
+      gdpr: "GDPR",
+      noData: "No data stored",
+      madeInEU: "Made in EU",
+      footerText: "Feedback? Ideas? Want to collaborate?",
+      footerCompany: "FORGE CREATIVE | AI Job Agency"
+    },
+    cz: {
+      headline1: "8 hodin v Excelu.",
+      headline2: "Hotovo za 30 vteřin.",
+      subheadline: "DataWizard AI je váš přátelský datový analytik. Proměňujeme nepřehledné tabulky v jasné poznatky, abyste se mohli soustředit na růst vašeho podnikání, ne na boj s formulemi.",
+      noDashboards: "✨ Bez dashboardů.",
+      noSetup: "🚀 Bez nastavení.",
+      justInsights: "👇 Jen poznatky.",
+      uploadBtn: "Nahrát soubor ✨",
+      seeBtn: "Ukázat demo ▶",
+      testimonial: "Konečně rozumím svým číslům.",
+      testimonialAuthor: "— Jana, Praha",
+      howItWorks: "Jak to funguje",
+      gdpr: "GDPR",
+      noData: "Žádná data neuložena",
+      madeInEU: "Vyrobeno v EU",
+      footerText: "Zpětná vazba? Nápady? Chcete spolupracovat?",
+      footerCompany: "FORGE CREATIVE | AI Job Agency"
+    }
+  };
+
+  const t = content[language];
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -62,31 +107,51 @@ export default function LandingPage() {
           gap: "32px"
         }}>
           <a
-            href="#how-it-works"
+            href="/datawizard"
             style={{
               color: "#4B5563",
               textDecoration: "none",
               fontSize: "1rem",
               fontWeight: "500",
-              transition: "color 0.2s"
+              transition: "color 0.2s",
+              cursor: "pointer"
             }}
             onMouseEnter={(e) => e.target.style.color = "#111827"}
             onMouseLeave={(e) => e.target.style.color = "#4B5563"}
           >
-            How it works
+            {t.howItWorks}
           </a>
 
-          {/* LANGUAGE TOGGLE */}
+          {/* LANGUAGE TOGGLE - FUNCTIONAL */}
           <div style={{
             display: "flex",
             gap: "8px",
-            color: "#6B7280",
             fontSize: "0.875rem",
             fontWeight: "600"
           }}>
-            <span style={{ cursor: "pointer" }}>EN</span>
-            <span>|</span>
-            <span style={{ cursor: "pointer" }}>CZ</span>
+            <span
+              onClick={() => setLanguage('en')}
+              style={{
+                cursor: "pointer",
+                color: language === 'en' ? "#6366F1" : "#6B7280",
+                fontWeight: language === 'en' ? "700" : "600",
+                transition: "color 0.2s"
+              }}
+            >
+              EN
+            </span>
+            <span style={{ color: "#D1D5DB" }}>|</span>
+            <span
+              onClick={() => setLanguage('cz')}
+              style={{
+                cursor: "pointer",
+                color: language === 'cz' ? "#6366F1" : "#6B7280",
+                fontWeight: language === 'cz' ? "700" : "600",
+                transition: "color 0.2s"
+              }}
+            >
+              CZ
+            </span>
           </div>
 
           {/* TRY DEMO BUTTON */}
@@ -157,9 +222,9 @@ export default function LandingPage() {
             lineHeight: "1.1",
             color: "#111827"
           }}>
-            8 hours in Excel.
+            {t.headline1}
             <br />
-            <span style={{ color: "#6366F1" }}>Done in 30 seconds.</span>
+            <span style={{ color: "#6366F1" }}>{t.headline2}</span>
           </h1>
 
           {/* SUBHEADLINE */}
@@ -169,7 +234,7 @@ export default function LandingPage() {
             marginBottom: "32px",
             lineHeight: "1.7"
           }}>
-            DataWizard AI is your friendly data analyst. We turn messy spreadsheets into clear insights so you can focus on growing your business, not fighting formulas.
+            {t.subheadline}
           </p>
 
           {/* FEATURE BULLETS */}
@@ -182,9 +247,9 @@ export default function LandingPage() {
             color: "#6B7280",
             fontWeight: "500"
           }}>
-            <span>✨ No dashboards.</span>
-            <span>🚀 No setup.</span>
-            <span>👇 Just insights.</span>
+            <span>{t.noDashboards}</span>
+            <span>{t.noSetup}</span>
+            <span>{t.justInsights}</span>
           </div>
 
           {/* DUAL CTA BUTTONS */}
@@ -223,12 +288,12 @@ export default function LandingPage() {
                 e.target.style.boxShadow = "0 8px 24px rgba(255, 107, 107, 0.35), 0 4px 12px rgba(255, 138, 128, 0.2)";
               }}
             >
-              Upload a file ✨
+              {t.uploadBtn}
             </button>
 
-            {/* SECONDARY CTA - OUTLINE */}
+            {/* SECONDARY CTA - OUTLINE - NOW FUNCTIONAL */}
             <button
-              onClick={() => {/* Add demo video or tour */}}
+              onClick={() => window.location.href = '/datawizard'}
               style={{
                 padding: "16px 32px",
                 fontSize: "1.125rem",
@@ -252,7 +317,7 @@ export default function LandingPage() {
                 e.target.style.color = "#6366F1";
               }}
             >
-              See the magic ▶
+              {t.seeBtn}
             </button>
           </div>
 
@@ -288,14 +353,14 @@ export default function LandingPage() {
                 color: "#111827",
                 fontWeight: "500"
               }}>
-                Finally understand my numbers.
+                {t.testimonial}
               </p>
               <p style={{
                 margin: 0,
                 fontSize: "0.75rem",
                 color: "#6B7280"
               }}>
-                — Jana, Prague
+                {t.testimonialAuthor}
               </p>
             </div>
           </div>
@@ -522,7 +587,7 @@ export default function LandingPage() {
           fontWeight: "500"
         }}>
           <span style={{ fontSize: "1.25rem" }}>✓</span>
-          <span>GDPR</span>
+          <span>{t.gdpr}</span>
         </div>
         <div style={{
           display: "flex",
@@ -533,7 +598,7 @@ export default function LandingPage() {
           fontWeight: "500"
         }}>
           <span style={{ fontSize: "1.25rem" }}>✓</span>
-          <span>No data stored</span>
+          <span>{t.noData}</span>
         </div>
         <div style={{
           display: "flex",
@@ -544,7 +609,7 @@ export default function LandingPage() {
           fontWeight: "500"
         }}>
           <span style={{ fontSize: "1.25rem" }}>✓</span>
-          <span>Made in EU</span>
+          <span>{t.madeInEU}</span>
         </div>
       </div>
 
@@ -559,7 +624,7 @@ export default function LandingPage() {
         zIndex: 1
       }}>
         <p style={{ marginBottom: "8px" }}>
-          Feedback? Ideas? Want to collaborate?
+          {t.footerText}
         </p>
         <a
           href="mailto:michael@forgecreative.cz?subject=DataWizard%20Feedback"
@@ -568,7 +633,7 @@ export default function LandingPage() {
           michael@forgecreative.cz
         </a>
         <p style={{ marginTop: "16px", fontSize: "0.75rem", color: "#D1D5DB" }}>
-          FORGE CREATIVE | AI Job Agency
+          {t.footerCompany}
         </p>
       </div>
 
