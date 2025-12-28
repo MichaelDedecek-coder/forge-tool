@@ -47,6 +47,39 @@ export default function LandingPage() {
   const t = content[language];
 
   return (
+    <>
+      {/* RESPONSIVE CSS */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .nav-container {
+            padding: 16px 20px !important;
+            flex-wrap: wrap !important;
+            gap: 16px !important;
+          }
+          .logo {
+            font-size: 1.25rem !important;
+          }
+          .logo svg {
+            width: 24px !important;
+            height: 24px !important;
+          }
+          .nav-items {
+            width: 100% !important;
+            justify-content: space-between !important;
+            gap: 16px !important;
+          }
+          .nav-link {
+            font-size: 0.875rem !important;
+          }
+          .lang-toggle {
+            font-size: 0.75rem !important;
+          }
+          .try-demo-btn {
+            padding: 10px 20px !important;
+            font-size: 0.875rem !important;
+          }
+        }
+      `}</style>
     <div style={{
       minHeight: "100vh",
       background: "linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 50%, #E9D5FF 100%)",
@@ -72,7 +105,7 @@ export default function LandingPage() {
       }} />
 
       {/* NAVIGATION */}
-      <nav style={{
+      <nav className="nav-container" style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -83,13 +116,14 @@ export default function LandingPage() {
         zIndex: 10
       }}>
         {/* LOGO */}
-        <div style={{
+        <div className="logo" style={{
           display: "flex",
           alignItems: "center",
           gap: "12px",
           fontSize: "1.5rem",
           fontWeight: "700",
-          color: "#111827"
+          color: "#111827",
+          whiteSpace: "nowrap"
         }}>
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
             <rect x="4" y="20" width="4" height="8" fill="#6366F1" rx="1"/>
@@ -101,20 +135,22 @@ export default function LandingPage() {
         </div>
 
         {/* NAV ITEMS */}
-        <div style={{
+        <div className="nav-items" style={{
           display: "flex",
           alignItems: "center",
           gap: "32px"
         }}>
           <a
             href="/datawizard"
+            className="nav-link"
             style={{
               color: "#4B5563",
               textDecoration: "none",
               fontSize: "1rem",
               fontWeight: "500",
               transition: "color 0.2s",
-              cursor: "pointer"
+              cursor: "pointer",
+              whiteSpace: "nowrap"
             }}
             onMouseEnter={(e) => e.target.style.color = "#111827"}
             onMouseLeave={(e) => e.target.style.color = "#4B5563"}
@@ -123,7 +159,7 @@ export default function LandingPage() {
           </a>
 
           {/* LANGUAGE TOGGLE - FUNCTIONAL */}
-          <div style={{
+          <div className="lang-toggle" style={{
             display: "flex",
             gap: "8px",
             fontSize: "0.875rem",
@@ -157,6 +193,7 @@ export default function LandingPage() {
           {/* TRY DEMO BUTTON */}
           <button
             onClick={() => window.location.href = '/datawizard'}
+            className="try-demo-btn"
             style={{
               padding: "12px 24px",
               fontSize: "1rem",
@@ -167,7 +204,8 @@ export default function LandingPage() {
               borderRadius: "50px",
               cursor: "pointer",
               boxShadow: "0 4px 12px rgba(99, 102, 241, 0.3)",
-              transition: "all 0.2s"
+              transition: "all 0.2s",
+              whiteSpace: "nowrap"
             }}
             onMouseEnter={(e) => {
               e.target.style.transform = "translateY(-2px)";
@@ -638,5 +676,6 @@ export default function LandingPage() {
       </div>
 
     </div>
+    </>
   );
 }
