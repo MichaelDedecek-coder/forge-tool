@@ -130,6 +130,22 @@ export default function LandingPage() {
         position: "relative",
         zIndex: 1
       }}>
+        {/* DECORATIVE SPARKLES */}
+        <div style={{ position: "absolute", top: "10%", left: "5%", opacity: 0.6 }}>
+          <svg width="20" height="20" viewBox="0 0 20 20">
+            <path d="M10 0L11 9L20 10L11 11L10 20L9 11L0 10L9 9Z" fill="#A855F7" opacity="0.5"/>
+          </svg>
+        </div>
+        <div style={{ position: "absolute", top: "20%", right: "15%", opacity: 0.4 }}>
+          <svg width="16" height="16" viewBox="0 0 20 20">
+            <path d="M10 0L11 9L20 10L11 11L10 20L9 11L0 10L9 9Z" fill="#6366F1" opacity="0.4"/>
+          </svg>
+        </div>
+        <div style={{ position: "absolute", bottom: "15%", left: "12%", opacity: 0.5 }}>
+          <svg width="14" height="14" viewBox="0 0 20 20">
+            <path d="M10 0L11 9L20 10L11 11L10 20L9 11L0 10L9 9Z" fill="#8B5CF6" opacity="0.3"/>
+          </svg>
+        </div>
 
         {/* LEFT COLUMN */}
         <div>
@@ -178,31 +194,33 @@ export default function LandingPage() {
             gap: "16px",
             marginBottom: "48px"
           }}>
-            {/* PRIMARY CTA - CORAL */}
+            {/* PRIMARY CTA - ENHANCED CORAL */}
             <button
               onClick={() => window.location.href = '/datawizard'}
               style={{
-                padding: "16px 32px",
+                padding: "18px 36px",
                 fontSize: "1.125rem",
-                fontWeight: "600",
-                background: "linear-gradient(135deg, #FF7B72 0%, #FF9A8B 100%)",
+                fontWeight: "700",
+                background: "linear-gradient(135deg, #FF8A80 0%, #FF6B6B 50%, #FF9A8B 100%)",
                 color: "white",
                 border: "none",
                 borderRadius: "50px",
                 cursor: "pointer",
-                boxShadow: "0 4px 16px rgba(255, 123, 114, 0.4)",
-                transition: "all 0.2s",
+                boxShadow: "0 8px 24px rgba(255, 107, 107, 0.35), 0 4px 12px rgba(255, 138, 128, 0.2)",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 display: "flex",
                 alignItems: "center",
-                gap: "8px"
+                gap: "10px",
+                position: "relative",
+                overflow: "hidden"
               }}
               onMouseEnter={(e) => {
-                e.target.style.transform = "translateY(-2px)";
-                e.target.style.boxShadow = "0 8px 24px rgba(255, 123, 114, 0.5)";
+                e.target.style.transform = "translateY(-3px) scale(1.02)";
+                e.target.style.boxShadow = "0 12px 32px rgba(255, 107, 107, 0.45), 0 6px 16px rgba(255, 138, 128, 0.3)";
               }}
               onMouseLeave={(e) => {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 4px 16px rgba(255, 123, 114, 0.4)";
+                e.target.style.transform = "translateY(0) scale(1)";
+                e.target.style.boxShadow = "0 8px 24px rgba(255, 107, 107, 0.35), 0 4px 12px rgba(255, 138, 128, 0.2)";
               }}
             >
               Upload a file ✨
@@ -288,35 +306,124 @@ export default function LandingPage() {
           position: "relative",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
+          minHeight: "500px"
         }}>
-          {/* SUBTLE SPREADSHEET IN BACKGROUND */}
+          {/* REALISTIC SPREADSHEET BACKGROUND */}
           <div style={{
             position: "absolute",
-            width: "400px",
-            height: "400px",
-            background: "rgba(255, 255, 255, 0.4)",
-            borderRadius: "16px",
-            transform: "rotate(-5deg)",
-            opacity: 0.5,
-            backdropFilter: "blur(2px)"
-          }} />
+            width: "480px",
+            height: "480px",
+            background: "linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
+            borderRadius: "20px",
+            transform: "rotate(-8deg) translateY(20px)",
+            boxShadow: "0 20px 60px rgba(139, 92, 246, 0.1)",
+            border: "1px solid rgba(139, 92, 246, 0.15)",
+            overflow: "hidden"
+          }}>
+            {/* Spreadsheet Grid */}
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `
+                linear-gradient(to right, rgba(139, 92, 246, 0.06) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(139, 92, 246, 0.06) 1px, transparent 1px)
+              `,
+              backgroundSize: "60px 40px"
+            }} />
+            {/* Header Row */}
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "40px",
+              background: "linear-gradient(to bottom, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.04))",
+              borderBottom: "2px solid rgba(139, 92, 246, 0.12)"
+            }} />
+            {/* Sample Data Bars (simulating content) */}
+            <div style={{
+              position: "absolute",
+              top: "80px",
+              left: "20px",
+              width: "140px",
+              height: "8px",
+              background: "linear-gradient(90deg, rgba(99, 102, 241, 0.3), transparent)",
+              borderRadius: "2px"
+            }} />
+            <div style={{
+              position: "absolute",
+              top: "120px",
+              left: "20px",
+              width: "180px",
+              height: "8px",
+              background: "linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent)",
+              borderRadius: "2px"
+            }} />
+            <div style={{
+              position: "absolute",
+              top: "160px",
+              left: "20px",
+              width: "110px",
+              height: "8px",
+              background: "linear-gradient(90deg, rgba(168, 85, 247, 0.3), transparent)",
+              borderRadius: "2px"
+            }} />
+            {/* Column Labels (simulated) */}
+            <div style={{
+              position: "absolute",
+              top: "12px",
+              left: "20px",
+              fontSize: "11px",
+              fontWeight: "600",
+              color: "rgba(99, 102, 241, 0.4)",
+              letterSpacing: "0.5px"
+            }}>A</div>
+            <div style={{
+              position: "absolute",
+              top: "12px",
+              left: "80px",
+              fontSize: "11px",
+              fontWeight: "600",
+              color: "rgba(99, 102, 241, 0.4)",
+              letterSpacing: "0.5px"
+            }}>B</div>
+            <div style={{
+              position: "absolute",
+              top: "12px",
+              left: "140px",
+              fontSize: "11px",
+              fontWeight: "600",
+              color: "rgba(99, 102, 241, 0.4)",
+              letterSpacing: "0.5px"
+            }}>C</div>
+          </div>
 
-          {/* GLASSMORPHIC INSIGHT CARD */}
+          {/* ENHANCED GLASSMORPHIC INSIGHT CARD */}
           <div style={{
             position: "relative",
-            background: "rgba(255, 255, 255, 0.85)",
-            backdropFilter: "blur(20px)",
-            borderRadius: "24px",
-            padding: "40px",
-            border: "1.5px solid rgba(139, 92, 246, 0.2)",
-            boxShadow: "0 8px 32px rgba(139, 92, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9)",
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            borderRadius: "28px",
+            padding: "48px",
+            border: "2px solid rgba(255, 255, 255, 0.8)",
+            boxShadow: `
+              0 24px 48px rgba(99, 102, 241, 0.12),
+              0 12px 24px rgba(139, 92, 246, 0.08),
+              inset 0 1px 2px rgba(255, 255, 255, 1),
+              inset 0 -1px 2px rgba(139, 92, 246, 0.05)
+            `,
             width: "100%",
-            maxWidth: "420px"
+            maxWidth: "440px",
+            transform: "translateZ(0)",
+            willChange: "transform"
           }}>
             {/* CHART VISUALIZATION */}
-            <svg width="100%" height="180" viewBox="0 0 400 180" style={{ marginBottom: "24px" }}>
-              {/* Purple gradient line chart */}
+            <svg width="100%" height="200" viewBox="0 0 400 200" style={{ marginBottom: "28px" }}>
               <defs>
                 <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#6366F1" />
@@ -324,30 +431,51 @@ export default function LandingPage() {
                   <stop offset="100%" stopColor="#A855F7" />
                 </linearGradient>
                 <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#6366F1" stopOpacity="0.3" />
+                  <stop offset="0%" stopColor="#6366F1" stopOpacity="0.35" />
                   <stop offset="100%" stopColor="#6366F1" stopOpacity="0" />
                 </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
               </defs>
 
-              {/* Area fill */}
+              {/* Grid lines */}
+              <line x1="0" y1="160" x2="400" y2="160" stroke="rgba(139, 92, 246, 0.08)" strokeWidth="1" />
+              <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(139, 92, 246, 0.08)" strokeWidth="1" />
+              <line x1="0" y1="80" x2="400" y2="80" stroke="rgba(139, 92, 246, 0.08)" strokeWidth="1" />
+
+              {/* Area fill with enhanced opacity */}
               <path
-                d="M 0 140 L 50 120 L 100 130 L 150 100 L 200 110 L 250 85 L 300 70 L 350 60 L 400 50 L 400 180 L 0 180 Z"
+                d="M 0 150 L 50 135 L 100 140 L 150 110 L 200 115 L 250 90 L 300 75 L 350 65 L 400 50 L 400 200 L 0 200 Z"
                 fill="url(#areaGradient)"
               />
 
-              {/* Line */}
+              {/* Main line with glow effect */}
               <path
-                d="M 0 140 L 50 120 L 100 130 L 150 100 L 200 110 L 250 85 L 300 70 L 350 60 L 400 50"
+                d="M 0 150 L 50 135 L 100 140 L 150 110 L 200 115 L 250 90 L 300 75 L 350 65 L 400 50"
                 stroke="url(#lineGradient)"
-                strokeWidth="3"
+                strokeWidth="4"
                 fill="none"
                 strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow)"
               />
 
-              {/* Data points */}
-              <circle cx="150" cy="100" r="5" fill="#6366F1" />
-              <circle cx="250" cy="85" r="5" fill="#8B5CF6" />
-              <circle cx="350" cy="60" r="5" fill="#A855F7" />
+              {/* Enhanced data points with halos */}
+              <circle cx="150" cy="110" r="8" fill="#6366F1" opacity="0.2" />
+              <circle cx="150" cy="110" r="6" fill="#6366F1" />
+              <circle cx="250" cy="90" r="8" fill="#8B5CF6" opacity="0.2" />
+              <circle cx="250" cy="90" r="6" fill="#8B5CF6" />
+              <circle cx="350" cy="65" r="8" fill="#A855F7" opacity="0.2" />
+              <circle cx="350" cy="65" r="6" fill="#A855F7" />
+
+              {/* Highlight final point */}
+              <circle cx="400" cy="50" r="10" fill="#A855F7" opacity="0.15" />
+              <circle cx="400" cy="50" r="7" fill="#A855F7" />
             </svg>
 
             {/* METRIC */}
