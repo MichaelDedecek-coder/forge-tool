@@ -3,6 +3,7 @@ import "./globals.css";
 import "./print.css";
 import Script from "next/script";
 import { Providers } from "./providers";
+import FeedbackWrapper from "./components/FeedbackWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <Providers>
           {children}
+          <FeedbackWrapper />
         </Providers>
         
         {/* --- GOOGLE ANALYTICS (Traffic) --- */}
