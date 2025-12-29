@@ -1,11 +1,12 @@
-import { Inter } from "next/font/google";
+// Google Fonts blocked in build environment - using system fonts
+// import { Inter } from "next/font/google";
 import "./globals.css";
 import "./print.css";
 import Script from "next/script";
 import { Providers } from "./providers";
 import FeedbackWrapper from "./components/FeedbackWrapper";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "DataWizard - AI Data Analyst",
@@ -15,7 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
         <Providers>
           {children}
           <FeedbackWrapper />
