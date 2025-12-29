@@ -182,7 +182,7 @@ except Exception as e:
     }
 
     // 7. NOW SEND COMPACT SUMMARY TO LLM (NOT RAW DATA!)
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const fullOutput = stdout + "\n" + stderr;
