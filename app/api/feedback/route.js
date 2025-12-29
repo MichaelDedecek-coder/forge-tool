@@ -8,7 +8,17 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '../../lib/supabase-server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/**
+ * Lazy initialization of Resend client
+ * Only creates client when needed, doesn't break build if env var missing
+ */
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('⚠️ RESEND_API_KEY not configured - email notifications disabled');
+    return null;
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function POST(req) {
   try {
@@ -88,9 +98,19 @@ export async function POST(req) {
 
 /**
  * Send email notification to Michael using Resend
+ * Gracefully handles missing Resend configuration
  */
 async function sendEmailNotification({ feedback_type, message, email, page_url, user_id, feedback_id }) {
   try {
+    const resend = getResendClient();
+
+    // If Resend is not configured, log and return
+    if (!resend) {
+      console.log('📧 Email notification skipped (Resend not configured)');
+      console.log('💾 Feedback saved to database:', feedback_id);
+      return;
+    }
+
     const { data, error } = await resend.emails.send({
       from: 'DataWizard <onboarding@resend.dev>',
       to: ['michael@forgecreative.cz'],
