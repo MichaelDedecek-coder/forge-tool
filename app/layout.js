@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "./print.css";
 import Script from "next/script";
+import FeedbackButton from "./components/FeedbackButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +16,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         {children}
-        
+
+        {/* --- FEEDBACK BUTTON --- */}
+        <FeedbackButton />
+
         {/* --- GOOGLE ANALYTICS (Traffic) --- */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-0BYYH501BW"
