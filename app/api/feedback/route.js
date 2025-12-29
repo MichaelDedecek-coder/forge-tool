@@ -1,10 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -19,22 +12,29 @@ export async function POST(request) {
       );
     }
 
-    // Save to Supabase
-    const { data, error } = await supabase
-      .from('feedback')
-      .insert([
-        {
+    // Save to Supabase using REST API
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/feedback`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
           feedback_type: feedback_type || 'general',
           message,
           email: email || null,
           page_url: page_url || null,
           user_agent: user_agent || null,
-        }
-      ])
-      .select();
+        })
+      }
+    );
 
-    if (error) {
-      console.error('Supabase error:', error);
+    if (!response.ok) {
+      console.error('Supabase error:', response.status);
       return Response.json(
         { error: 'Failed to save feedback' },
         { status: 500 }
