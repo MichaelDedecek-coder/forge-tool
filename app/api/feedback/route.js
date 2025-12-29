@@ -1,7 +1,7 @@
 export async function POST(request) {
   try {
     const body = await request.json();
-
+    
     const { feedback_type, message, email, page_url, user_agent } = body;
 
     // Validate required fields
