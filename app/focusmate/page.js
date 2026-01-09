@@ -159,7 +159,7 @@ export default function FocusMatePage() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              The €47,000 Problem
+              Stop Triaging. Start Executing.
             </h2>
             <p className="text-xl text-gray-300 leading-relaxed mb-8">
               The average professional spends <span className="text-teal-400 font-semibold">2.1 hours daily</span> just figuring out what to work on.
