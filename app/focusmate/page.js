@@ -40,7 +40,7 @@ export default function FocusMatePage() {
               <span className="text-teal-600">Automated.</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              FocusMate synthesizes your Google Workspace into one 8am email. Know exactly what needs your attention today.
+              We read your Calendar, Gmail, and Tasks overnight. You get one email at 8am telling you exactly what needs attention.
             </p>
 
             {/* Trust Signal */}
