@@ -159,7 +159,7 @@ export default function FeedbackButton() {
               fontSize: "14px",
               color: "#6B7280"
             }}>
-              Help us improve DataWizard
+              Help us improve {typeof window !== 'undefined' && window.location.pathname.includes('/focusmate') ? 'FocusMate' : 'DataWizard'}
             </p>
 
             {/* Success Message */}

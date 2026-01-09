@@ -95,7 +95,7 @@ export default function FocusMatePage() {
                     <div className="text-xs text-gray-500">focus@focusmate.app</div>
                   </div>
                 </div>
-                <h2 className="text-lg font-bold text-slate-900">☀️ Your Morning Pulse — Thursday, Jan 9</h2>
+                <h2 className="text-lg font-bold text-slate-900">☀️ Your Morning Pulse — Monday, Jan 12</h2>
               </div>
 
               {/* Email Body */}
@@ -168,7 +168,7 @@ export default function FocusMatePage() {
               Email triage. Calendar scanning. Context switching. Searching old threads for meeting prep.
             </p>
             <p className="text-lg text-teal-400 font-semibold mt-4">
-              That's €47,000/year in lost productivity. Per person.
+              That's hundreds of hours per year spent on administrative overhead instead of actual work.
             </p>
           </div>
         </div>
