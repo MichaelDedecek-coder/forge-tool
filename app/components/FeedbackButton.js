@@ -25,13 +25,15 @@ export default function FeedbackButton() {
 
     try {
       const payload = {
-        ...formData,
+        email: formData.email,
+        type: formData.feedback_type,
+        message: formData.message,
         page_url: window.location.href,
         user_agent: navigator.userAgent,
         timestamp: new Date().toISOString()
       };
 
-      const res = await fetch("/api/feedback", {
+      const res = await fetch("https://formspree.io/f/mbddrkow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

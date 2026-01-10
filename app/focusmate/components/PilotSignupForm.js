@@ -22,7 +22,7 @@ export default function PilotSignupForm() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/focusmate-pilot', {
+      const response = await fetch('https://formspree.io/f/xreezlqr', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,15 +30,13 @@ export default function PilotSignupForm() {
         body: JSON.stringify({ email, name }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
         setStatus('success');
         setEmail('');
         setName('');
       } else {
         setStatus('error');
-        setErrorMessage(data.error || 'Something went wrong. Please try again.');
+        setErrorMessage('Something went wrong. Please try again.');
       }
     } catch (error) {
       setStatus('error');
