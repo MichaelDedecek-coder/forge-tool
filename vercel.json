@@ -5,5 +5,29 @@
       "memory": 1024
     }
   },
-  "buildCommand": "npm run build"
+  "buildCommand": "npm run build",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.getfocusmate.app"
+        }
+      ],
+      "destination": "/focusmate",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "getfocusmate.app"
+        }
+      ],
+      "destination": "/focusmate",
+      "permanent": false
+    }
+  ]
 }
