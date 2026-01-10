@@ -1,3 +1,5 @@
+import Script from "next/script";
+
 // Using system fonts for better performance and reliability
 const inter = { className: 'font-sans' };
 
@@ -104,6 +106,20 @@ export default function FocusMateLayout({ children }) {
           }),
         }}
       />
+
+      {/* Google Analytics */}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-1ZEVKTP4HE"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-1ZEVKTP4HE');
+        `}
+      </Script>
 
       <div className={inter.className}>{children}</div>
     </>
