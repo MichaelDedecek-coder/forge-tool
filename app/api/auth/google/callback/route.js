@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 /**
  * OAuth Callback Handler
@@ -105,16 +106,12 @@ export async function GET(request) {
       );
     }
 
-    // Store user and tokens in Supabase
-    const dbResponse = await fetch(`${supabaseUrl}/rest/v1/focusmate_users`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Prefer': 'resolution=merge-duplicates',
-      },
-      body: JSON.stringify({
+    // Store user and tokens in Supabase using official client
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data, error } = await supabase
+      .from('focusmate_users')
+      .upsert({
         email: userInfo.email,
         google_id: userInfo.id,
         name: userInfo.name,
@@ -124,12 +121,10 @@ export async function GET(request) {
         token_expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
         scopes: tokens.scope,
         connected_at: new Date().toISOString(),
-      }),
-    });
+      }, { onConflict: 'email' });
 
-    if (!dbResponse.ok) {
-      const dbError = await dbResponse.text();
-      console.error('[OAuth Callback] Failed to store tokens:', dbError);
+    if (error) {
+      console.error('[OAuth Callback] Failed to store tokens:', error);
       return NextResponse.redirect(
         `${process.env.NEXT_PUBLIC_APP_URL}/focusmate?error=storage_failed`
       );
