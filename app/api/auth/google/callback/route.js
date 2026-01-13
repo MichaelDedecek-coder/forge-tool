@@ -109,7 +109,7 @@ export async function GET(request) {
     // Store user and tokens in Supabase using official client
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data, error } = await supabase
+    const { data, error: dbError } = await supabase
       .from('focusmate_users')
       .upsert({
         email: userInfo.email,
@@ -123,8 +123,8 @@ export async function GET(request) {
         connected_at: new Date().toISOString(),
       }, { onConflict: 'email' });
 
-    if (error) {
-      console.error('[OAuth Callback] Failed to store tokens:', error);
+    if (dbError) {
+      console.error('[OAuth Callback] Failed to store tokens:', dbError);
       return NextResponse.redirect(
         `${process.env.NEXT_PUBLIC_APP_URL}/focusmate?error=storage_failed`
       );
