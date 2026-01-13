@@ -49,9 +49,25 @@ export default function PilotSignupForm() {
       <div className="bg-teal-600/10 border border-teal-600/30 rounded-2xl p-8 text-center">
         <CheckCircle2 className="w-16 h-16 text-teal-400 mx-auto mb-4" />
         <h3 className="text-2xl font-bold text-white mb-2">You're on the list!</h3>
-        <p className="text-gray-300">
+        <p className="text-gray-300 mb-6">
           We'll reach out when your spot opens. Check your inbox for confirmation.
         </p>
+
+        {/* OAuth Connect Button */}
+        <div className="bg-white/5 border border-white/20 rounded-xl p-6 mt-6">
+          <p className="text-sm text-gray-300 mb-4">
+            <strong>Ready to start now?</strong> Connect your Google Workspace to begin receiving morning briefings.
+          </p>
+          <a
+            href="/api/auth/google"
+            className="inline-flex items-center justify-center px-6 py-3 bg-white text-slate-900 font-bold rounded-full hover:bg-gray-100 transition-all hover:shadow-xl"
+          >
+            🔗 Connect Google Workspace
+          </a>
+          <p className="text-xs text-gray-400 mt-3">
+            Read-only access. We never modify or send emails on your behalf.
+          </p>
+        </div>
       </div>
     );
   }
