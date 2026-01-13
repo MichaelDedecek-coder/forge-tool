@@ -99,14 +99,6 @@ export async function GET(request) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // DEBUG: Check environment variables
-    console.log('[DEBUG] ENV CHECK:', {
-      hasSupabaseUrl: !!supabaseUrl,
-      hasSupabaseKey: !!supabaseKey,
-      keyLength: supabaseKey?.length || 0,
-      urlValue: supabaseUrl,
-    });
-
     if (!supabaseUrl || !supabaseKey) {
       console.error('[OAuth Callback] Supabase not configured');
       return NextResponse.redirect(
@@ -132,11 +124,7 @@ export async function GET(request) {
       }, { onConflict: 'email' });
 
     if (dbError) {
-      console.error('[OAuth Callback] FULL ERROR:', JSON.stringify(dbError, null, 2));
-      console.error('[OAuth Callback] Error message:', dbError.message);
-      console.error('[OAuth Callback] Error code:', dbError.code);
-      console.error('[OAuth Callback] Error details:', dbError.details);
-      console.error('[OAuth Callback] Error hint:', dbError.hint);
+      console.error('[OAuth Callback] Failed to store tokens:', dbError.message || dbError);
       return NextResponse.redirect(
         `${process.env.NEXT_PUBLIC_APP_URL}/focusmate?error=storage_failed`
       );
