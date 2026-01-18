@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "playwright install --with-deps chromium || echo 'Playwright install skipped'"
+    "postinstall": "playwright install --with-deps chromium || echo 'Playwright install skipped'",
+    "encrypt-tokens": "ts-node scripts/encrypt-existing-tokens.ts"
   },
   "dependencies": {
     "@e2b/code-interpreter": "^2.3.3",
@@ -24,9 +25,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/node": "^25.0.9",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2"
   }
 }
