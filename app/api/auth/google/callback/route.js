@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { encrypt } from '@/lib/encryption';
 
 /**
  * OAuth Callback Handler
@@ -109,6 +110,11 @@ export async function GET(request) {
     // Store user and tokens in Supabase using official client
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Encrypt tokens before storing (AES-256-GCM)
+    console.log('[OAuth Callback] Encrypting tokens for secure storage');
+    const encryptedAccessToken = encrypt(tokens.access_token);
+    const encryptedRefreshToken = encrypt(tokens.refresh_token);
+
     const { data, error: dbError } = await supabase
       .from('focusmate_users')
       .upsert({
@@ -116,8 +122,8 @@ export async function GET(request) {
         google_id: userInfo.id,
         name: userInfo.name,
         picture: userInfo.picture,
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
+        access_token: encryptedAccessToken,
+        refresh_token: encryptedRefreshToken,
         token_expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
         scopes: tokens.scope,
         connected_at: new Date().toISOString(),
@@ -130,7 +136,7 @@ export async function GET(request) {
       );
     }
 
-    console.log('[OAuth Callback] ✅ Tokens stored in Supabase');
+    console.log('[OAuth Callback] ✅ Tokens encrypted and stored in Supabase');
     console.log('[OAuth Callback] User connected:', userInfo.email);
 
     // Success! Redirect to success page
