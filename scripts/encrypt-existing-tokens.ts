@@ -4,11 +4,15 @@
  * This script encrypts all plain-text tokens in the database
  * Run once after deploying encryption functionality
  *
- * Usage: npx ts-node scripts/encrypt-existing-tokens.ts
+ * Usage: npm run encrypt-tokens
  */
 
+import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { encrypt, isEncrypted } from '../lib/encryption';
+
+// Load environment variables from .env.local
+config({ path: '.env.local' });
 
 async function migrateTokens() {
   console.log('🔐 Starting token encryption migration...\n');
@@ -28,12 +32,14 @@ async function migrateTokens() {
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   // Fetch all users with tokens
+  console.log('Fetching users from Supabase...');
   const { data: users, error: fetchError } = await supabase
     .from('focusmate_users')
     .select('id, email, access_token, refresh_token');
 
   if (fetchError) {
-    throw new Error(`Failed to fetch users: ${fetchError.message}`);
+    console.error('Fetch error details:', fetchError);
+    throw new Error(`Failed to fetch users: ${fetchError.message || JSON.stringify(fetchError)}`);
   }
 
   if (!users || users.length === 0) {
