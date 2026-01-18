@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { encrypt } from '@/lib/encryption';
+import { encrypt } from '../../../../../lib/encryption';
 
 /**
  * OAuth Callback Handler

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { encrypt, isEncrypted } from '@/lib/encryption';
+import { encrypt, isEncrypted } from '../../../../lib/encryption';
 
 /**
  * Migration API Endpoint: Encrypt Existing Tokens
