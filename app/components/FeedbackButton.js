@@ -25,13 +25,15 @@ export default function FeedbackButton() {
 
     try {
       const payload = {
-        ...formData,
+        email: formData.email,
+        type: formData.feedback_type,
+        message: formData.message,
         page_url: window.location.href,
         user_agent: navigator.userAgent,
         timestamp: new Date().toISOString()
       };
 
-      const res = await fetch("/api/feedback", {
+      const res = await fetch("https://formspree.io/f/mbddrkow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -159,7 +161,7 @@ export default function FeedbackButton() {
               fontSize: "14px",
               color: "#6B7280"
             }}>
-              Help us improve DataWizard
+              Help us improve {typeof window !== 'undefined' && window.location.pathname.includes('/focusmate') ? 'FocusMate' : 'DataWizard'}
             </p>
 
             {/* Success Message */}
@@ -212,6 +214,7 @@ export default function FeedbackButton() {
                     width: "100%",
                     padding: "12px 14px",
                     fontSize: "15px",
+                    color: "#111827",
                     border: "2px solid #E5E7EB",
                     borderRadius: "10px",
                     outline: "none",
@@ -248,6 +251,7 @@ export default function FeedbackButton() {
                     width: "100%",
                     padding: "12px 14px",
                     fontSize: "15px",
+                    color: "#111827",
                     border: "2px solid #E5E7EB",
                     borderRadius: "10px",
                     outline: "none",
@@ -280,6 +284,7 @@ export default function FeedbackButton() {
                     width: "100%",
                     padding: "12px 14px",
                     fontSize: "15px",
+                    color: "#111827",
                     border: "2px solid #E5E7EB",
                     borderRadius: "10px",
                     outline: "none",
