@@ -104,11 +104,11 @@ Format:
 
 Keep the briefing under 300 words. Be direct and actionable.`;
 
-  // Call Claude Haiku 4.5
-  console.log('[Morning Pulse] Calling Claude Haiku 4.5...');
+  // Call Claude 3.5 Haiku
+  console.log('[Morning Pulse] Calling Claude 3.5 Haiku...');
 
   const message = await anthropic.messages.create({
-    model: 'claude-haiku-4-20250514',
+    model: 'claude-3-5-haiku-20241022',
     max_tokens: 1024,
     messages: [
       {
