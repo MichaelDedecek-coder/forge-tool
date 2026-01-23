@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       'dedecekm@gmail.com'
     ];
 
-    console.log(`[Cron] Generating Morning Pulse with data from: ${[primaryUserEmail, ...additionalGmailAccounts].join(', ')}`);
+    console.log(`[Cron] Generating Morning Pulse with Gmail from: ${[primaryUserEmail, ...additionalGmailAccounts].join(', ')}`);
     console.log(`[Cron] Sending to: ${recipients.join(', ')}`);
 
     // Send Morning Pulse to both email addresses
