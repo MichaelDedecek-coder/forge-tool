@@ -22,8 +22,11 @@ export async function GET(request: Request) {
       );
     }
 
-    // Data source: primary user email
+    // Data source: primary user email (for Calendar and Tasks)
     const primaryUserEmail = process.env.PRIMARY_USER_EMAIL || 'michael@agentforge.tech';
+
+    // Additional Gmail accounts to pull email data from
+    const additionalGmailAccounts = ['dedecekm@gmail.com'];
 
     // Recipients: send to both email addresses
     const recipients = [
@@ -31,14 +34,17 @@ export async function GET(request: Request) {
       'dedecekm@gmail.com'
     ];
 
-    console.log(`[Cron] Sending Morning Pulse to: ${recipients.join(', ')}`);
+    console.log(`[Cron] Generating Morning Pulse with data from: ${[primaryUserEmail, ...additionalGmailAccounts].join(', ')}`);
+    console.log(`[Cron] Sending to: ${recipients.join(', ')}`);
 
     // Send Morning Pulse to both email addresses
+    // Both will receive the SAME briefing with combined Gmail data from both accounts
     const results = await Promise.all(
       recipients.map(recipientEmail =>
         sendMorningPulseEmail(
-          primaryUserEmail, // data source email (same for both)
-          recipientEmail    // recipient email (different)
+          primaryUserEmail,           // Primary email (Calendar + Tasks + Gmail)
+          recipientEmail,              // Recipient email
+          additionalGmailAccounts      // Additional Gmail accounts to include
         )
       )
     );
@@ -48,6 +54,7 @@ export async function GET(request: Request) {
       message: `Morning Pulse sent successfully to ${recipients.length} recipients`,
       emailIds: results.map(r => r.id),
       recipients: recipients,
+      gmailAccounts: [primaryUserEmail, ...additionalGmailAccounts],
       timestamp: new Date().toISOString(),
     });
 
