@@ -241,6 +241,113 @@ export default function FocusMatePage() {
         </div>
       </section>
 
+      {/* Permissions & Security Section */}
+      <section className="py-16 sm:py-24 bg-white border-y border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
+              Transparent & Secure
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Your privacy and security matter. Here's exactly what we access and how we protect your data.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+            {/* What We Access */}
+            <div className="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-2xl p-8 border border-teal-200">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">
+                What FocusMate Accesses (Read-Only)
+              </h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <Calendar className="w-6 h-6 text-teal-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="font-semibold text-slate-900">Calendar</p>
+                    <p className="text-sm text-gray-600">See your meetings and schedule</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Mail className="w-6 h-6 text-teal-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="font-semibold text-slate-900">Gmail</p>
+                    <p className="text-sm text-gray-600">See email subjects and senders (never content)</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-teal-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="font-semibold text-slate-900">Tasks</p>
+                    <p className="text-sm text-gray-600">See your task lists and due dates</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            {/* What We Never Do */}
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 border border-red-200">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">
+                What FocusMate NEVER Does
+              </h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 text-red-600 flex-shrink-0 mt-1 font-bold text-xl">❌</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Send emails on your behalf</p>
+                    <p className="text-sm text-gray-600">We only read, never send</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 text-red-600 flex-shrink-0 mt-1 font-bold text-xl">❌</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Modify your calendar</p>
+                    <p className="text-sm text-gray-600">Read-only access only</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 text-red-600 flex-shrink-0 mt-1 font-bold text-xl">❌</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Delete anything</p>
+                    <p className="text-sm text-gray-600">Your data stays untouched</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 text-red-600 flex-shrink-0 mt-1 font-bold text-xl">❌</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Share your data</p>
+                    <p className="text-sm text-gray-600">Never sold to third parties</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Security Badges */}
+          <div className="mt-12 bg-slate-50 rounded-2xl p-8 max-w-3xl mx-auto">
+            <h3 className="text-xl font-bold text-slate-900 text-center mb-6">
+              Enterprise-Grade Security
+            </h3>
+            <div className="grid sm:grid-cols-3 gap-6 text-center">
+              <div>
+                <div className="text-3xl mb-2">🔒</div>
+                <p className="font-semibold text-slate-900">Bank-Level Encryption</p>
+                <p className="text-sm text-gray-600 mt-1">AES-256-GCM standard</p>
+              </div>
+              <div>
+                <div className="text-3xl mb-2">🔐</div>
+                <p className="font-semibold text-slate-900">OAuth 2.0</p>
+                <p className="text-sm text-gray-600 mt-1">We never see your password</p>
+              </div>
+              <div>
+                <div className="text-3xl mb-2">🗑️</div>
+                <p className="font-semibold text-slate-900">Disconnect Anytime</p>
+                <p className="text-sm text-gray-600 mt-1">From Google Account settings</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-16 sm:py-24 bg-gradient-to-br from-slate-50 to-gray-100">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">

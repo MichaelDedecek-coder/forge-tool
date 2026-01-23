@@ -118,9 +118,10 @@ function ConnectedPageContent() {
 
         {/* Footer Note */}
         <p className="text-center text-gray-600 mt-8">
-          Questions? Email us at{' '}
-          <a href="mailto:support@focusmateapp.com" className="text-teal-600 font-semibold hover:underline">
-            support@focusmateapp.com
+          Want to adjust your briefing time or disconnect?<br />
+          <span className="text-sm text-gray-500">Settings coming soon — for now, email </span>
+          <a href="mailto:michael@forgecreative.cz" className="text-teal-600 font-semibold hover:underline">
+            michael@forgecreative.cz
           </a>
         </p>
       </div>
