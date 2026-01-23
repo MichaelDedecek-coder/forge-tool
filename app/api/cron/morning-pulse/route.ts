@@ -22,21 +22,32 @@ export async function GET(request: Request) {
       );
     }
 
-    // TODO: In the future, loop through all users from a database
-    // For now, send to the primary user
+    // Data source: primary user email
     const primaryUserEmail = process.env.PRIMARY_USER_EMAIL || 'michael@agentforge.tech';
 
-    console.log(`[Cron] Sending Morning Pulse to ${primaryUserEmail}`);
+    // Recipients: send to both email addresses
+    const recipients = [
+      'michael@agentforge.tech',
+      'dedecekm@gmail.com'
+    ];
 
-    const result = await sendMorningPulseEmail(
-      primaryUserEmail, // data source email
-      primaryUserEmail  // recipient email
+    console.log(`[Cron] Sending Morning Pulse to: ${recipients.join(', ')}`);
+
+    // Send Morning Pulse to both email addresses
+    const results = await Promise.all(
+      recipients.map(recipientEmail =>
+        sendMorningPulseEmail(
+          primaryUserEmail, // data source email (same for both)
+          recipientEmail    // recipient email (different)
+        )
+      )
     );
 
     return NextResponse.json({
       success: true,
-      message: 'Morning Pulse sent successfully',
-      emailId: result.id,
+      message: `Morning Pulse sent successfully to ${recipients.length} recipients`,
+      emailIds: results.map(r => r.id),
+      recipients: recipients,
       timestamp: new Date().toISOString(),
     });
 
