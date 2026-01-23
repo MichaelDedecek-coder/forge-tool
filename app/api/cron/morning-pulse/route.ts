@@ -54,6 +54,7 @@ export async function GET(request: Request) {
       message: `Morning Pulse sent successfully to ${recipients.length} recipients`,
       emailIds: results.map(r => r.id),
       recipients: recipients,
+      gmailAccounts: [primaryUserEmail, ...additionalGmailAccounts],
       timestamp: new Date().toISOString(),
     });
 

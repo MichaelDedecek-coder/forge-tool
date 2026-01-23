@@ -1,10 +1,10 @@
-// import { Inter } from "next/font/google";
 import "./globals.css";
 import "./print.css";
 import Script from "next/script";
 import FeedbackButton from "./components/FeedbackButton";
 
-// const inter = Inter({ subsets: ["latin"] });
+// Using system fonts for better performance
+const inter = { className: 'font-sans' };
 
 export const metadata = {
   title: "DataWizard - AI Data Analyst",
