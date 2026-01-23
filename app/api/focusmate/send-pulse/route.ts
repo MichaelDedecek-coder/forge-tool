@@ -7,18 +7,21 @@ import { sendMorningPulseEmail } from '@/lib/ai/email-delivery';
  * Generates and emails AI-powered daily briefing
  *
  * Query Parameters:
- * - email: User's email for data source (required)
+ * - email: User's primary email for data source (required) - used for Calendar and Tasks
  * - to: Email address to send to (optional, defaults to same as email)
+ * - additionalEmails: Comma-separated additional Gmail accounts (optional)
  *
  * Examples:
  * - /api/focusmate/send-pulse?email=user@example.com
  * - /api/focusmate/send-pulse?email=user@example.com&to=recipient@example.com
+ * - /api/focusmate/send-pulse?email=user@example.com&additionalEmails=other@gmail.com
  */
 export async function POST(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
     const toEmail = searchParams.get('to');
+    const additionalEmailsParam = searchParams.get('additionalEmails');
 
     // Validate email
     if (!email) {
@@ -28,16 +31,26 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`[Send Pulse API] Processing request for ${email}`);
+    // Parse additional email accounts
+    const additionalEmails = additionalEmailsParam
+      ? additionalEmailsParam.split(',').map(e => e.trim()).filter(Boolean)
+      : [];
+
+    console.log(`[Send Pulse API] Processing request for ${email}${additionalEmails.length > 0 ? ` + ${additionalEmails.length} additional account(s)` : ''}`);
 
     // Send email
-    const result = await sendMorningPulseEmail(email, toEmail || undefined);
+    const result = await sendMorningPulseEmail(
+      email,
+      toEmail || undefined,
+      additionalEmails.length > 0 ? additionalEmails : undefined
+    );
 
     console.log(`[Send Pulse API] ✅ Email sent successfully`);
 
     return NextResponse.json({
       success: true,
       email,
+      additionalEmails,
       sentTo: toEmail || email,
       emailId: result.id,
       message: 'Morning Pulse email sent successfully',

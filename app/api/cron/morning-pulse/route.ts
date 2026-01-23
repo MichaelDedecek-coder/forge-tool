@@ -22,21 +22,39 @@ export async function GET(request: Request) {
       );
     }
 
-    // TODO: In the future, loop through all users from a database
-    // For now, send to the primary user
+    // Data source: primary user email (for Calendar and Tasks)
     const primaryUserEmail = process.env.PRIMARY_USER_EMAIL || 'michael@agentforge.tech';
 
-    console.log(`[Cron] Sending Morning Pulse to ${primaryUserEmail}`);
+    // Additional Gmail accounts to pull email data from
+    const additionalGmailAccounts = ['dedecekm@gmail.com'];
 
-    const result = await sendMorningPulseEmail(
-      primaryUserEmail, // data source email
-      primaryUserEmail  // recipient email
+    // Recipients: send to both email addresses
+    const recipients = [
+      'michael@agentforge.tech',
+      'dedecekm@gmail.com'
+    ];
+
+    console.log(`[Cron] Generating Morning Pulse with data from: ${[primaryUserEmail, ...additionalGmailAccounts].join(', ')}`);
+    console.log(`[Cron] Sending to: ${recipients.join(', ')}`);
+
+    // Send Morning Pulse to both email addresses
+    // Both will receive the SAME briefing with combined Gmail data from both accounts
+    const results = await Promise.all(
+      recipients.map(recipientEmail =>
+        sendMorningPulseEmail(
+          primaryUserEmail,           // Primary email (Calendar + Tasks + Gmail)
+          recipientEmail,              // Recipient email
+          additionalGmailAccounts      // Additional Gmail accounts to include
+        )
+      )
     );
 
     return NextResponse.json({
       success: true,
-      message: 'Morning Pulse sent successfully',
-      emailId: result.id,
+      message: `Morning Pulse sent successfully to ${recipients.length} recipients`,
+      emailIds: results.map(r => r.id),
+      recipients: recipients,
+      gmailAccounts: [primaryUserEmail, ...additionalGmailAccounts],
       timestamp: new Date().toISOString(),
     });
 

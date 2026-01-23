@@ -16,25 +16,60 @@ const anthropic = new Anthropic({
 
 /**
  * Generate Morning Pulse briefing for a user
- * @param email User's email address
+ * @param email User's primary email address (for Calendar and Tasks)
+ * @param additionalEmailAccounts Optional array of additional Gmail accounts to include
  * @returns AI-generated morning briefing
  */
-export async function generateMorningPulse(email: string): Promise<string> {
+export async function generateMorningPulse(
+  email: string,
+  additionalEmailAccounts?: string[]
+): Promise<string> {
   console.log(`[Morning Pulse] Generating briefing for ${email}`);
 
-  // Fetch all data in parallel
-  const [calendarEvents, recentEmails, unreadCount, incompleteTasks, taskSummary] = await Promise.all([
+  // Determine all email accounts to fetch Gmail data from
+  const allEmailAccounts = [email, ...(additionalEmailAccounts || [])];
+  console.log(`[Morning Pulse] Fetching Gmail from: ${allEmailAccounts.join(', ')}`);
+
+  // Fetch Calendar and Tasks from primary account only
+  // Fetch Gmail from all accounts
+  const [calendarEvents, incompleteTasks, taskSummary, ...gmailResults] = await Promise.all([
     getUpcomingEvents(email, 10),
-    getRecentEmails(email, 10),
-    getUnreadCount(email),
     getIncompleteTasks(email),
     getTaskSummary(email),
+    // Fetch Gmail data for each account
+    ...allEmailAccounts.map(async (gmailAccount) => ({
+      account: gmailAccount,
+      recentEmails: await getRecentEmails(gmailAccount, 10),
+      unreadCount: await getUnreadCount(gmailAccount),
+    })),
   ]);
 
-  console.log(`[Morning Pulse] Data fetched: ${calendarEvents.length} events, ${recentEmails.length} emails, ${incompleteTasks.length} tasks`);
+  // Combine Gmail data from all accounts
+  const combinedRecentEmails = gmailResults.flatMap(result =>
+    result.recentEmails.map(email => ({
+      ...email,
+      account: result.account, // Tag which account this email is from
+    }))
+  );
+
+  const totalUnreadCount = gmailResults.reduce((sum, result) => sum + result.unreadCount, 0);
+
+  console.log(`[Morning Pulse] Data fetched: ${calendarEvents.length} events, ${combinedRecentEmails.length} emails from ${allEmailAccounts.length} accounts, ${incompleteTasks.length} tasks`);
 
   // Prepare context for Claude
   const today = new Date().toISOString().split('T')[0];
+
+  // Group emails by account for better organization
+  const emailsByAccount = gmailResults.map(result => ({
+    account: result.account,
+    unreadCount: result.unreadCount,
+    recentEmails: result.recentEmails.slice(0, 5).map(e => ({
+      from: e.from,
+      subject: e.subject,
+      snippet: e.snippet,
+      isUnread: e.isUnread,
+    })),
+  }));
 
   const context = {
     date: today,
@@ -48,14 +83,8 @@ export async function generateMorningPulse(email: string): Promise<string> {
       })),
     },
     email: {
-      unreadCount,
-      recentCount: recentEmails.length,
-      recent: recentEmails.slice(0, 5).map(e => ({
-        from: e.from,
-        subject: e.subject,
-        snippet: e.snippet,
-        isUnread: e.isUnread,
-      })),
+      totalUnreadCount,
+      accounts: emailsByAccount,
     },
     tasks: {
       totalLists: taskSummary.totalLists,
@@ -77,10 +106,14 @@ TODAY'S DATE: ${today}
 CALENDAR (next 10 events):
 ${JSON.stringify(context.calendar, null, 2)}
 
-EMAIL:
-- ${unreadCount} unread emails
-- Recent emails:
-${JSON.stringify(context.email.recent, null, 2)}
+EMAIL (from ${allEmailAccounts.length} account${allEmailAccounts.length > 1 ? 's' : ''}):
+- Total unread: ${totalUnreadCount} emails
+${emailsByAccount.map(acc => `
+  Account: ${acc.account}
+  - ${acc.unreadCount} unread
+  - Recent emails:
+  ${JSON.stringify(acc.recentEmails, null, 2)}
+`).join('\n')}
 
 TASKS:
 - ${taskSummary.incompleteTasks} incomplete tasks across ${taskSummary.totalLists} lists
@@ -92,7 +125,7 @@ Create a Morning Pulse briefing with these sections:
 1. **GREETING** - Warm, personal greeting
 2. **TOP 3 PRIORITIES** - Most urgent items from calendar/tasks/email (with specific times/deadlines)
 3. **QUICK WINS** - 3-5 small, easy tasks that can be completed quickly
-4. **DAY OVERVIEW** - Summary of meetings, emails, and tasks
+4. **DAY OVERVIEW** - Summary of meetings, emails, and tasks (show breakdown by email account if multiple)
 5. **IMPORTANT NOTES** - Any deadlines, overdue items, or critical meetings
 
 Format:
@@ -101,6 +134,7 @@ Format:
 - Include actionable details (times, names, deadlines)
 - Prioritize by urgency and importance
 - Highlight overdue or time-sensitive items
+- When showing email stats with multiple accounts, show the breakdown clearly
 
 Keep the briefing under 300 words. Be direct and actionable.`;
 
@@ -127,10 +161,14 @@ Keep the briefing under 300 words. Be direct and actionable.`;
 
 /**
  * Generate Morning Pulse with structured output
- * @param email User's email address
+ * @param email User's primary email address
+ * @param additionalEmailAccounts Optional array of additional Gmail accounts
  * @returns Structured briefing object
  */
-export async function generateStructuredPulse(email: string): Promise<{
+export async function generateStructuredPulse(
+  email: string,
+  additionalEmailAccounts?: string[]
+): Promise<{
   greeting: string;
   topPriorities: string[];
   quickWins: string[];
@@ -141,14 +179,20 @@ export async function generateStructuredPulse(email: string): Promise<{
   };
   briefing: string;
 }> {
-  const briefing = await generateMorningPulse(email);
+  const briefing = await generateMorningPulse(email, additionalEmailAccounts);
+
+  // Determine all email accounts
+  const allEmailAccounts = [email, ...(additionalEmailAccounts || [])];
 
   // Fetch summary data
-  const [events, unreadCount, taskSummary] = await Promise.all([
+  const [events, taskSummary, ...unreadCounts] = await Promise.all([
     getUpcomingEvents(email, 10),
-    getUnreadCount(email),
     getTaskSummary(email),
+    // Get unread count from all email accounts
+    ...allEmailAccounts.map(gmailAccount => getUnreadCount(gmailAccount)),
   ]);
+
+  const totalUnreadCount = unreadCounts.reduce((sum, count) => sum + count, 0);
 
   return {
     greeting: `Good morning! Here's your Morning Pulse for ${new Date().toLocaleDateString()}`,
@@ -156,7 +200,7 @@ export async function generateStructuredPulse(email: string): Promise<{
     quickWins: [], // Extracted by Claude in briefing
     overview: {
       meetings: events.length,
-      unreadEmails: unreadCount,
+      unreadEmails: totalUnreadCount,
       incompleteTasks: taskSummary.incompleteTasks,
     },
     briefing,

@@ -87,18 +87,20 @@ function briefingToHtml(briefing: string): string {
 
 /**
  * Send Morning Pulse email
- * @param email Recipient's email address
+ * @param email Primary email address (for Calendar and Tasks data)
  * @param toEmail Email address to send to (can be different from data source)
+ * @param additionalEmailAccounts Additional Gmail accounts to include in briefing
  * @returns Resend response
  */
 export async function sendMorningPulseEmail(
   email: string,
-  toEmail?: string
+  toEmail?: string,
+  additionalEmailAccounts?: string[]
 ): Promise<{ id: string; success: boolean }> {
-  console.log(`[Email Delivery] Generating Morning Pulse for ${email}`);
+  console.log(`[Email Delivery] Generating Morning Pulse for ${email}${additionalEmailAccounts && additionalEmailAccounts.length > 0 ? ` + ${additionalEmailAccounts.length} additional account(s)` : ''}`);
 
-  // Generate the briefing
-  const briefing = await generateMorningPulse(email);
+  // Generate the briefing with multiple email accounts
+  const briefing = await generateMorningPulse(email, additionalEmailAccounts);
 
   // Convert to HTML
   const htmlContent = briefingToHtml(briefing);
