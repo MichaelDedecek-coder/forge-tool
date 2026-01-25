@@ -7,7 +7,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { getUpcomingEvents } from '@/lib/google/calendar';
-import { getRecentEmails, getUnreadCount } from '@/lib/google/gmail';
+import { getRecentEmails } from '@/lib/google/gmail';
 import { getIncompleteTasks, getTaskSummary } from '@/lib/google/tasks';
 
 const anthropic = new Anthropic({
@@ -30,17 +30,21 @@ export async function generateMorningPulse(
   const allEmailAccounts = [email, ...(additionalEmailAccounts || [])];
   console.log(`[Morning Pulse] Fetching Gmail from: ${allEmailAccounts.join(', ')}`);
 
+  // Calculate date for "last 48 hours" Gmail query
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  const dateFilter = twoDaysAgo.toISOString().split('T')[0].replace(/-/g, '/');
+
   // Fetch Calendar and Tasks from primary account only
-  // Fetch Gmail from all accounts
+  // Fetch Gmail from all accounts (last 48 hours, up to 50 emails per account)
   const [calendarEvents, incompleteTasks, taskSummary, ...gmailResults] = await Promise.all([
     getUpcomingEvents(email, 10),
     getIncompleteTasks(email),
     getTaskSummary(email),
-    // Fetch Gmail data for each account
+    // Fetch Gmail data for each account - last 48 hours only
     ...allEmailAccounts.map(async (gmailAccount) => ({
       account: gmailAccount,
-      recentEmails: await getRecentEmails(gmailAccount, 10),
-      unreadCount: await getUnreadCount(gmailAccount),
+      recentEmails: await getRecentEmails(gmailAccount, 50, `after:${dateFilter}`),
     })),
   ]);
 
@@ -52,98 +56,121 @@ export async function generateMorningPulse(
     }))
   );
 
-  const totalUnreadCount = gmailResults.reduce((sum, result) => sum + result.unreadCount, 0);
-
   console.log(`[Morning Pulse] Data fetched: ${calendarEvents.length} events, ${combinedRecentEmails.length} emails from ${allEmailAccounts.length} accounts, ${incompleteTasks.length} tasks`);
 
-  // Prepare context for Claude
+  // Prepare context for Claude - NO COUNTS, ONLY ACTUAL DATA
   const today = new Date().toISOString().split('T')[0];
 
-  // Group emails by account for better organization
-  const emailsByAccount = gmailResults.map(result => ({
-    account: result.account,
-    unreadCount: result.unreadCount,
-    recentEmails: result.recentEmails.slice(0, 5).map(e => ({
+  // Prepare email data - ONLY the emails themselves, NO counts
+  const allEmailsFlat = gmailResults.flatMap(result =>
+    result.recentEmails.slice(0, 20).map(e => ({
+      account: result.account,
       from: e.from,
       subject: e.subject,
       snippet: e.snippet,
+      date: e.date,
       isUnread: e.isUnread,
-    })),
-  }));
+    }))
+  );
 
   const context = {
     date: today,
-    calendar: {
-      count: calendarEvents.length,
-      events: calendarEvents.map(e => ({
-        summary: e.summary,
-        start: e.start.dateTime || e.start.date,
-        end: e.end.dateTime || e.end.date,
-        location: e.location,
-      })),
-    },
-    email: {
-      totalUnreadCount,
-      accounts: emailsByAccount,
-    },
-    tasks: {
-      totalLists: taskSummary.totalLists,
-      totalTasks: taskSummary.totalTasks,
-      incompleteCount: taskSummary.incompleteTasks,
-      incompleteTasks: incompleteTasks.slice(0, 10).map(t => ({
-        title: t.title,
-        due: t.due,
-        notes: t.notes,
-      })),
-    },
+    calendar: calendarEvents.map(e => ({
+      summary: e.summary,
+      start: e.start.dateTime || e.start.date,
+      end: e.end.dateTime || e.end.date,
+      location: e.location,
+      attendees: e.attendees?.map((a: any) => a.email) || [],
+    })),
+    emails: allEmailsFlat, // Just the emails, no counts
+    tasks: incompleteTasks.map(t => ({ // Just the tasks, no counts
+      title: t.title,
+      due: t.due,
+      notes: t.notes,
+      status: t.status,
+      updated: t.updated,
+    })),
   };
 
-  // Craft the prompt
-  const prompt = `You are an executive assistant creating a Morning Pulse briefing. Analyze the user's data and create a concise, actionable morning briefing.
+  // Craft the prompt with STRICT format requirements
+  const prompt = `You are an executive assistant. Create a Morning Pulse briefing for ${today}.
 
-TODAY'S DATE: ${today}
+DATA PROVIDED:
 
-CALENDAR (next 10 events):
+CALENDAR EVENTS:
 ${JSON.stringify(context.calendar, null, 2)}
 
-EMAIL (from ${allEmailAccounts.length} account${allEmailAccounts.length > 1 ? 's' : ''}):
-- Total unread: ${totalUnreadCount} emails
-${emailsByAccount.map(acc => `
-  Account: ${acc.account}
-  - ${acc.unreadCount} unread
-  - Recent emails:
-  ${JSON.stringify(acc.recentEmails, null, 2)}
-`).join('\n')}
+EMAILS (last 48 hours from ${allEmailAccounts.join(', ')}):
+${JSON.stringify(context.emails, null, 2)}
 
 TASKS:
-- ${taskSummary.incompleteTasks} incomplete tasks across ${taskSummary.totalLists} lists
-- High-priority incomplete tasks:
-${JSON.stringify(context.tasks.incompleteTasks, null, 2)}
+${JSON.stringify(context.tasks, null, 2)}
 
-Create a Morning Pulse briefing with these sections:
+═══════════════════════════════════════════════════════════════════
+STRICT OUTPUT FORMAT - FOLLOW EXACTLY:
+═══════════════════════════════════════════════════════════════════
 
-1. **GREETING** - Warm, personal greeting
-2. **TOP 3 PRIORITIES** - Most urgent items from calendar/tasks/email (with specific times/deadlines)
-3. **QUICK WINS** - 3-5 small, easy tasks that can be completed quickly
-4. **DAY OVERVIEW** - Summary of meetings, emails, and tasks (show breakdown by email account if multiple)
-5. **IMPORTANT NOTES** - Any deadlines, overdue items, or critical meetings
+☀️ MORNING PULSE: ${today}
 
-Format:
-- Use emojis strategically for visual scanning
-- Be concise but specific
-- Include actionable details (times, names, deadlines)
-- Prioritize by urgency and importance
-- Highlight overdue or time-sensitive items
-- When showing email stats with multiple accounts, show the breakdown clearly
+**TOP 3 PRIORITIES**
+1. [Most urgent item with time/deadline/person]
+2. [Second most urgent item]
+3. [Third most urgent item]
 
-Keep the briefing under 300 words. Be direct and actionable.`;
+**IMPORTANT NEW EMAILS** 📧
+[List 4-6 emails that require response/action. For EACH email, show:]
+- **From:** [Sender name/email]
+- **Subject:** [Email subject]
+- **Action needed:** [What user needs to do]
+- **Account:** [Which Gmail account: ${allEmailAccounts.join(' or ')}]
+
+[If there are NO important emails requiring action, write: "✅ No urgent emails requiring action"]
+
+**TASKS BREAKDOWN** ✅
+
+⚠️ **OVERDUE:**
+[List each overdue task with: "- [Task title] (due: [date]) - [notes if any]"]
+[If none, write: "None"]
+
+🔥 **DUE TODAY:**
+[List each task due today with: "- [Task title] - [notes if any]"]
+[If none, write: "None"]
+
+📅 **DUE THIS WEEK:**
+[List each task due this week with: "- [Task title] (due: [date]) - [notes if any]"]
+[If none, write: "None"]
+
+📋 **NO DEADLINE:**
+[List important tasks without deadlines: "- [Task title] - [notes if any]"]
+[Only show 3-5 most important ones]
+
+**TODAY'S MEETINGS** 📅
+[List each meeting with time, attendees, and what to prepare]
+[If no meetings, write: "No meetings scheduled"]
+
+**QUICK WINS** ⚡
+[List 2-3 tasks that can be done in under 10 minutes]
+
+═══════════════════════════════════════════════════════════════════
+CRITICAL RULES:
+═══════════════════════════════════════════════════════════════════
+
+1. **NEVER** show email counts like "201 unread" or "402 total unread"
+2. **NEVER** show "Email Status:" section
+3. **NEVER** write "- michael@agentforge.tech: X unread"
+4. **ONLY** list SPECIFIC emails that need response (sender + subject + action)
+5. **ALWAYS** list ALL tasks with their due dates
+6. **IGNORE** promotional emails, newsletters, automated notifications
+7. **FOCUS** on actionable items only
+
+Keep total length under 400 words. Be specific and actionable.`;
 
   // Call Claude 3.5 Haiku
   console.log('[Morning Pulse] Calling Claude 3.5 Haiku...');
 
   const message = await anthropic.messages.create({
     model: 'claude-3-5-haiku-20241022',
-    max_tokens: 1024,
+    max_tokens: 1536,
     messages: [
       {
         role: 'user',
@@ -184,15 +211,22 @@ export async function generateStructuredPulse(
   // Determine all email accounts
   const allEmailAccounts = [email, ...(additionalEmailAccounts || [])];
 
+  // Calculate date for "last 48 hours" Gmail query
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  const dateFilter = twoDaysAgo.toISOString().split('T')[0].replace(/-/g, '/');
+
   // Fetch summary data
-  const [events, taskSummary, ...unreadCounts] = await Promise.all([
+  const [events, taskSummary, ...gmailResults] = await Promise.all([
     getUpcomingEvents(email, 10),
     getTaskSummary(email),
-    // Get unread count from all email accounts
-    ...allEmailAccounts.map(gmailAccount => getUnreadCount(gmailAccount)),
+    // Get recent emails from all accounts
+    ...allEmailAccounts.map(async (gmailAccount) =>
+      getRecentEmails(gmailAccount, 50, `after:${dateFilter}`)
+    ),
   ]);
 
-  const totalUnreadCount = unreadCounts.reduce((sum, count) => sum + count, 0);
+  const totalNewEmails = gmailResults.reduce((sum, emails) => sum + emails.length, 0);
 
   return {
     greeting: `Good morning! Here's your Morning Pulse for ${new Date().toLocaleDateString()}`,
@@ -200,7 +234,7 @@ export async function generateStructuredPulse(
     quickWins: [], // Extracted by Claude in briefing
     overview: {
       meetings: events.length,
-      unreadEmails: totalUnreadCount,
+      unreadEmails: totalNewEmails,
       incompleteTasks: taskSummary.incompleteTasks,
     },
     briefing,
