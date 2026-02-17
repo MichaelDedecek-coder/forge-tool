@@ -1,22 +1,17 @@
 {
-  "name": "forge-tool",
-  "version": "0.1.0",
+  "name": "datawizard",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "playwright install --with-deps chromium || echo 'Playwright install skipped'",
-    "encrypt-tokens": "tsx scripts/encrypt-existing-tokens.ts"
+    "postinstall": "playwright install --with-deps chromium || echo 'Playwright install skipped'"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.71.2",
     "@e2b/code-interpreter": "^2.3.3",
     "@google/generative-ai": "^0.24.1",
-    "@supabase/supabase-js": "^2.90.1",
-    "dotenv": "^17.2.3",
-    "googleapis": "^170.1.0",
     "lucide-react": "^0.562.0",
     "next": "^16.0.10",
     "playwright": "^1.57.0",
@@ -24,7 +19,6 @@
     "react-dom": "19.2.0",
     "react-dropzone": "^14.3.8",
     "recharts": "^3.6.0",
-    "resend": "^6.8.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -36,8 +30,6 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "tailwindcss": "^4",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

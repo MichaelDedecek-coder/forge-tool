@@ -3,37 +3,11 @@
     "app/api/export-pdf/route.js": {
       "maxDuration": 60,
       "memory": 1024
+    },
+    "app/api/datawizard/route.js": {
+      "maxDuration": 120,
+      "memory": 1024
     }
   },
-  "buildCommand": "npm run build",
-  "crons": [
-    {
-      "path": "/api/cron/morning-pulse",
-      "schedule": "0 8 * * *"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.getfocusmate.app"
-        }
-      ],
-      "destination": "/focusmate",
-      "permanent": false
-    },
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "getfocusmate.app"
-        }
-      ],
-      "destination": "/focusmate",
-      "permanent": false
-    }
-  ]
+  "buildCommand": "npm run build"
 }

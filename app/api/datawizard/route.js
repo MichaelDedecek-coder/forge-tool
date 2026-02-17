@@ -5,22 +5,67 @@ import { NextResponse } from "next/server";
 // Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
 export const maxDuration = 120;
 
+// --- RATE LIMITING (in-memory, per-IP, resets on deploy) ---
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 5; // max 5 analyses per minute
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(ip, { windowStart: now, count: 1 });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
+// --- FILE SIZE LIMITS ---
+const MAX_CSV_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_ROW_COUNT = 200_000;
+
 export async function POST(req) {
   try {
+    // Rate limiting
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a moment before analyzing again." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const userQuestion = body.message || "Analyze the sales trend.";
     const dynamicData = body.csvData;
     const language = body.language || "en";
-    const onProgress = body.onProgress; // For progressive loading
 
     if (!dynamicData) {
       return NextResponse.json({ error: "No data provided." }, { status: 400 });
+    }
+
+    // File size guard
+    const csvByteSize = Buffer.byteLength(dynamicData, "utf8");
+    if (csvByteSize > MAX_CSV_SIZE_BYTES) {
+      return NextResponse.json(
+        { error: `File too large (${(csvByteSize / 1024 / 1024).toFixed(1)} MB). Maximum is 10 MB.` },
+        { status: 413 }
+      );
     }
 
     // 1. PREPARE METADATA
     const dataRows = dynamicData.split('\n').filter(row => row.trim());
     const headerRow = dataRows[0];
     const totalRows = dataRows.length - 1; // Exclude header
+
+    // Row count guard
+    if (totalRows > MAX_ROW_COUNT) {
+      return NextResponse.json(
+        { error: `Too many rows (${totalRows.toLocaleString()}). Maximum is ${MAX_ROW_COUNT.toLocaleString()}.` },
+        { status: 413 }
+      );
+    }
 
     console.log(`DATAWIZARD INPUT: Received ${totalRows} rows. Lang: ${language}`);
 

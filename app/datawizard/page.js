@@ -167,7 +167,7 @@ export default function Home() {
             type: "DATAWIZARD_PRINT_DATA",
             data: parsedReport,
             language: language
-          }, "*"); // Use "*" to allow any origin (print window might be on different domain)
+          }, window.location.origin);
 
           // Clean up listener
           window.removeEventListener("message", handleMessage);

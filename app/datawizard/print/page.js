@@ -40,7 +40,7 @@ export default function PrintPage() {
     // Send "ready" message to parent window (if opened via window.open)
     if (window.opener) {
       console.log("[PrintPage] Sending READY message to parent");
-      window.opener.postMessage({ type: "PRINT_PAGE_READY" }, "*");
+      window.opener.postMessage({ type: "PRINT_PAGE_READY" }, window.location.origin);
     }
 
     // FALLBACK: Try localStorage (works if same origin)
