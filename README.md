@@ -7,7 +7,7 @@ DataWizard turns messy spreadsheets into clear insights using AI-powered statist
 ## Architecture
 
 - **Frontend**: Next.js (React) with Tailwind CSS, Recharts for visualization
-- **AI Engine**: Google Gemini Flash (narration) — Claude Sonnet 4.5 migration planned
+- **AI Engine**: Claude Sonnet 4.5 (narration) by Anthropic
 - **Compute**: E2B Sandbox (Python/Pandas for statistical pre-aggregation)
 - **Hosting**: Vercel
 - **Export**: Playwright-based PDF generation
@@ -33,7 +33,7 @@ See `.env.example` for required configuration.
 |-------|-------------|
 | `/` | Landing page |
 | `/datawizard` | Main analysis interface |
-| `/api/datawizard` | Core analysis API (E2B + Gemini) |
+| `/api/datawizard` | Core analysis API (E2B + Claude Sonnet 4.5) |
 | `/api/export-pdf` | PDF report generation |
 
 ## License
