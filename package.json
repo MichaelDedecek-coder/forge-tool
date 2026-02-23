@@ -12,6 +12,8 @@
   "dependencies": {
     "@e2b/code-interpreter": "^2.3.3",
     "@google/generative-ai": "^0.24.1",
+    "@gsap/react": "^2.1.2",
+    "gsap": "^3.14.2",
     "lucide-react": "^0.562.0",
     "next": "^16.0.10",
     "playwright": "^1.57.0",
