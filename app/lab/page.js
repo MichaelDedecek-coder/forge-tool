@@ -62,7 +62,7 @@ function Navbar() {
 
   return (
     <nav className={`fixed left-1/2 top-6 z-50 flex w-[90%] max-w-5xl -translate-x-1/2 items-center justify-between rounded-4xl px-6 py-4 transition-all duration-500 ${scrolled ? 'bg-surface/80 backdrop-blur-xl border border-dark/10 shadow-lg' : 'bg-transparent text-primary'}`}>
-      <div className={`font-sans text-xl font-bold tracking-tight ${scrolled ? 'text-dark' : 'text-primary'}`}>SPŠS AI LAB.</div>
+      <div className={`font-sans text-xl font-bold tracking-tight ${scrolled ? 'text-dark' : 'text-primary'}`}>AI LAB</div>
       <div className={`hidden md:flex gap-8 font-mono text-sm uppercase ${scrolled ? 'text-dark/70' : 'text-primary/70'}`}>
         <a href="#features" className="hover:-translate-y-[1px] transition-transform hover:text-accent">Infrastruktura</a>
         <a href="#protocol" className="hover:-translate-y-[1px] transition-transform hover:text-accent">Protokol</a>
@@ -91,11 +91,11 @@ function Hero() {
           <span className="font-drama text-7xl italic md:ml-12 md:text-9xl">Systémy.</span>
         </h1>
         <p className="hero-el mt-8 max-w-xl font-mono text-lg leading-relaxed text-primary/70 md:text-xl">
-          Středoškolská vývojářská laboratoř pro aplikovanou umělou inteligenci. Konec teorie, stavíme reálné nástroje.
+          Vývojářská laboratoř pro aplikovanou umělou inteligenci. Konec AI teorie, stavíme reálné nástroje.
         </p>
         <div className="hero-el mt-12">
-          <a href="https://slack.com" target="_blank" rel="noreferrer" className="btn-magnetic btn-slide inline-flex items-center gap-3 rounded-4xl bg-accent px-8 py-4 font-sans text-lg font-bold text-white shadow-xl shadow-accent/20">
-            <span className="flex items-center gap-3 transition-colors">Připojit se na Slack SPŠS AI Lab <Terminal size={20} /></span>
+          <a href="https://join.slack.com/t/agentforgetech/shared_invite/zt-3qi1or6nq-cAvEDMU13nFtiZyqV8~0Sg" target="_blank" rel="noreferrer" className="btn-magnetic btn-slide inline-flex items-center gap-3 rounded-4xl bg-accent px-8 py-4 font-sans text-lg font-bold text-white shadow-xl shadow-accent/20">
+            <span className="flex items-center gap-3 transition-colors">Připojit se na Slack AI Lab <Terminal size={20} /></span>
           </a>
         </div>
       </div>
@@ -114,7 +114,7 @@ function Features() {
         </div>
         <div className="flex flex-col overflow-hidden rounded-4xl border border-dark/10 bg-primary p-6 shadow-sm">
           <div className="relative mb-6 flex h-48 w-full items-center justify-center overflow-hidden rounded-[1.5rem] bg-dark text-accent border border-dark/5 p-4"><TelemetryTypewriter /></div>
-          <h3 className="font-sans text-2xl font-bold tracking-tight text-dark">Napojení na praxi</h3>
+          <h3 className="font-sans text-2xl font-bold tracking-tight text-dark">Napojení na firmy</h3>
           <p className="mt-2 font-mono text-sm leading-relaxed text-dark/60">B2B datová extrakce</p>
         </div>
         <div className="flex flex-col overflow-hidden rounded-4xl border border-dark/10 bg-primary p-6 shadow-sm">
@@ -200,7 +200,7 @@ function Philosophy() {
       </div>
       <div className="relative z-10 mx-auto max-w-5xl">
         <p className="phil-el mb-8 font-mono text-xl uppercase tracking-widest text-primary/50 md:text-2xl">
-          Většina škol se soustředí na: nekonečnou teorii a fiktivní cvičení.
+          Většina vývojářů se soustředí na: AI teorii a fiktivní problémy.
         </p>
         <h2 className="phil-el font-sans text-5xl font-bold leading-tight tracking-tighter text-primary md:text-7xl">
           My se soustředíme na: <br />
@@ -286,7 +286,7 @@ function GetStarted() {
           Získej přístup do vývojářského kanálu, převezmi datová zadání a začni stavět reálné systémy.
         </p>
         <a href="https://slack.com" target="_blank" rel="noreferrer" className="btn-magnetic btn-slide inline-flex items-center gap-3 rounded-4xl bg-accent px-10 py-5 font-sans text-xl font-bold text-white shadow-xl shadow-accent/20">
-          <span className="flex items-center gap-3 transition-colors">Připojit se na Slack SPŠS AI Lab <ArrowRight size={24} /></span>
+          <span className="flex items-center gap-3 transition-colors">Připojit se na Slack AI Lab <ArrowRight size={24} /></span>
         </a>
       </div>
     </section>
@@ -298,8 +298,8 @@ function Footer() {
     <footer className="relative z-50 -mt-10 rounded-t-5xl bg-dark px-8 py-16 text-primary md:px-16">
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-12 border-b border-primary/10 pb-12 md:flex-row md:items-end">
         <div>
-          <h3 className="font-sans text-3xl font-bold tracking-tight">SPŠS AI LAB.</h3>
-          <p className="mt-2 font-mono text-sm text-primary/50">Středoškolská vývojářská laboratoř.</p>
+          <h3 className="font-sans text-3xl font-bold tracking-tight">AI LAB</h3>
+          <p className="mt-2 font-mono text-sm text-primary/50">Vývojářská laboratoř.</p>
         </div>
         <div className="flex items-center gap-3 rounded-full border border-green-500/30 bg-green-500/10 px-5 py-2.5">
           <div className="h-2 w-2 animate-pulse rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]"></div>
@@ -307,7 +307,7 @@ function Footer() {
         </div>
       </div>
       <div className="mx-auto mt-8 flex max-w-7xl justify-between font-mono text-xs text-primary/40">
-        <p>© 2026 AgentForge.Tech / SPŠS</p>
+        <p>© 2026 AgentForge.Tech / AI Lab CL</p>
         <p>BUILD_V2.0.4</p>
       </div>
     </footer>
