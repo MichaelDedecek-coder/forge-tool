@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'AI LAB | Ovládněte systémy',
-  description: 'Nezávislý technologický inkubátor. Vývojářská laboratoř pro aplikovanou umělou inteligenci.',
+  description: 'Nezávislý technologický inkubátor. Konec AI teorie, stavíme reálné produkční systémy.',
   openGraph: {
     title: 'AI LAB | Ovládněte systémy',
     description: 'Nezávislý technologický inkubátor. Konec AI teorie, stavíme reálné produkční systémy.',

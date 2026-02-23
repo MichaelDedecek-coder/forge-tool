@@ -91,7 +91,7 @@ function Hero() {
           <span className="font-drama text-7xl italic md:ml-12 md:text-9xl">Systémy.</span>
         </h1>
         <p className="hero-el mt-8 max-w-xl font-mono text-lg leading-relaxed text-primary/70 md:text-xl">
-          Vývojářská laboratoř pro aplikovanou umělou inteligenci. Konec AI teorie, stavíme reálné nástroje.
+          Nezávislý technologický inkubátor. Konec AI teorie, stavíme reálné produkční systémy.
         </p>
         <div className="hero-el mt-12">
           <a href="https://join.slack.com/t/agentforgetech/shared_invite/zt-3qi1or6nq-cAvEDMU13nFtiZyqV8~0Sg" target="_blank" rel="noreferrer" className="btn-magnetic btn-slide inline-flex items-center gap-3 rounded-4xl bg-accent px-8 py-4 font-sans text-lg font-bold text-white shadow-xl shadow-accent/20">
@@ -110,7 +110,7 @@ function Features() {
         <div className="flex flex-col overflow-hidden rounded-4xl border border-dark/10 bg-primary p-6 shadow-sm">
           <div className="relative mb-6 flex h-48 w-full items-center justify-center overflow-hidden rounded-[1.5rem] bg-surface border border-dark/5"><DiagnosticShuffler /></div>
           <h3 className="font-sans text-2xl font-bold tracking-tight text-dark">Inženýrský přístup</h3>
-          <p className="mt-2 font-mono text-sm leading-relaxed text-dark/60">5vrstvá architektura</p>
+          <p className="mt-2 font-mono text-sm leading-relaxed text-dark/60">5-vrstvá architektura</p>
         </div>
         <div className="flex flex-col overflow-hidden rounded-4xl border border-dark/10 bg-primary p-6 shadow-sm">
           <div className="relative mb-6 flex h-48 w-full items-center justify-center overflow-hidden rounded-[1.5rem] bg-dark text-accent border border-dark/5 p-4"><TelemetryTypewriter /></div>
@@ -214,7 +214,7 @@ function Philosophy() {
 function Protocol() {
   const steps = [
     { num: '01', title: 'Dekonstrukce problému', desc: 'Identifikace procesů vhodných pro AI automatizaci.', icon: <Network size={80} strokeWidth={1} /> },
-    { num: '02', title: 'AgentForge Stack', desc: 'Aplikace 5vrstvé architektury promptů pro absolutní kontrolu.', icon: <Terminal size={80} strokeWidth={1} /> },
+    { num: '02', title: 'AgentForge Stack', desc: 'Aplikace 5-vrstvé architektury promptů pro absolutní kontrolu.', icon: <Terminal size={80} strokeWidth={1} /> },
     { num: '03', title: 'Produkční Exekuce', desc: 'Testování mantinelů, iterace a nasazení autonomních řešení.', icon: <Cpu size={80} strokeWidth={1} /> }
   ];
   return (
@@ -285,7 +285,7 @@ function GetStarted() {
         <p className="mx-auto mt-6 max-w-lg font-mono text-dark/70 leading-relaxed mb-10">
           Získej přístup do vývojářského kanálu, převezmi datová zadání a začni stavět reálné systémy.
         </p>
-        <a href="https://slack.com" target="_blank" rel="noreferrer" className="btn-magnetic btn-slide inline-flex items-center gap-3 rounded-4xl bg-accent px-10 py-5 font-sans text-xl font-bold text-white shadow-xl shadow-accent/20">
+        <a href="https://join.slack.com/t/agentforgetech/shared_invite/zt-3qi1or6nq-cAvEDMU13nFtiZyqV8~0Sg" target="_blank" rel="noreferrer" className="btn-magnetic btn-slide inline-flex items-center gap-3 rounded-4xl bg-accent px-10 py-5 font-sans text-xl font-bold text-white shadow-xl shadow-accent/20">
           <span className="flex items-center gap-3 transition-colors">Připojit se na Slack AI Lab <ArrowRight size={24} /></span>
         </a>
       </div>
@@ -307,7 +307,7 @@ function Footer() {
         </div>
       </div>
       <div className="mx-auto mt-8 flex max-w-7xl justify-between font-mono text-xs text-primary/40">
-        <p>© 2026 AgentForge.Tech / AI Lab CL</p>
+        <p>© 2026 AgentForge.Tech / AI Lab</p>
         <p>BUILD_V2.0.4</p>
       </div>
     </footer>
