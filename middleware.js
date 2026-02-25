@@ -1,12 +1,22 @@
 /**
- * Next.js Middleware for Supabase Auth
- * Runs on every request to manage auth sessions
+ * Next.js Middleware
+ * - Supabase Auth session management
+ * - Hostname-based routing for ailab-cl.cz
  */
 
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
 export async function middleware(req) {
+  // Hostname-based routing for ailab-cl.cz
+  const hostname = req.headers.get('host');
+  if (hostname === 'ailab-cl.cz' || hostname === 'www.ailab-cl.cz') {
+    const url = req.nextUrl.clone();
+    url.pathname = `/lab${url.pathname === '/' ? '' : url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
+  // Supabase Auth session refresh
   let res = NextResponse.next({
     request: req,
   });
@@ -40,16 +50,9 @@ export async function middleware(req) {
   return res;
 }
 
-// Match all routes except static files and API routes
+// Match all routes except static files
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
