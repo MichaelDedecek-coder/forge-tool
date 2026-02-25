@@ -17,6 +17,12 @@ export function AuthProvider({ children }) {
   const supabase = createClient();
 
   useEffect(() => {
+    // Skip auth if Supabase not configured
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     const getInitialSession = async () => {
       try {
@@ -58,6 +64,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const fetchProfile = async (userId) => {
+    if (!supabase) return;
+
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -73,6 +81,8 @@ export function AuthProvider({ children }) {
   };
 
   const signUp = async (email, password) => {
+    if (!supabase) throw new Error('Authentication not configured');
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -83,6 +93,8 @@ export function AuthProvider({ children }) {
   };
 
   const signIn = async (email, password) => {
+    if (!supabase) throw new Error('Authentication not configured');
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -93,6 +105,8 @@ export function AuthProvider({ children }) {
   };
 
   const signInWithGoogle = async () => {
+    if (!supabase) throw new Error('Authentication not configured');
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -105,6 +119,8 @@ export function AuthProvider({ children }) {
   };
 
   const signOut = async () => {
+    if (!supabase) throw new Error('Authentication not configured');
+
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     setUser(null);
