@@ -10,6 +10,7 @@
     "postinstall": "playwright install --with-deps chromium || echo 'Playwright install skipped'"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@e2b/code-interpreter": "^2.3.3",
     "@google/generative-ai": "^0.24.1",
     "@supabase/auth-helpers-nextjs": "^0.15.0",

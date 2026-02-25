@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
 
@@ -181,84 +181,88 @@ except Exception as e:
         }, { status: 500 });
     }
 
-    // 7. NOW SEND COMPACT SUMMARY TO LLM (NOT RAW DATA!)
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    // 7. NOW SEND COMPACT SUMMARY TO CLAUDE (NOT RAW DATA!)
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
     const fullOutput = stdout + "\n" + stderr;
 
-    // 8. UPDATED SYSTEM PROMPT FOR PRE-AGGREGATED DATA
-    const analysisPrompt = `
-    You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset.
+    // 8. SYSTEM PROMPT FOR PRE-AGGREGATED DATA
+    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset. You produce precise, data-driven analysis with beautiful chart visualizations.
 
-    ## DATASET OVERVIEW
-    - **Total Rows**: ${statisticalSummary.total_rows.toLocaleString()}
-    - **Analysis Method**: Statistical Pre-Aggregation (100% mathematically verified)
+CRITICAL RULES:
+- 100% ACCURACY: Only use numbers from the statistical summary provided. DO NOT invent or estimate.
+- NO FAKE DATA: Never create synthetic examples or placeholder values.
+- SMART INTERPRETATION: The sample_rows show representative examples - use them for context.
+- DATA TYPES: Pay attention to column types (numerical, categorical, datetime).
+- NULL HANDLING: If null_percent is high, mention data quality issues.
+- OUTLIERS: If outliers_count exists and is significant, highlight it.
+- LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
+- CHARTS: Always include at least 2-3 charts if the data supports it.`;
 
-    ## USER QUESTION
-    "${userQuestion}"
+    const userPrompt = `## DATASET OVERVIEW
+- **Total Rows**: ${statisticalSummary.total_rows.toLocaleString()}
+- **Analysis Method**: Statistical Pre-Aggregation (100% mathematically verified)
 
-    ## STATISTICAL SUMMARY
-    You are receiving VERIFIED statistical data calculated by Python/Pandas. These numbers are 100% accurate.
+## USER QUESTION
+"${userQuestion}"
 
-    ${JSON.stringify(statisticalSummary, null, 2)}
+## STATISTICAL SUMMARY
+You are receiving VERIFIED statistical data calculated by Python/Pandas. These numbers are 100% accurate.
 
-    ## YOUR TASK
-    Analyze the statistical summary above and answer the user's question: "${userQuestion}"
+${JSON.stringify(statisticalSummary, null, 2)}
 
-    Use ${language === 'cs' ? 'CZECH' : 'ENGLISH'} language for all text.
+## YOUR TASK
+Analyze the statistical summary above and answer the user's question: "${userQuestion}"
 
-    ## OUTPUT FORMAT
-    You MUST output your response in a specific Markdown format that includes structured JSON blocks for charts.
+## OUTPUT FORMAT
+You MUST output your response in a specific Markdown format that includes structured JSON blocks for charts.
 
-    ### Output Format Rules:
+### Output Format Rules:
 
-    1. **Title:** Start with a H1 title (\`# Title\`) that reflects the analysis.
-    2. **Summary:** Provide a brief executive summary (2-3 sentences) about the dataset.
-    3. **Key Metrics:** List the most important numbers as bullet points using bold keys:
-        * \`- **Total Rows Analyzed**: ${statisticalSummary.total_rows.toLocaleString()}\`
-        * \`- **[Metric Name]**: [Value]\`
-    4. **Charts:** Create visualizations from the statistical data. Supported types: \`"bar"\`, \`"line"\`, \`"pie"\`
-        * For categorical columns: Use top_10_values to create bar or pie charts
-        * For numerical columns: Use the stats (mean, median, min, max) to create comparison charts
-        * Structure:
-            \`\`\`json
-            {
-              "type": "chart",
-              "title": "Top 10 Categories by Frequency",
-              "chartType": "bar",
-              "data": [
-                { "category": "Value1", "count": 1234 },
-                { "category": "Value2", "count": 987 }
-              ],
-              "dataKeys": [
-                { "name": "category", "value": "count" }
-              ]
-            }
-            \`\`\`
-    5. **Insights:** Use a \`## ${language === 'cs' ? 'Poznatky' : 'Insights'}\` section to list detailed findings.
-        * Use bold for insight titles: \`- **Data Quality**: 98% of rows are complete...\`
-        * Mention outliers if outliers_count > 0
-        * Comment on distributions, trends, and patterns
+1. **Title:** Start with a H1 title (\`# Title\`) that reflects the analysis.
+2. **Summary:** Provide a brief executive summary (2-3 sentences) about the dataset.
+3. **Key Metrics:** List the most important numbers as bullet points using bold keys:
+    * \`- **Total Rows Analyzed**: ${statisticalSummary.total_rows.toLocaleString()}\`
+    * \`- **[Metric Name]**: [Value]\`
+4. **Charts:** Create visualizations from the statistical data. Supported types: \`"bar"\`, \`"line"\`, \`"pie"\`
+    * For categorical columns: Use top_10_values to create bar or pie charts
+    * For numerical columns: Use the stats (mean, median, min, max) to create comparison charts
+    * Structure:
+        \`\`\`json
+        {
+          "type": "chart",
+          "title": "Top 10 Categories by Frequency",
+          "chartType": "bar",
+          "data": [
+            { "category": "Value1", "count": 1234 },
+            { "category": "Value2", "count": 987 }
+          ],
+          "dataKeys": [
+            { "name": "category", "value": "count" }
+          ]
+        }
+        \`\`\`
+5. **Insights:** Use a \`## ${language === 'cs' ? 'Poznatky' : 'Insights'}\` section to list detailed findings.
+    * Use bold for insight titles: \`- **Data Quality**: 98% of rows are complete...\`
+    * Mention outliers if outliers_count > 0
+    * Comment on distributions, trends, and patterns`;
 
-    ## CRITICAL RULES:
-    - **100% ACCURACY**: Only use numbers from the statistical summary above. DO NOT invent or estimate.
-    - **NO FAKE DATA**: Never create synthetic examples or placeholder values.
-    - **SMART INTERPRETATION**: The sample_rows show representative examples - use them for context.
-    - **DATA TYPES**: Pay attention to column types (numerical, categorical, datetime).
-    - **NULL HANDLING**: If null_percent is high, mention data quality issues.
-    - **OUTLIERS**: If outliers_count exists and is significant, highlight it.
-    - **LANGUAGE**: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
-    - **CHARTS**: Always include at least 2-3 charts if the data supports it.
-    `;
+    console.log("🤖 Sending to Claude API...");
+    const finalResponse = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 8192,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userPrompt }]
+    });
 
-    const finalResponse = await model.generateContent(analysisPrompt);
+    const resultText = finalResponse.content[0].text;
+    console.log(`✅ Claude response received: ${resultText.length} chars`);
 
     return NextResponse.json({
       question: userQuestion,
-      result: finalResponse.response.text(),
+      result: resultText,
       raw_output: fullOutput,
-      statistical_summary: statisticalSummary, // Include for debugging
+      statistical_summary: statisticalSummary,
       total_rows_processed: statisticalSummary.total_rows
     });
 
