@@ -11,6 +11,10 @@ import { cookies } from 'next/headers';
  * Use in API routes
  */
 export function createServerClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return null;
+  }
+
   const cookieStore = cookies();
 
   return createSSRClient(

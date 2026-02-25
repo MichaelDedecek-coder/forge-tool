@@ -1,10 +1,9 @@
 /**
  * Next.js Middleware
- * - Supabase Auth session management
+ * - Supabase Auth session management (when configured)
  * - Hostname-based routing for ailab-cl.cz
  */
 
-import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
 export async function middleware(req) {
@@ -16,7 +15,14 @@ export async function middleware(req) {
     return NextResponse.rewrite(url);
   }
 
+  // Skip Supabase auth if env vars not configured
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return NextResponse.next();
+  }
+
   // Supabase Auth session refresh
+  const { createServerClient } = await import('@supabase/ssr');
+
   let res = NextResponse.next({
     request: req,
   });
