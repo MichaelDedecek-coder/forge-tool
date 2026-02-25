@@ -13,15 +13,39 @@ import {
 // --- SUB-COMPONENTS (Consolidated) ---
 
 function KeyFindingCard({ metric }) {
+  // DEBUG: Log metric data
+  console.log("[KeyFindingCard] Rendering metric:", {
+    label: metric.label,
+    value: metric.value,
+    hasValue: !!metric.value,
+    valueLength: metric.value?.length
+  });
+
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition-colors">
+    <div
+      className="print-metric-card bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-blue-500/30 transition-colors"
+      style={{
+        // FORCE VISIBILITY IN PRINT
+        display: 'block',
+        visibility: 'visible',
+        opacity: 1,
+        pageBreakInside: 'avoid',
+        background: '#f8fafc',
+        border: '1px solid #cbd5e1',
+        padding: '1.5rem',
+        borderRadius: '0.75rem',
+        marginBottom: '1rem'
+      }}
+    >
       <div className="pb-2">
-        <h3 className="text-sm font-medium text-slate-400">
+        <h3 className="text-sm font-medium text-slate-400" style={{ color: '#64748b', fontSize: '0.875rem' }}>
           {metric.label}
         </h3>
       </div>
       <div>
-        <div className="text-2xl font-bold text-white">{metric.value}</div>
+        <div className="text-2xl font-bold text-white" style={{ color: '#0f172a', fontSize: '1.5rem', fontWeight: 'bold' }}>
+          {metric.value || '[NO VALUE]'}
+        </div>
         {metric.trend && (
           <div className={`flex items-center text-xs mt-1 ${
             metric.trend.direction === 'up' ? 'text-green-400' : 
@@ -261,7 +285,7 @@ function InsightDetailCard({ insight }) {
 
 // --- MAIN COMPONENT ---
 
-export default function ReportInterface({ data }) {
+export default function ReportInterface({ data, printMode = false }) {
   const [activeTab, setActiveTab] = useState("charts");
 
   // Debug logging
@@ -286,54 +310,98 @@ export default function ReportInterface({ data }) {
       </div>
 
       {/* Key Metrics Grid */}
-      {data.metrics && data.metrics.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {data.metrics.map((metric, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {data.metrics && data.metrics.map((metric, index) => (
+          printMode ? (
+            // PRINT VERSION: Clean, professional cards with subtle styling
+            <div
+              key={index}
+              style={{
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                padding: '24px',
+                marginBottom: '12px',
+                pageBreakInside: 'avoid',
+                borderRadius: '8px'
+              }}
+            >
+              <h3 style={{
+                color: '#64748b',
+                fontSize: '13px',
+                fontWeight: '500',
+                marginBottom: '12px',
+                textTransform: 'capitalize'
+              }}>
+                {metric.label}
+              </h3>
+              <div style={{
+                color: '#0f172a',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                lineHeight: '1.2'
+              }}>
+                {metric.value || 'N/A'}
+              </div>
+              {metric.description && (
+                <p style={{
+                  color: '#64748b',
+                  fontSize: '12px',
+                  marginTop: '8px',
+                  lineHeight: '1.4'
+                }}>
+                  {metric.description}
+                </p>
+              )}
+            </div>
+          ) : (
             <KeyFindingCard key={index} metric={metric} />
-          ))}
-        </div>
-      )}
+          )
+        ))}
+      </div>
 
       {/* Custom Tabs Implementation */}
       <div className="w-full">
-        <div className="flex space-x-1 rounded-xl bg-slate-800/50 p-1 w-full md:w-auto inline-flex mb-6">
-          <button
-            onClick={() => setActiveTab("charts")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === "charts" 
-                ? "bg-blue-600 text-white shadow-sm" 
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <BarChart3 className="h-4 w-4" />
-            Visuals
-          </button>
-          <button
-            onClick={() => setActiveTab("insights")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === "insights" 
-                ? "bg-blue-600 text-white shadow-sm" 
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <Lightbulb className="h-4 w-4" />
-            Insights
-          </button>
-          <button
-            onClick={() => setActiveTab("raw")}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              activeTab === "raw" 
-                ? "bg-blue-600 text-white shadow-sm" 
-                : "text-slate-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <FileText className="h-4 w-4" />
-            Raw
-          </button>
-        </div>
+        {/* Hide tabs in print mode */}
+        {!printMode && (
+          <div className="flex space-x-1 rounded-xl bg-slate-800/50 p-1 w-full md:w-auto inline-flex mb-6">
+            <button
+              onClick={() => setActiveTab("charts")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                activeTab === "charts"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <BarChart3 className="h-4 w-4" />
+              Visuals
+            </button>
+            <button
+              onClick={() => setActiveTab("insights")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                activeTab === "insights"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <Lightbulb className="h-4 w-4" />
+              Insights
+            </button>
+            <button
+              onClick={() => setActiveTab("raw")}
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                activeTab === "raw"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Raw
+            </button>
+          </div>
+        )}
 
         {/* Charts Tab Content */}
-        {activeTab === "charts" && (
+        {(printMode || activeTab === "charts") && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {data.charts && data.charts.map((chart, index) => (
@@ -385,7 +453,7 @@ export default function ReportInterface({ data }) {
         )}
 
         {/* Insights Tab Content */}
-        {activeTab === "insights" && (
+        {(printMode || activeTab === "insights") && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="grid grid-cols-1 gap-4">
               {data.insights && data.insights.map((insight, index) => (
@@ -401,7 +469,7 @@ export default function ReportInterface({ data }) {
         )}
 
         {/* Raw Markdown Tab Content */}
-        {activeTab === "raw" && (
+        {(printMode || activeTab === "raw") && (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="bg-slate-950 border border-slate-800 rounded-xl p-6">
               <pre className="whitespace-pre-wrap font-mono text-sm text-slate-300 overflow-auto max-h-[600px]">

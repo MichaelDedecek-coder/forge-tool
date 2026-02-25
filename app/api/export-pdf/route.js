@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { chromium } from "playwright";
 
 // PDF Export Engine - Server-side Playwright
 // Generates vector-quality PDFs with professional layout
@@ -9,6 +8,9 @@ export async function POST(req) {
   let browser = null;
 
   try {
+    // Dynamic import to avoid build-time resolution issues
+    const { chromium } = await import("playwright");
+
     const body = await req.json();
     const { reportData, fileName, language } = body;
 
