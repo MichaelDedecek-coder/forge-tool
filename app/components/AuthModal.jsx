@@ -41,7 +41,7 @@ export default function AuthModal({ isOpen, onClose, language = 'en' }) {
         invalidCredentials: 'Invalid email or password',
       }
     },
-    cz: {
+    cs: {
       signupTitle: 'Vytvořit Bezplatný Účet',
       signinTitle: 'Vítejte zpět',
       signupSubtitle: 'Pokračujte v analýze dat — 5 analýz/měsíc zdarma',
@@ -64,7 +64,7 @@ export default function AuthModal({ isOpen, onClose, language = 'en' }) {
     }
   };
 
-  const t = content[language];
+  const t = content[language] || content.en;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
