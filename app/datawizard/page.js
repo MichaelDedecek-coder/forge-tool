@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 import ReportInterface from "../components/ReportInterface";
+import UpgradeModal from "../components/UpgradeModal";
 import { markdownToReportJson } from "../lib/markdown-transformer";
 
 export default function Home() {
@@ -15,6 +16,11 @@ export default function Home() {
   const [loadingStage, setLoadingStage] = useState("");
   const [rowCount, setRowCount] = useState(0);
   const [language, setLanguage] = useState("cs");
+
+  // Upgrade modal state
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState(null);
+  const [upgradeMessage, setUpgradeMessage] = useState("");
 
   // --- DEBUG HELPER (console only) ---
   const addLog = (msg) => {
@@ -96,6 +102,32 @@ export default function Home() {
         }),
       });
       const data = await res.json();
+
+      // Handle upgrade requirements
+      if (res.status === 403 && data.requiresUpgrade) {
+        setUpgradeReason(data.reason);
+        setUpgradeMessage(data.error);
+        setShowUpgradeModal(true);
+        setLoading(false);
+        setLoadingStage("");
+        return;
+      }
+
+      // Handle auth requirement
+      if (res.status === 401 && data.requiresAuth) {
+        alert(data.error);
+        // Redirect to login or show auth modal
+        window.location.href = '/';
+        return;
+      }
+
+      if (data.error) {
+        alert(data.error);
+        setLoading(false);
+        setLoadingStage("");
+        return;
+      }
+
       addLog(`API response received. Result length: ${data.result?.length || 0}`);
 
       // V9: Log first 1000 chars of the response for debugging
@@ -316,12 +348,21 @@ export default function Home() {
         </div>
       )}
 
+      {/* UPGRADE MODAL */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        reason={upgradeReason}
+        message={upgradeMessage}
+        language={language}
+      />
+
       {/* FOOTER - CONTACT FOR FEEDBACK */}
       <div style={{ marginTop: "60px", textAlign: "center", color: "#475569", fontSize: "14px", paddingBottom: "20px" }}>
         <p style={{ marginBottom: "8px" }}>
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
-        <a 
+        <a
           href="mailto:michael@forgecreative.cz?subject=DataWizard%20Feedback"
           style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: "600" }}
         >

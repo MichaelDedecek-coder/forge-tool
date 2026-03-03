@@ -14,32 +14,24 @@ export const TIER_LIMITS = {
     storageDays: 0,
     priorityProcessing: false,
     apiAccess: false,
-    price: 0
+    price: 0,
+    trialDays: 0
   },
   pro: {
     name: 'Pro',
-    maxRows: 100000,
-    analysesPerMonth: Infinity,
+    maxRows: Infinity, // Unlimited rows for PRO
+    analysesPerMonth: Infinity, // Unlimited analyses
     pdfExport: true,
     pptExport: true,
     reportStorage: true,
-    storageDays: 30,
+    storageDays: 90, // 3 months storage
     priorityProcessing: true,
     apiAccess: false,
-    price: 29 // EUR per month
-  },
-  enterprise: {
-    name: 'Enterprise',
-    maxRows: 500000,
-    analysesPerMonth: Infinity,
-    pdfExport: true,
-    pptExport: true,
-    reportStorage: true,
-    storageDays: 365,
-    priorityProcessing: true,
-    apiAccess: true,
-    whiteLabel: true,
-    price: 199 // EUR per month (starting price)
+    price: 49, // EUR per month
+    priceUSD: 49, // USD per month
+    trialDays: 7, // 7-day free trial
+    stripeProductId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID,
+    stripePriceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID
   }
 };
 

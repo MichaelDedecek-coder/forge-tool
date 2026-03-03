@@ -1,9 +1,17 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
+import { createClient } from '@/app/lib/supabase-server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
 export const maxDuration = 120;
+
+// Supabase admin client for usage tracking
+const supabaseAdmin = createSupabaseClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 export async function POST(req) {
   try {
@@ -23,6 +31,42 @@ export async function POST(req) {
     const totalRows = dataRows.length - 1; // Exclude header
 
     console.log(`DATAWIZARD INPUT: Received ${totalRows} rows. Lang: ${language}`);
+
+    // 2. CHECK USER AUTH & LIMITS (MONETIZATION)
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({
+        error: language === 'cs'
+          ? "Pro používání DataWizard se musíte přihlásit."
+          : "You must be logged in to use DataWizard.",
+        requiresAuth: true
+      }, { status: 401 });
+    }
+
+    // Check if user can analyze (tier limits)
+    const { data: checkResult, error: checkError } = await supabaseAdmin
+      .rpc('can_user_analyze', {
+        p_user_id: user.id,
+        p_row_count: totalRows
+      });
+
+    if (checkError) {
+      console.error('Error checking tier limits:', checkError);
+      // Continue anyway if check fails (graceful degradation)
+    } else if (checkResult && !checkResult.allowed) {
+      // User exceeded limits
+      return NextResponse.json({
+        error: checkResult.message,
+        reason: checkResult.reason,
+        upgradeTier: checkResult.upgrade_tier,
+        requiresUpgrade: true
+      }, { status: 403 });
+    }
+
+    console.log(`✅ User ${user.email} authorized (tier: ${checkResult?.tier || 'unknown'})`);
+    console.log(`📊 Current usage: ${checkResult?.usage_count || 0}/${checkResult?.usage_limit || '∞'}`);
 
     // 2. CREATE E2B SANDBOX FOR STATISTICAL PRE-AGGREGATION
     console.log("🚀 Stage 1/3: Initializing Python Sandbox...");
@@ -258,12 +302,28 @@ You MUST output your response in a specific Markdown format that includes struct
     const resultText = finalResponse.content[0].text;
     console.log(`✅ Claude response received: ${resultText.length} chars`);
 
+    // 3. INCREMENT USAGE COUNTER (After successful analysis)
+    try {
+      await supabaseAdmin.rpc('increment_user_usage', {
+        p_user_id: user.id,
+        p_rows_processed: statisticalSummary.total_rows
+      });
+      console.log(`📈 Usage incremented for user ${user.email}`);
+    } catch (usageError) {
+      console.error('Error incrementing usage:', usageError);
+      // Don't fail the request if usage tracking fails
+    }
+
     return NextResponse.json({
       question: userQuestion,
       result: resultText,
       raw_output: fullOutput,
       statistical_summary: statisticalSummary,
-      total_rows_processed: statisticalSummary.total_rows
+      total_rows_processed: statisticalSummary.total_rows,
+      user_tier: checkResult?.tier || 'free',
+      remaining_analyses: checkResult?.usage_limit === Infinity
+        ? 'unlimited'
+        : Math.max(0, checkResult.usage_limit - (checkResult.usage_count + 1))
     });
 
   } catch (error) {
