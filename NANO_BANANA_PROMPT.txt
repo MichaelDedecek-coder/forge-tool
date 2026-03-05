@@ -1,0 +1,49 @@
+Vytvoř moderní technickou infografiku na tmavém pozadí (#0f172a → #000000 gradient) ve stylu profesionálního diagramu AI systému.
+
+NADPIS (nahoře, střed):
+"DataWizard 2026 — AI Agent pro Analýzu Dat"
+Font: Bold, velký, "DataWizard" cyan (#0ea5e9), "2026" bílá
+
+ARCHITEKTURA (horizontální flow diagram):
+
+LEVÁ STRANA - 3 vstupní bloky (tmavé s barevnými okraji):
+1. 📊 CSV/Excel [cyan okraj]
+   "až 50K+ řádků"
+2. 💬 Uživatelský Dotaz [fialový okraj]
+   "CZ/EN jazyk"
+3. 🔐 Autentifikace [zelený okraj]
+   "Supabase + Tiers"
+
+STŘED - Hlavní AI Agent (velký gradientový box cyan→zelená→fialová):
+🧙‍♂️ DATAWIZARD
+AI AGENT
+
+Uvnitř 3 vrstvy:
+- 🐍 E2B Python Sandbox (Pandas)
+- 🧠 Claude Sonnet 4 (AI Analysis)
+- ⚙️ Data Pipeline
+
+PRAVÁ STRANA - 4 výstupní bloky:
+1. 📈 Statistické Metriky [cyan]
+   "Mean, Median, Outliers"
+2. 📊 Vizualizace [fialová]
+   "Bar, Line, Pie"
+3. 💡 AI Insights [žlutá]
+   "Trendy & Doporučení"
+4. 📄 Export [zelená]
+   "PDF + TXT"
+
+BAREVNÉ ŠIPKY ukazující data flow:
+→ Modrá: CSV → Sandbox "Upload 50K rows"
+→ Zelená: Sandbox → Claude "Summary 10KB"
+→ Fialová: Claude → Output "Report"
+
+SPODEK - Tech Stack (horizontální loga):
+Next.js • Vercel • Supabase • Claude Sonnet 4 • E2B • XLSX.js
+
+CALLOUT BOXY (malé poznámky v rozích):
+- Pravý horní: "⏱️ Max 120s timeout"
+- Levý dolní: "💎 Free → Pro → Enterprise"
+- Střed dole: "✅ 100% Data Accuracy"
+
+Styl: Moderní, minimalistický, technologický, profesionální design s jemnými gradienty a glow efekty. Landscape 1920x1080px.
