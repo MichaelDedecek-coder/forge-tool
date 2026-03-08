@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-export async function POST() {
+async function testKey() {
   try {
     console.log("🧪 TESTING GOOGLE KEY...");
 
@@ -32,4 +32,12 @@ export async function POST() {
     console.error("❌ GOOGLE DIED:", error.message);
     return NextResponse.json({ status: "Dead", error: error.message }, { status: 500 });
   }
+}
+
+export async function GET() {
+  return testKey();
+}
+
+export async function POST() {
+  return testKey();
 }
