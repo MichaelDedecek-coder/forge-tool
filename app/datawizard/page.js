@@ -184,10 +184,45 @@ export default function Home() {
 
       // Parse the markdown into structured data
       addLog("Parsing markdown to report...");
-      console.log("[DataWizard V9] === STARTING PARSE ===");
+      console.log("═══════════════════════════════════════════════════════");
+      console.log("[FRONTEND] Starting markdown parse...");
+      console.log("═══════════════════════════════════════════════════════");
+      console.log("Markdown length:", data.result?.length);
+      console.log("Research augmented:", data.research_augmented);
+      console.log("EXA insights count:", data.exa_insights?.length);
+
+      // Check if sections exist in raw markdown
+      const hasBenchmarksInRaw = data.result?.includes('Industry Benchmarks') || data.result?.includes('Srovnání s Průmyslem');
+      const hasTrendsInRaw = data.result?.includes('Market Trends') || data.result?.includes('Tržní Trendy');
+      const hasSourcesInRaw = data.result?.includes('Research Sources') || data.result?.includes('Zdroje Výzkumu');
+
+      console.log("Sections in RAW markdown:");
+      console.log(`  - Industry Benchmarks: ${hasBenchmarksInRaw ? '✅ YES' : '❌ NO'}`);
+      console.log(`  - Market Trends: ${hasTrendsInRaw ? '✅ YES' : '❌ NO'}`);
+      console.log(`  - Research Sources: ${hasSourcesInRaw ? '✅ YES' : '❌ NO'}`);
+
       const reportData = markdownToReportJson(data.result);
-      console.log("[DataWizard V9] === PARSE COMPLETE ===");
-      console.log("[DataWizard V9] Parsed report structure:", {
+
+      console.log("Sections in PARSED report:");
+      console.log(`  - industryBenchmarks: ${reportData?.industryBenchmarks?.length || 0} items`);
+      console.log(`  - marketTrends: ${reportData?.marketTrends?.length || 0} items`);
+      console.log(`  - researchSources: ${reportData?.researchSources?.length || 0} items`);
+
+      if (reportData?.industryBenchmarks?.length > 0) {
+        console.log("✅ Industry Benchmarks WILL BE DISPLAYED");
+        console.log("First benchmark:", reportData.industryBenchmarks[0]);
+      }
+      if (reportData?.marketTrends?.length > 0) {
+        console.log("✅ Market Trends WILL BE DISPLAYED");
+        console.log("First trend:", reportData.marketTrends[0]);
+      }
+      if (reportData?.researchSources?.length > 0) {
+        console.log("✅ Research Sources WILL BE DISPLAYED");
+        console.log("First source:", reportData.researchSources[0]);
+      }
+      console.log("═══════════════════════════════════════════════════════");
+
+      console.log("[FRONTEND] Parsed report structure:", {
         title: reportData?.title,
         summary: reportData?.summary?.substring(0, 100),
         metricsCount: reportData?.metrics?.length || 0,

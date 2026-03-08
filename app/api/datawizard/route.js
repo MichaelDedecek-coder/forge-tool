@@ -477,17 +477,58 @@ You MUST include these three sections AFTER the Insights section:
 
     // 🔴 POST-PROCESSING: Ensure research sections exist
     if (researchAugmented && exaInsights.length > 0) {
-      console.log("🔍 Checking if AI generated required research sections...");
+      console.log("═══════════════════════════════════════════════════════");
+      console.log("🔍 POST-PROCESSING: Checking research sections...");
+      console.log(`Research augmented: ${researchAugmented}`);
+      console.log(`EXA insights count: ${exaInsights.length}`);
+      console.log(`Markdown length before: ${resultText.length} chars`);
+
+      // Check what sections exist BEFORE post-processing
+      const hasBenchmarks = resultText.match(/##\s*(?:📊\s*)?(?:Industry Benchmarks|Srovnání s Průmyslem)/i);
+      const hasTrends = resultText.match(/##\s*(?:📈\s*)?(?:Market Trends|Tržní Trendy)/i);
+      const hasSources = resultText.match(/##\s*(?:📚\s*)?(?:Research Sources|Zdroje Výzkumu)/i);
+
+      console.log(`BEFORE POST-PROCESSING:`);
+      console.log(`  - Industry Benchmarks: ${hasBenchmarks ? '✅ FOUND' : '❌ MISSING'}`);
+      console.log(`  - Market Trends: ${hasTrends ? '✅ FOUND' : '❌ MISSING'}`);
+      console.log(`  - Research Sources: ${hasSources ? '✅ FOUND' : '❌ MISSING'}`);
+
       const originalLength = resultText.length;
       resultText = ensureResearchSections(resultText, exaInsights, language);
+
+      console.log(`Markdown length after: ${resultText.length} chars`);
+      console.log(`Characters added: ${resultText.length - originalLength}`);
+
       if (resultText.length > originalLength) {
-        console.log(`✅ Added missing research sections (+${resultText.length - originalLength} chars)`);
+        console.log(`✅ POST-PROCESSING ADDED MISSING SECTIONS`);
       } else {
-        console.log("✅ AI correctly generated all research sections");
+        console.log("✅ AI generated all sections correctly");
       }
+      console.log("═══════════════════════════════════════════════════════");
     }
 
-    // DEBUG: Log first 2000 chars to verify sections exist
+    // DEBUG: Verify sections exist in FINAL markdown
+    console.log("═══════════════════════════════════════════════════════");
+    console.log("🔍 FINAL MARKDOWN VERIFICATION");
+    console.log("═══════════════════════════════════════════════════════");
+    console.log(`Total length: ${resultText.length} chars`);
+
+    const finalHasBenchmarks = resultText.match(/##\s*(?:📊\s*)?(?:Industry Benchmarks|Srovnání s Průmyslem)/i);
+    const finalHasTrends = resultText.match(/##\s*(?:📈\s*)?(?:Market Trends|Tržní Trendy)/i);
+    const finalHasSources = resultText.match(/##\s*(?:📚\s*)?(?:Research Sources|Zdroje Výzkumu)/i);
+
+    console.log(`FINAL SECTIONS IN MARKDOWN:`);
+    console.log(`  - Industry Benchmarks: ${finalHasBenchmarks ? '✅ YES at position ' + resultText.indexOf(finalHasBenchmarks[0]) : '❌ NO'}`);
+    console.log(`  - Market Trends: ${finalHasTrends ? '✅ YES at position ' + resultText.indexOf(finalHasTrends[0]) : '❌ NO'}`);
+    console.log(`  - Research Sources: ${finalHasSources ? '✅ YES at position ' + resultText.indexOf(finalHasSources[0]) : '❌ NO'}`);
+
+    // Show sections that exist in markdown
+    const allSections = resultText.match(/^##\s+.+$/gm) || [];
+    console.log(`\nAll ## sections found in markdown (${allSections.length}):`);
+    allSections.forEach((section, i) => console.log(`  ${i + 1}. ${section}`));
+    console.log("═══════════════════════════════════════════════════════");
+
+    // DEBUG: Log preview
     console.log("🔍 MARKDOWN OUTPUT PREVIEW (first 2000 chars):");
     console.log(resultText.substring(0, 2000));
     console.log("...\n[LAST 500 CHARS]:");
