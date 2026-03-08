@@ -278,7 +278,16 @@ CRITICAL RULES:
 - OUTLIERS: If outliers_count exists and is significant, highlight it.
 - LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
 - CHARTS: Always include at least 2-3 charts if the data supports it.${researchAugmented ? `
-- RESEARCH CONTEXT: You have ${exaInsights.length} external research insights. MANDATORY: Create dedicated sections for "Industry Benchmarks" and "Market Trends" using this research. Compare the user's data to industry standards and cite all sources.` : ''}`;
+
+🔴 RESEARCH-AUGMENTED MODE ACTIVE 🔴
+You have ${exaInsights.length} external research insights from Exa.ai. This is MANDATORY for your response:
+
+REQUIRED SECTIONS (DO NOT SKIP ANY):
+1. ## ${language === 'cs' ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'} - Compare user's metrics to industry standards
+2. ## ${language === 'cs' ? '📈 Tržní Trendy' : '📈 Market Trends'} - Summarize relevant market trends
+3. ## ${language === 'cs' ? '📚 Zdroje Výzkumu' : '📚 Research Sources'} - List ALL ${exaInsights.length} sources with links
+
+These sections MUST appear in your markdown output. Do not skip them!` : ''}`;
 
     const userPrompt = `## DATASET OVERVIEW
 - **Total Rows**: ${statisticalSummary.total_rows.toLocaleString()}
@@ -348,22 +357,32 @@ You MUST output your response in a specific Markdown format that includes struct
     * Mention outliers if outliers_count > 0
     * Comment on distributions, trends, and patterns
 ${researchAugmented ? `
-6. **Industry Benchmarks:** MANDATORY - Create a \`## ${language === 'cs' ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'}\` section:
-    * Compare user's metrics to industry averages from research
-    * Use bullet points with bold metric names
-    * Indicate if user is above/below industry standards
-    * Example: \`- **Average Order Value**: Your €1,085 is 23% above industry average of €880 (Source: E-commerce Trends 2025)\`
 
-7. **Market Trends:** MANDATORY - Create a \`## ${language === 'cs' ? '📈 Tržní Trendy' : '📈 Market Trends'}\` section:
-    * Summarize relevant trends from research insights
-    * Explain how these trends relate to the user's data
-    * Provide actionable context
-    * Example: \`- **Gaming Product Dominance**: Industry research shows 40% shift toward gaming products in Q4 2025, aligning with your 45% gaming category share\`
+═══════════════════════════════════════════════════════════════
+🔴 RESEARCH-AUGMENTED SECTIONS - ABSOLUTELY MANDATORY 🔴
+You MUST include these three sections AFTER the Insights section:
+═══════════════════════════════════════════════════════════════
 
-8. **Research Sources:** MANDATORY - Create a \`## ${language === 'cs' ? '📚 Zdroje Výzkumu' : '📚 Research Sources'}\` section:
-    * List all ${exaInsights.length} research sources used
-    * Format: \`- [Source Title](URL) - Brief description\`
-    * Show publication dates when available
+6. **Industry Benchmarks:** Create a \`## ${language === 'cs' ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'}\` section:
+    * REQUIRED: At least 3-5 benchmark comparisons
+    * Format: \`- **Metric Name**: Your value vs Industry average (Source: Article Name)\`
+    * Example: \`- **Average Transaction Value**: Your $1,085 is 23% above industry average of $880 (Source: E-commerce Industry Report 2025)\`
+    * Use the research insights below to find relevant industry data
+    * If no exact numbers in research, cite trends: "Industry reports indicate strong growth in this sector"
+
+7. **Market Trends:** Create a \`## ${language === 'cs' ? '📈 Tržní Trendy' : '📈 Market Trends'}\` section:
+    * REQUIRED: At least 3-4 market trends
+    * Format: \`- **Trend Name**: Description of trend and how it relates to user's data\`
+    * Example: \`- **Mobile Commerce Growth**: Industry seeing 40% shift to mobile purchases, aligning with your 45% mobile transaction rate\`
+    * Connect research insights to the user's actual data patterns
+
+8. **Research Sources:** Create a \`## ${language === 'cs' ? '📚 Zdroje Výzkumu' : '📚 Research Sources'}\` section:
+    * REQUIRED: List ALL ${exaInsights.length} research sources provided below
+    * Format: \`- [Exact Source Title](URL) - One sentence description\`
+    * Example: \`- [E-commerce Trends Report 2025](https://example.com) - Comprehensive analysis of global e-commerce market dynamics\`
+    * DO NOT skip any sources - include all ${exaInsights.length} of them!
+
+⚠️ CRITICAL: Your response will be considered INCOMPLETE if any of these 3 sections are missing! ⚠️
 ` : ''}`;
 
     console.log("🤖 Sending to AI for analysis...");

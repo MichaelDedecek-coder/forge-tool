@@ -359,6 +359,77 @@ export default function ReportInterface({ data, printMode = false }) {
         ))}
       </div>
 
+      {/* Research-Augmented Sections */}
+      {(data.industryBenchmarks?.length > 0 || data.marketTrends?.length > 0 || data.researchSources?.length > 0) && (
+        <div className="space-y-6">
+          {/* Industry Benchmarks Section */}
+          {data.industryBenchmarks && data.industryBenchmarks.length > 0 && (
+            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">📊</span>
+                <h2 className="text-2xl font-bold text-white">Industry Benchmarks</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {data.industryBenchmarks.map((benchmark, index) => (
+                  <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-400 mb-2">{benchmark.title}</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">{benchmark.content}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Market Trends Section */}
+          {data.marketTrends && data.marketTrends.length > 0 && (
+            <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">📈</span>
+                <h2 className="text-2xl font-bold text-white">Market Trends</h2>
+              </div>
+              <div className="space-y-3">
+                {data.marketTrends.map((trend, index) => (
+                  <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4">
+                    <h3 className="font-semibold text-purple-400 mb-2">{trend.title}</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">{trend.content}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Research Sources Section */}
+          {data.researchSources && data.researchSources.length > 0 && (
+            <div className="bg-gradient-to-r from-green-500/10 to-teal-500/10 border border-green-500/20 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">📚</span>
+                <h2 className="text-2xl font-bold text-white">Research Sources</h2>
+              </div>
+              <div className="space-y-2">
+                {data.researchSources.map((source, index) => (
+                  <div key={index} className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors">
+                    <span className="text-green-400 font-bold text-sm">{index + 1}.</span>
+                    <div className="flex-1">
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-green-400 hover:text-green-300 font-medium underline decoration-dotted"
+                      >
+                        {source.title}
+                      </a>
+                      {source.description && (
+                        <p className="text-xs text-slate-400 mt-1">{source.description}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Custom Tabs Implementation */}
       <div className="w-full">
         {/* Hide tabs in print mode */}
