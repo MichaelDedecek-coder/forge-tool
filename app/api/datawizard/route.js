@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
+import Exa from "exa-js";
 
 // Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
 export const maxDuration = 120;
@@ -188,8 +189,6 @@ except Exception as e:
     if (process.env.EXA_API_KEY) {
         try {
             console.log("🔍 Fetching research insights from Exa.ai...");
-            // Import Exa directly instead of making HTTP call to avoid URL issues
-            const Exa = (await import("exa-js")).default;
             const exa = new Exa(process.env.EXA_API_KEY);
 
             // Build research query
@@ -307,7 +306,7 @@ IMPORTANT: When referencing these research insights in your analysis:
 - Compare the user's metrics to industry standards when applicable
 - Cite sources using the format: "According to [source title]..." or "Industry research shows..."
 - Add a "📚 Research Context" section to highlight key external insights
-` : ''}`;
+` : ''}
 
 ## YOUR TASK
 Analyze the statistical summary above and answer the user's question: "${userQuestion}"
