@@ -86,18 +86,18 @@ export default function Home() {
           : "Performing statistical aggregation...");
       }, 1000);
 
-      // Stage 3: Exa Research (if enabled)
+      // Stage 3: Exa Research (AUTOMATIC!)
       setTimeout(() => {
         setLoadingStage(language === "cs"
-          ? "Hledám kontextové informace..."
-          : "Fetching research insights...");
+          ? "🔍 Hledám kontextové informace přes Exa.ai..."
+          : "🔍 Fetching research insights from Exa.ai...");
       }, 3000);
 
-      // Stage 4: AI Insights
+      // Stage 4: AI Insights with Research Context
       setTimeout(() => {
         setLoadingStage(language === "cs"
-          ? "Generuji AI analýzu..."
-          : "Generating AI insights...");
+          ? "✨ Generuji research-augmented analýzu..."
+          : "✨ Generating research-augmented insights...");
       }, 5000);
 
       addLog("Calling /api/datawizard...");

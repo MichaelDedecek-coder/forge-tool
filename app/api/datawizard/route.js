@@ -181,14 +181,90 @@ except Exception as e:
         }, { status: 500 });
     }
 
-    // 7. NOW SEND COMPACT SUMMARY TO GEMINI (NOT RAW DATA!)
+    // 7. EXA RESEARCH-AUGMENTED ANALYSIS (AUTOMATIC!)
+    let exaInsights = [];
+    let researchAugmented = false;
+
+    if (process.env.EXA_API_KEY) {
+        try {
+            console.log("🔍 Fetching research insights from Exa.ai...");
+            // Import Exa directly instead of making HTTP call to avoid URL issues
+            const Exa = (await import("exa-js")).default;
+            const exa = new Exa(process.env.EXA_API_KEY);
+
+            // Build research query
+            const columns = Object.keys(statisticalSummary.columns || {});
+            const columnString = columns.join(" ").toLowerCase();
+
+            // Infer business context
+            let businessContext = "business data";
+            if (columnString.includes("sales") || columnString.includes("revenue") || columnString.includes("price")) {
+                businessContext = "sales revenue";
+            } else if (columnString.includes("customer") || columnString.includes("user") || columnString.includes("marketing")) {
+                businessContext = "customer marketing";
+            } else if (columnString.includes("cost") || columnString.includes("expense") || columnString.includes("profit")) {
+                businessContext = "financial business";
+            } else if (columnString.includes("product") || columnString.includes("item") || columnString.includes("category")) {
+                businessContext = "product business";
+            } else if (columnString.includes("employee") || columnString.includes("salary") || columnString.includes("department")) {
+                businessContext = "human resources workforce";
+            }
+
+            const searchQuery = `${businessContext} trends analysis benchmark statistics industry`;
+            console.log(`🔍 Exa Research Query: "${searchQuery}"`);
+
+            // Perform Exa search
+            const searchResults = await exa.searchAndContents(searchQuery, {
+                type: "neural",
+                numResults: 5,
+                text: { maxCharacters: 500 },
+                category: "research paper",
+            });
+
+            exaInsights = searchResults.results.map((result) => ({
+                title: result.title,
+                url: result.url,
+                summary: result.text || result.snippet || "",
+                publishedDate: result.publishedDate,
+                score: result.score,
+            }));
+
+            if (exaInsights.length > 0) {
+                researchAugmented = true;
+                console.log(`✨ Research-augmented: ${exaInsights.length} insights found`);
+            } else {
+                console.log("ℹ️ No research insights found, continuing with standard analysis");
+            }
+
+            // Store the old fetch code for reference (commented out)
+            /*
+            const exaResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/exa-research`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    statisticalSummary,
+                    userQuestion,
+                    language
+                })
+            });
+
+            */
+        } catch (exaError) {
+            console.log("⚠️ Exa research failed (graceful degradation):", exaError.message);
+            // Continue without research - graceful degradation
+        }
+    } else {
+        console.log("ℹ️ EXA_API_KEY not configured, skipping research augmentation");
+    }
+
+    // 8. NOW SEND COMPACT SUMMARY TO GEMINI (NOT RAW DATA!)
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const fullOutput = stdout + "\n" + stderr;
 
-    // 8. SYSTEM PROMPT FOR PRE-AGGREGATED DATA
-    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset. You produce precise, data-driven analysis with beautiful chart visualizations.
+    // 9. SYSTEM PROMPT FOR PRE-AGGREGATED DATA (WITH EXA RESEARCH!)
+    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset${researchAugmented ? ' AND EXTERNAL RESEARCH INSIGHTS from Exa.ai' : ''}. You produce precise, data-driven analysis with beautiful chart visualizations.
 
 CRITICAL RULES:
 - 100% ACCURACY: Only use numbers from the statistical summary provided. DO NOT invent or estimate.
@@ -198,11 +274,13 @@ CRITICAL RULES:
 - NULL HANDLING: If null_percent is high, mention data quality issues.
 - OUTLIERS: If outliers_count exists and is significant, highlight it.
 - LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
-- CHARTS: Always include at least 2-3 charts if the data supports it.`;
+- CHARTS: Always include at least 2-3 charts if the data supports it.${researchAugmented ? `
+- RESEARCH CONTEXT: You have ${exaInsights.length} external research insights. Use them to provide industry benchmarks, trends, and context. Cite sources when relevant.` : ''}`;
 
     const userPrompt = `## DATASET OVERVIEW
 - **Total Rows**: ${statisticalSummary.total_rows.toLocaleString()}
 - **Analysis Method**: Statistical Pre-Aggregation (100% mathematically verified)
+${researchAugmented ? `- **Research Augmentation**: ✨ ${exaInsights.length} external research insights included` : ''}
 
 ## USER QUESTION
 "${userQuestion}"
@@ -211,6 +289,25 @@ CRITICAL RULES:
 You are receiving VERIFIED statistical data calculated by Python/Pandas. These numbers are 100% accurate.
 
 ${JSON.stringify(statisticalSummary, null, 2)}
+${researchAugmented ? `
+
+## EXTERNAL RESEARCH INSIGHTS (from Exa.ai)
+You have access to ${exaInsights.length} relevant research articles and industry reports. Use these to provide context, benchmarks, and trends.
+
+${exaInsights.map((insight, idx) => `
+### Research Source ${idx + 1}: ${insight.title}
+- **URL**: ${insight.url}
+- **Published**: ${insight.publishedDate || 'N/A'}
+- **Relevance Score**: ${(insight.score * 100).toFixed(0)}%
+- **Summary**: ${insight.summary}
+`).join('\n')}
+
+IMPORTANT: When referencing these research insights in your analysis:
+- Mention industry benchmarks or trends that relate to the user's data
+- Compare the user's metrics to industry standards when applicable
+- Cite sources using the format: "According to [source title]..." or "Industry research shows..."
+- Add a "📚 Research Context" section to highlight key external insights
+` : ''}`;
 
 ## YOUR TASK
 Analyze the statistical summary above and answer the user's question: "${userQuestion}"
@@ -262,7 +359,9 @@ You MUST output your response in a specific Markdown format that includes struct
       result: resultText,
       raw_output: fullOutput,
       statistical_summary: statisticalSummary,
-      total_rows_processed: statisticalSummary.total_rows
+      total_rows_processed: statisticalSummary.total_rows,
+      research_augmented: researchAugmented,
+      exa_insights: exaInsights
     });
 
   } catch (error) {
