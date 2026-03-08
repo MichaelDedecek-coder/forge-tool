@@ -89,15 +89,15 @@ export default function Home() {
       // Stage 3: Exa Research (AUTOMATIC!)
       setTimeout(() => {
         setLoadingStage(language === "cs"
-          ? "🔍 Hledám kontextové informace přes Exa.ai..."
-          : "🔍 Fetching research insights from Exa.ai...");
+          ? "🔍 Automaticky hledám průmyslové benchmarky a trendy..."
+          : "🔍 Auto-fetching industry benchmarks & market trends...");
       }, 3000);
 
       // Stage 4: AI Insights with Research Context
       setTimeout(() => {
         setLoadingStage(language === "cs"
-          ? "✨ Generuji research-augmented analýzu..."
-          : "✨ Generating research-augmented insights...");
+          ? "✨ Generuji analýzu s externím kontextem..."
+          : "✨ Generating analysis with external research context...");
       }, 5000);
 
       addLog("Calling /api/datawizard...");
@@ -333,24 +333,33 @@ export default function Home() {
           {researchAugmented && (
             <div style={{
               background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
-              padding: "12px 20px",
+              padding: "16px 24px",
               borderRadius: "12px",
               marginBottom: "16px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
               boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)"
             }}>
-              <span style={{ fontSize: "20px" }}>🔍</span>
-              <div>
-                <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                  {language === "cs" ? "✨ Research-Augmented Analysis" : "✨ Research-Augmented Analysis"}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                <span style={{ fontSize: "24px" }}>🔍</span>
+                <div>
+                  <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    {language === "cs" ? "✨ Research-Augmented Analysis" : "✨ Research-Augmented Analysis"}
+                  </div>
+                  <div style={{ fontSize: "13px", opacity: 0.9 }}>
+                    {language === "cs"
+                      ? `Obohaceno o ${exaInsightsCount} externí${exaInsightsCount === 1 ? ' zdroj' : exaInsightsCount < 5 ? ' zdroje' : ' zdrojů'} z Exa.ai`
+                      : `Enriched with ${exaInsightsCount} external insight${exaInsightsCount === 1 ? '' : 's'} from Exa.ai`
+                    }
+                  </div>
                 </div>
-                <div style={{ fontSize: "12px", opacity: 0.9 }}>
-                  {language === "cs"
-                    ? `Analýza obohacena o ${exaInsightsCount} externí${exaInsightsCount === 1 ? ' zdroj' : exaInsightsCount < 5 ? ' zdroje' : ' zdrojů'} z Exa.ai`
-                    : `Analysis enriched with ${exaInsightsCount} external insight${exaInsightsCount === 1 ? '' : 's'} from Exa.ai`
-                  }
+              </div>
+
+              {/* Feature List */}
+              <div style={{ fontSize: "12px", opacity: 0.95, marginLeft: "36px", lineHeight: "1.8" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                  <div>✅ {language === "cs" ? "Srovnání s průmyslem" : "Industry benchmarks"}</div>
+                  <div>✅ {language === "cs" ? "Tržní trendy" : "Market trends"}</div>
+                  <div>✅ {language === "cs" ? "Externí kontext" : "External research context"}</div>
+                  <div>✅ {language === "cs" ? "Citované zdroje" : "Cited sources"}</div>
                 </div>
               </div>
             </div>

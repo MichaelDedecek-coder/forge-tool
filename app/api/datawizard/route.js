@@ -278,7 +278,7 @@ CRITICAL RULES:
 - OUTLIERS: If outliers_count exists and is significant, highlight it.
 - LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
 - CHARTS: Always include at least 2-3 charts if the data supports it.${researchAugmented ? `
-- RESEARCH CONTEXT: You have ${exaInsights.length} external research insights. Use them to provide industry benchmarks, trends, and context. Cite sources when relevant.` : ''}`;
+- RESEARCH CONTEXT: You have ${exaInsights.length} external research insights. MANDATORY: Create dedicated sections for "Industry Benchmarks" and "Market Trends" using this research. Compare the user's data to industry standards and cite all sources.` : ''}`;
 
     const userPrompt = `## DATASET OVERVIEW
 - **Total Rows**: ${statisticalSummary.total_rows.toLocaleString()}
@@ -346,7 +346,25 @@ You MUST output your response in a specific Markdown format that includes struct
 5. **Insights:** Use a \`## ${language === 'cs' ? 'Poznatky' : 'Insights'}\` section to list detailed findings.
     * Use bold for insight titles: \`- **Data Quality**: 98% of rows are complete...\`
     * Mention outliers if outliers_count > 0
-    * Comment on distributions, trends, and patterns`;
+    * Comment on distributions, trends, and patterns
+${researchAugmented ? `
+6. **Industry Benchmarks:** MANDATORY - Create a \`## ${language === 'cs' ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'}\` section:
+    * Compare user's metrics to industry averages from research
+    * Use bullet points with bold metric names
+    * Indicate if user is above/below industry standards
+    * Example: \`- **Average Order Value**: Your €1,085 is 23% above industry average of €880 (Source: E-commerce Trends 2025)\`
+
+7. **Market Trends:** MANDATORY - Create a \`## ${language === 'cs' ? '📈 Tržní Trendy' : '📈 Market Trends'}\` section:
+    * Summarize relevant trends from research insights
+    * Explain how these trends relate to the user's data
+    * Provide actionable context
+    * Example: \`- **Gaming Product Dominance**: Industry research shows 40% shift toward gaming products in Q4 2025, aligning with your 45% gaming category share\`
+
+8. **Research Sources:** MANDATORY - Create a \`## ${language === 'cs' ? '📚 Zdroje Výzkumu' : '📚 Research Sources'}\` section:
+    * List all ${exaInsights.length} research sources used
+    * Format: \`- [Source Title](URL) - Brief description\`
+    * Show publication dates when available
+` : ''}`;
 
     console.log("🤖 Sending to AI for analysis...");
 
