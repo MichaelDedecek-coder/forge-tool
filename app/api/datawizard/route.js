@@ -225,13 +225,43 @@ except Exception as e:
         }, { status: 500 });
     }
 
-    // 7. NOW SEND COMPACT SUMMARY TO CLAUDE (NOT RAW DATA!)
+    // 7. OPTIONAL: EXA RESEARCH-AUGMENTED ANALYSIS
+    let exaInsights = null;
+    if (process.env.EXA_API_KEY) {
+      try {
+        console.log("🔍 Stage 4/4: Fetching research insights from Exa.ai...");
+        const exaResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/exa-research`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            statisticalSummary,
+            userQuestion,
+            language
+          })
+        });
+
+        if (exaResponse.ok) {
+          const exaData = await exaResponse.json();
+          exaInsights = exaData.insights || [];
+          console.log(`✅ Exa Research: Found ${exaInsights.length} relevant insights`);
+        } else {
+          console.log("⚠️ Exa research failed, continuing without external insights");
+        }
+      } catch (exaError) {
+        console.log("⚠️ Exa research error:", exaError.message);
+        // Continue without Exa insights - graceful degradation
+      }
+    } else {
+      console.log("ℹ️ Exa API key not configured - skipping research augmentation");
+    }
+
+    // 8. NOW SEND COMPACT SUMMARY TO CLAUDE (NOT RAW DATA!)
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
     const fullOutput = stdout + "\n" + stderr;
 
-    // 8. SYSTEM PROMPT FOR PRE-AGGREGATED DATA
-    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset. You produce precise, data-driven analysis with beautiful chart visualizations.
+    // 9. SYSTEM PROMPT FOR PRE-AGGREGATED DATA + EXA RESEARCH
+    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset${exaInsights && exaInsights.length > 0 ? ' AND real-world research insights from Exa.ai' : ''}. You produce precise, data-driven analysis with beautiful chart visualizations.
 
 CRITICAL RULES:
 - 100% ACCURACY: Only use numbers from the statistical summary provided. DO NOT invent or estimate.
@@ -239,7 +269,7 @@ CRITICAL RULES:
 - SMART INTERPRETATION: The sample_rows show representative examples - use them for context.
 - DATA TYPES: Pay attention to column types (numerical, categorical, datetime).
 - NULL HANDLING: If null_percent is high, mention data quality issues.
-- OUTLIERS: If outliers_count exists and is significant, highlight it.
+- OUTLIERS: If outliers_count exists and is significant, highlight it.${exaInsights && exaInsights.length > 0 ? '\n- RESEARCH CONTEXT: Use the Exa research insights to provide industry benchmarks, trends, and external context. Compare the user\'s data to market standards when relevant.' : ''}
 - LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
 - CHARTS: Always include at least 2-3 charts if the data supports it.`;
 
@@ -254,6 +284,25 @@ CRITICAL RULES:
 You are receiving VERIFIED statistical data calculated by Python/Pandas. These numbers are 100% accurate.
 
 ${JSON.stringify(statisticalSummary, null, 2)}
+
+${exaInsights && exaInsights.length > 0 ? `
+## EXTERNAL RESEARCH INSIGHTS (from Exa.ai)
+The following are real-world research insights, industry benchmarks, and market trends found on the web that may provide valuable context for your analysis:
+
+${exaInsights.map((insight, idx) => `
+### Research Source ${idx + 1}: ${insight.title}
+- **URL**: ${insight.url}
+- **Relevance Score**: ${(insight.score * 100).toFixed(1)}%
+- **Content**: ${insight.summary}
+${insight.publishedDate ? `- **Published**: ${insight.publishedDate}` : ''}
+`).join('\n')}
+
+**How to use these insights:**
+- Compare the user's data trends with industry benchmarks mentioned in the research
+- Provide context by referencing relevant statistics from the research sources
+- Identify if the user's data aligns with or deviates from industry trends
+- Cite specific research sources when making comparisons (e.g., "According to [source title], industry average is X%")
+` : ''}
 
 ## YOUR TASK
 Analyze the statistical summary above and answer the user's question: "${userQuestion}"
@@ -319,6 +368,8 @@ You MUST output your response in a specific Markdown format that includes struct
       result: resultText,
       raw_output: fullOutput,
       statistical_summary: statisticalSummary,
+      exa_insights: exaInsights || [],
+      research_augmented: exaInsights && exaInsights.length > 0,
       total_rows_processed: statisticalSummary.total_rows,
       user_tier: checkResult?.tier || 'free',
       remaining_analyses: checkResult?.usage_limit === Infinity

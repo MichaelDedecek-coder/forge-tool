@@ -16,6 +16,8 @@ export default function Home() {
   const [loadingStage, setLoadingStage] = useState("");
   const [rowCount, setRowCount] = useState(0);
   const [language, setLanguage] = useState("cs");
+  const [researchAugmented, setResearchAugmented] = useState(false);
+  const [exaInsightsCount, setExaInsightsCount] = useState(0);
 
   // Upgrade modal state
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -84,12 +86,19 @@ export default function Home() {
           : "Performing statistical aggregation...");
       }, 1000);
 
-      // Stage 3: AI Insights
+      // Stage 3: Exa Research (if enabled)
+      setTimeout(() => {
+        setLoadingStage(language === "cs"
+          ? "Hledám kontextové informace..."
+          : "Fetching research insights...");
+      }, 3000);
+
+      // Stage 4: AI Insights
       setTimeout(() => {
         setLoadingStage(language === "cs"
           ? "Generuji AI analýzu..."
           : "Generating AI insights...");
-      }, 3000);
+      }, 5000);
 
       addLog("Calling /api/datawizard...");
       const res = await fetch("/api/datawizard", {
@@ -132,6 +141,13 @@ export default function Home() {
 
       // V9: Log first 1000 chars of the response for debugging
       console.log("[DataWizard V9] API Response preview:", data.result?.substring(0, 1000));
+
+      // Check if research augmentation was used
+      if (data.research_augmented) {
+        setResearchAugmented(true);
+        setExaInsightsCount(data.exa_insights?.length || 0);
+        addLog(`✨ Research-augmented: ${data.exa_insights?.length || 0} insights found`);
+      }
 
       setResult(data.result);
 
@@ -313,6 +329,33 @@ export default function Home() {
       {/* RESULTS */}
       {parsedReport && (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
+          {/* Research Augmentation Badge */}
+          {researchAugmented && (
+            <div style={{
+              background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+              padding: "12px 20px",
+              borderRadius: "12px",
+              marginBottom: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)"
+            }}>
+              <span style={{ fontSize: "20px" }}>🔍</span>
+              <div>
+                <div style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  {language === "cs" ? "✨ Research-Augmented Analysis" : "✨ Research-Augmented Analysis"}
+                </div>
+                <div style={{ fontSize: "12px", opacity: 0.9 }}>
+                  {language === "cs"
+                    ? `Analýza obohacena o ${exaInsightsCount} externí${exaInsightsCount === 1 ? ' zdroj' : exaInsightsCount < 5 ? ' zdroje' : ' zdrojů'} z Exa.ai`
+                    : `Analysis enriched with ${exaInsightsCount} external insight${exaInsightsCount === 1 ? '' : 's'} from Exa.ai`
+                  }
+                </div>
+              </div>
+            </div>
+          )}
+
           <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
                 <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
