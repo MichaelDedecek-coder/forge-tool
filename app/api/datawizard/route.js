@@ -257,11 +257,14 @@ except Exception as e:
         console.log("ℹ️ EXA_API_KEY not configured, skipping research augmentation");
     }
 
-    // 8. NOW SEND COMPACT SUMMARY TO GEMINI (NOT RAW DATA!)
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
     const fullOutput = stdout + "\n" + stderr;
+
+    // 8. Initialize AI provider (Gemini or Claude)
+    let genAI, model;
+    if (process.env.GEMINI_API_KEY) {
+      genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    }
 
     // 9. SYSTEM PROMPT FOR PRE-AGGREGATED DATA (WITH EXA RESEARCH!)
     const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset${researchAugmented ? ' AND EXTERNAL RESEARCH INSIGHTS from Exa.ai' : ''}. You produce precise, data-driven analysis with beautiful chart visualizations.
@@ -353,16 +356,22 @@ You MUST output your response in a specific Markdown format that includes struct
     let resultText;
     let aiProvider = "gemini";
 
-    // Try Gemini first, fall back to Claude if it fails
-    try {
-        const finalResponse = await model.generateContent(fullPrompt);
-        resultText = finalResponse.response.text();
-        console.log(`✅ Gemini response received: ${resultText.length} chars`);
-    } catch (geminiError) {
-        console.log(`⚠️ Gemini failed: ${geminiError.message}`);
+    // Try Gemini first (if key exists), fall back to Claude if it fails
+    if (process.env.GEMINI_API_KEY && model) {
+      try {
+          const finalResponse = await model.generateContent(fullPrompt);
+          resultText = finalResponse.response.text();
+          console.log(`✅ Gemini response received: ${resultText.length} chars`);
+      } catch (geminiError) {
+          console.log(`⚠️ Gemini failed: ${geminiError.message}`);
+          model = null; // Force fallback
+      }
+    }
 
+    // Use Claude if Gemini not available or failed
+    if (!resultText) {
         if (process.env.ANTHROPIC_API_KEY) {
-            console.log("🔄 Falling back to Claude API...");
+            console.log("🔄 Using Claude API...");
             aiProvider = "claude";
 
             const anthropic = new Anthropic({
@@ -382,7 +391,7 @@ You MUST output your response in a specific Markdown format that includes struct
             resultText = claudeResponse.content[0].text;
             console.log(`✅ Claude response received: ${resultText.length} chars`);
         } else {
-            throw new Error(`Gemini API failed and no ANTHROPIC_API_KEY available for fallback: ${geminiError.message}`);
+            throw new Error(`No AI provider available. Please set GEMINI_API_KEY or ANTHROPIC_API_KEY.`);
         }
     }
 
