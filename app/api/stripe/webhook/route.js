@@ -2,11 +2,13 @@ import { NextResponse } from 'next/server';
 import { constructWebhookEvent } from '@/app/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 
-// Use service role key for admin operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Helper to get Supabase admin client
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
 
 /**
  * POST /api/stripe/webhook
@@ -28,6 +30,9 @@ export async function POST(request) {
   const signature = request.headers.get('stripe-signature');
 
   try {
+    // Initialize Supabase admin client
+    const supabaseAdmin = getSupabaseAdmin();
+
     // Verify webhook signature
     const event = await constructWebhookEvent(body, signature);
 

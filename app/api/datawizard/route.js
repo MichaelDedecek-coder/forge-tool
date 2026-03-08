@@ -1,17 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
-import { createClient } from '@/app/lib/supabase-server';
+import { createServerClient } from '@/app/lib/supabase-server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
 export const maxDuration = 120;
 
-// Supabase admin client for usage tracking
-const supabaseAdmin = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Helper to get Supabase admin client
+function getSupabaseAdmin() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
 
 export async function POST(req) {
   try {
@@ -33,7 +35,7 @@ export async function POST(req) {
     console.log(`DATAWIZARD INPUT: Received ${totalRows} rows. Lang: ${language}`);
 
     // 2. CHECK USER AUTH & LIMITS (MONETIZATION)
-    const supabase = await createClient();
+    const supabase = await createServerClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -46,6 +48,7 @@ export async function POST(req) {
     }
 
     // Check if user can analyze (tier limits)
+    const supabaseAdmin = getSupabaseAdmin();
     const { data: checkResult, error: checkError } = await supabaseAdmin
       .rpc('can_user_analyze', {
         p_user_id: user.id,
@@ -353,7 +356,7 @@ You MUST output your response in a specific Markdown format that includes struct
 
     // 3. INCREMENT USAGE COUNTER (After successful analysis)
     try {
-      await supabaseAdmin.rpc('increment_user_usage', {
+      await getSupabaseAdmin().rpc('increment_user_usage', {
         p_user_id: user.id,
         p_rows_processed: statisticalSummary.total_rows
       });

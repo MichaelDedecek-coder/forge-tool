@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createPortalSession } from '@/app/lib/stripe';
-import { createClient } from '@/app/lib/supabase-server';
+import { createServerClient } from '@/app/lib/supabase-server';
 
 /**
  * POST /api/stripe/portal
@@ -8,7 +8,7 @@ import { createClient } from '@/app/lib/supabase-server';
  */
 export async function POST(request) {
   try {
-    const supabase = await createClient();
+    const supabase = await createServerClient();
 
     // Get authenticated user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
