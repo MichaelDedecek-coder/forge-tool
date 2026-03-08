@@ -258,7 +258,7 @@ except Exception as e:
 
     // 8. NOW SEND COMPACT SUMMARY TO GEMINI (NOT RAW DATA!)
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const fullOutput = stdout + "\n" + stderr;
 
