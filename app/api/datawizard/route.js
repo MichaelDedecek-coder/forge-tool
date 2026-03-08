@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
 import Exa from "exa-js";
+import Anthropic from "@anthropic-ai/sdk";
 
 // Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
 export const maxDuration = 120;
@@ -344,14 +345,46 @@ You MUST output your response in a specific Markdown format that includes struct
     * Mention outliers if outliers_count > 0
     * Comment on distributions, trends, and patterns`;
 
-    console.log("🤖 Sending to Gemini API...");
+    console.log("🤖 Sending to AI for analysis...");
 
-    // Combine system and user prompts for Gemini
+    // Combine system and user prompts
     const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
 
-    const finalResponse = await model.generateContent(fullPrompt);
-    const resultText = finalResponse.response.text();
-    console.log(`✅ Gemini response received: ${resultText.length} chars`);
+    let resultText;
+    let aiProvider = "gemini";
+
+    // Try Gemini first, fall back to Claude if it fails
+    try {
+        const finalResponse = await model.generateContent(fullPrompt);
+        resultText = finalResponse.response.text();
+        console.log(`✅ Gemini response received: ${resultText.length} chars`);
+    } catch (geminiError) {
+        console.log(`⚠️ Gemini failed: ${geminiError.message}`);
+
+        if (process.env.ANTHROPIC_API_KEY) {
+            console.log("🔄 Falling back to Claude API...");
+            aiProvider = "claude";
+
+            const anthropic = new Anthropic({
+                apiKey: process.env.ANTHROPIC_API_KEY
+            });
+
+            const claudeResponse = await anthropic.messages.create({
+                model: "claude-3-5-sonnet-20241022",
+                max_tokens: 4096,
+                system: systemPrompt,
+                messages: [{
+                    role: "user",
+                    content: userPrompt
+                }]
+            });
+
+            resultText = claudeResponse.content[0].text;
+            console.log(`✅ Claude response received: ${resultText.length} chars`);
+        } else {
+            throw new Error(`Gemini API failed and no ANTHROPIC_API_KEY available for fallback: ${geminiError.message}`);
+        }
+    }
 
     return NextResponse.json({
       question: userQuestion,
@@ -360,7 +393,8 @@ You MUST output your response in a specific Markdown format that includes struct
       statistical_summary: statisticalSummary,
       total_rows_processed: statisticalSummary.total_rows,
       research_augmented: researchAugmented,
-      exa_insights: exaInsights
+      exa_insights: exaInsights,
+      ai_provider: aiProvider
     });
 
   } catch (error) {
