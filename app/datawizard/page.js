@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 import ReportInterface from "../components/ReportInterface";
@@ -28,6 +28,31 @@ export default function Home() {
   const addLog = (msg) => {
     console.log(`[DataWizard] ${msg}`);
   };
+
+  // Check EXA status on page load
+  useEffect(() => {
+    console.log('═══════════════════════════════════════');
+    console.log('🔍 CHECKING EXA CONFIGURATION...');
+    console.log('═══════════════════════════════════════');
+
+    fetch('/api/exa-status')
+      .then(res => res.json())
+      .then(data => {
+        console.log(`Status: ${data.exa_status}`);
+        console.log(`Message: ${data.message}`);
+        console.log('═══════════════════════════════════════');
+
+        if (!data.exa_configured) {
+          console.warn('⚠️  WARNING: EXA IS NOT ACTIVE!');
+          console.warn('⚠️  Research sections will NOT appear in your reports.');
+          console.warn('⚠️  To enable: Add EXA_API_KEY to your .env.local file');
+          console.warn('⚠️  Get API key from: https://exa.ai');
+        } else {
+          console.log('✅ EXA IS ACTIVE - Research sections will appear!');
+        }
+      })
+      .catch(err => console.error('Failed to check EXA status:', err));
+  }, []);
 
   // Handle File Drop
   const onDrop = useCallback((acceptedFiles) => {
