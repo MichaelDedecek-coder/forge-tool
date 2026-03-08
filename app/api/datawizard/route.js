@@ -181,44 +181,14 @@ except Exception as e:
         }, { status: 500 });
     }
 
-    // 7. OPTIONAL: EXA RESEARCH-AUGMENTED ANALYSIS
-    let exaInsights = null;
-    if (process.env.EXA_API_KEY) {
-      try {
-        console.log("🔍 Stage 4/4: Fetching research insights from Exa.ai...");
-        const exaResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/exa-research`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            statisticalSummary,
-            userQuestion,
-            language
-          })
-        });
-
-        if (exaResponse.ok) {
-          const exaData = await exaResponse.json();
-          exaInsights = exaData.insights || [];
-          console.log(`✅ Exa Research: Found ${exaInsights.length} relevant insights`);
-        } else {
-          console.log("⚠️ Exa research failed, continuing without external insights");
-        }
-      } catch (exaError) {
-        console.log("⚠️ Exa research error:", exaError.message);
-        // Continue without Exa insights - graceful degradation
-      }
-    } else {
-      console.log("ℹ️ Exa API key not configured - skipping research augmentation");
-    }
-
-    // 8. NOW SEND COMPACT SUMMARY TO GEMINI (NOT RAW DATA!)
+    // 7. NOW SEND COMPACT SUMMARY TO GEMINI (NOT RAW DATA!)
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const fullOutput = stdout + "\n" + stderr;
 
-    // 9. SYSTEM PROMPT FOR PRE-AGGREGATED DATA + EXA RESEARCH
-    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset${exaInsights && exaInsights.length > 0 ? ' AND real-world research insights from Exa.ai' : ''}. You produce precise, data-driven analysis with beautiful chart visualizations.
+    // 8. SYSTEM PROMPT FOR PRE-AGGREGATED DATA
+    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset. You produce precise, data-driven analysis with beautiful chart visualizations.
 
 CRITICAL RULES:
 - 100% ACCURACY: Only use numbers from the statistical summary provided. DO NOT invent or estimate.
@@ -226,11 +196,7 @@ CRITICAL RULES:
 - SMART INTERPRETATION: The sample_rows show representative examples - use them for context.
 - DATA TYPES: Pay attention to column types (numerical, categorical, datetime).
 - NULL HANDLING: If null_percent is high, mention data quality issues.
-- OUTLIERS: If outliers_count exists and is significant, highlight it.${exaInsights && exaInsights.length > 0 ? `\n- RESEARCH CONTEXT: You MUST use the Exa research insights to provide industry benchmarks, market trends, and external context.
-- BENCHMARKS REQUIRED: Create a dedicated insight about industry benchmarks comparing the user's data to industry standards.
-- TRENDS REQUIRED: Create a dedicated insight about market trends based on the research sources.
-- EXTERNAL COMPARISONS REQUIRED: Compare the user's metrics to external data from research sources.
-- CITE SOURCES: Always reference specific research sources when making comparisons.` : ''}
+- OUTLIERS: If outliers_count exists and is significant, highlight it.
 - LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
 - CHARTS: Always include at least 2-3 charts if the data supports it.`;
 
@@ -245,25 +211,6 @@ CRITICAL RULES:
 You are receiving VERIFIED statistical data calculated by Python/Pandas. These numbers are 100% accurate.
 
 ${JSON.stringify(statisticalSummary, null, 2)}
-
-${exaInsights && exaInsights.length > 0 ? `
-## EXTERNAL RESEARCH INSIGHTS (from Exa.ai)
-The following are real-world research insights, industry benchmarks, and market trends found on the web that may provide valuable context for your analysis:
-
-${exaInsights.map((insight, idx) => `
-### Research Source ${idx + 1}: ${insight.title}
-- **URL**: ${insight.url}
-- **Relevance Score**: ${(insight.score * 100).toFixed(1)}%
-- **Content**: ${insight.summary}
-${insight.publishedDate ? `- **Published**: ${insight.publishedDate}` : ''}
-`).join('\n')}
-
-**How to use these insights:**
-- Compare the user's data trends with industry benchmarks mentioned in the research
-- Provide context by referencing relevant statistics from the research sources
-- Identify if the user's data aligns with or deviates from industry trends
-- Cite specific research sources when making comparisons (e.g., "According to [source title], industry average is X%")
-` : ''}
 
 ## YOUR TASK
 Analyze the statistical summary above and answer the user's question: "${userQuestion}"
@@ -299,20 +246,7 @@ You MUST output your response in a specific Markdown format that includes struct
 5. **Insights:** Use a \`## ${language === 'cs' ? 'Poznatky' : 'Insights'}\` section to list detailed findings.
     * Use bold for insight titles: \`- **Data Quality**: 98% of rows are complete...\`
     * Mention outliers if outliers_count > 0
-    * Comment on distributions, trends, and patterns${exaInsights && exaInsights.length > 0 ? `
-
-**REQUIRED RESEARCH-AUGMENTED INSIGHTS (when external research is available):**
-You MUST include these specific insights when Exa research data is provided:
-
-* **📊 Industry Benchmarks**: Compare the user's key metrics (averages, totals, distributions) to industry standards mentioned in the research sources. Example: "The average price of €195 is [higher/lower] than the industry benchmark of €X mentioned in [source title]."
-
-* **📈 Market Trends**: Identify relevant market trends from the research and explain how the user's data aligns or deviates. Example: "Recent market research shows [trend from source], which [aligns/contrasts] with our data showing [specific finding]."
-
-* **🔍 External Context & Comparisons**: Provide broader context by comparing the user's data patterns to external findings. Example: "Industry analysis from [source] indicates that [context], placing our [metric] in the [percentile/category]."
-
-**Citation Format:** Always cite sources as: "According to [source title], [finding]" or "Research from [source title] shows that [benchmark]"
-
-**Integration:** These research-augmented insights should be interwoven with your data-driven insights, not in a separate section.` : ''}`;
+    * Comment on distributions, trends, and patterns`;
 
     console.log("🤖 Sending to Gemini API...");
 
@@ -328,8 +262,6 @@ You MUST include these specific insights when Exa research data is provided:
       result: resultText,
       raw_output: fullOutput,
       statistical_summary: statisticalSummary,
-      exa_insights: exaInsights || [],
-      research_augmented: exaInsights && exaInsights.length > 0,
       total_rows_processed: statisticalSummary.total_rows
     });
 
