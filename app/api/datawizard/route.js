@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
 import { createServerClient } from '@/app/lib/supabase-server';
@@ -258,8 +258,9 @@ except Exception as e:
       console.log("ℹ️ Exa API key not configured - skipping research augmentation");
     }
 
-    // 8. NOW SEND COMPACT SUMMARY TO CLAUDE (NOT RAW DATA!)
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    // 8. NOW SEND COMPACT SUMMARY TO GEMINI (NOT RAW DATA!)
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const fullOutput = stdout + "\n" + stderr;
 
@@ -343,16 +344,14 @@ You MUST output your response in a specific Markdown format that includes struct
     * Mention outliers if outliers_count > 0
     * Comment on distributions, trends, and patterns`;
 
-    console.log("🤖 Sending to Claude API...");
-    const finalResponse = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8192,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }]
-    });
+    console.log("🤖 Sending to Gemini API...");
 
-    const resultText = finalResponse.content[0].text;
-    console.log(`✅ Claude response received: ${resultText.length} chars`);
+    // Combine system and user prompts for Gemini
+    const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
+
+    const finalResponse = await model.generateContent(fullPrompt);
+    const resultText = finalResponse.response.text();
+    console.log(`✅ Gemini response received: ${resultText.length} chars`);
 
     // 3. INCREMENT USAGE COUNTER (After successful analysis)
     try {
