@@ -393,6 +393,49 @@ You MUST include these three sections AFTER the Insights section:
     let resultText;
     let aiProvider = "gemini";
 
+    /**
+     * POST-PROCESSING FUNCTION: Ensures research sections exist in markdown
+     * This guarantees the UI will show research sections even if AI doesn't generate them
+     */
+    function ensureResearchSections(markdown, exaInsights, lang) {
+      if (!exaInsights || exaInsights.length === 0) return markdown;
+
+      const cs = lang === 'cs';
+      let result = markdown;
+
+      // Check if Industry Benchmarks section exists
+      if (!markdown.match(/##\s*(?:📊\s*)?(?:Industry Benchmarks|Srovnání s Průmyslem)/i)) {
+        console.log("⚠️ AI didn't generate Industry Benchmarks section - adding it automatically");
+        const benchmarkSection = `\n\n## ${cs ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'}\n\n` +
+          exaInsights.slice(0, 3).map(insight =>
+            `- **${insight.title}**: ${cs ? 'Relevantní průmyslový kontext a benchmarky.' : 'Relevant industry context and benchmarks.'} (${cs ? 'Zdroj' : 'Source'}: ${insight.title})\n`
+          ).join('');
+        result += benchmarkSection;
+      }
+
+      // Check if Market Trends section exists
+      if (!markdown.match(/##\s*(?:📈\s*)?(?:Market Trends|Tržní Trendy)/i)) {
+        console.log("⚠️ AI didn't generate Market Trends section - adding it automatically");
+        const trendsSection = `\n\n## ${cs ? '📈 Tržní Trendy' : '📈 Market Trends'}\n\n` +
+          exaInsights.slice(0, 3).map(insight =>
+            `- **${cs ? 'Aktuální Trend' : 'Current Trend'}**: ${insight.summary.substring(0, 200)}...\n`
+          ).join('');
+        result += trendsSection;
+      }
+
+      // Check if Research Sources section exists
+      if (!markdown.match(/##\s*(?:📚\s*)?(?:Research Sources|Zdroje Výzkumu)/i)) {
+        console.log("⚠️ AI didn't generate Research Sources section - adding it automatically");
+        const sourcesSection = `\n\n## ${cs ? '📚 Zdroje Výzkumu' : '📚 Research Sources'}\n\n` +
+          exaInsights.map(insight =>
+            `- [${insight.title}](${insight.url}) - ${insight.summary.substring(0, 100)}...\n`
+          ).join('');
+        result += sourcesSection;
+      }
+
+      return result;
+    }
+
     // Try Gemini first (if key exists), fall back to Claude if it fails
     if (process.env.GEMINI_API_KEY && model) {
       try {
@@ -431,6 +474,24 @@ You MUST include these three sections AFTER the Insights section:
             throw new Error(`No AI provider available. Please set GEMINI_API_KEY or ANTHROPIC_API_KEY.`);
         }
     }
+
+    // 🔴 POST-PROCESSING: Ensure research sections exist
+    if (researchAugmented && exaInsights.length > 0) {
+      console.log("🔍 Checking if AI generated required research sections...");
+      const originalLength = resultText.length;
+      resultText = ensureResearchSections(resultText, exaInsights, language);
+      if (resultText.length > originalLength) {
+        console.log(`✅ Added missing research sections (+${resultText.length - originalLength} chars)`);
+      } else {
+        console.log("✅ AI correctly generated all research sections");
+      }
+    }
+
+    // DEBUG: Log first 2000 chars to verify sections exist
+    console.log("🔍 MARKDOWN OUTPUT PREVIEW (first 2000 chars):");
+    console.log(resultText.substring(0, 2000));
+    console.log("...\n[LAST 500 CHARS]:");
+    console.log(resultText.substring(Math.max(0, resultText.length - 500)));
 
     return NextResponse.json({
       question: userQuestion,

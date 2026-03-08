@@ -147,6 +147,12 @@ export default function Home() {
         setResearchAugmented(true);
         setExaInsightsCount(data.exa_insights?.length || 0);
         addLog(`✨ Research-augmented: ${data.exa_insights?.length || 0} insights found`);
+        console.log("🔍 EXA RESEARCH IS ACTIVE! Insights:", data.exa_insights);
+        // Show alert to user for visibility
+        console.log("✅ RESEARCH BADGE SHOULD BE VISIBLE NOW");
+      } else {
+        console.log("ℹ️ EXA RESEARCH NOT ACTIVE (research_augmented=false)");
+        console.log("Possible reasons: No EXA_API_KEY, search failed, or no insights found");
       }
 
       setResult(data.result);
@@ -162,8 +168,25 @@ export default function Home() {
         metricsCount: reportData?.metrics?.length || 0,
         chartsCount: reportData?.charts?.length || 0,
         insightsCount: reportData?.insights?.length || 0,
-        charts: reportData?.charts
+        charts: reportData?.charts,
+        // 🔴 CRITICAL FOR DEBUGGING EXA
+        industryBenchmarksCount: reportData?.industryBenchmarks?.length || 0,
+        marketTrendsCount: reportData?.marketTrends?.length || 0,
+        researchSourcesCount: reportData?.researchSources?.length || 0
       });
+
+      // 🔴 EXPLICIT CHECK FOR RESEARCH SECTIONS
+      if (data.research_augmented) {
+        console.log("🔍 RESEARCH SECTIONS CHECK:");
+        console.log("  - Industry Benchmarks:", reportData?.industryBenchmarks?.length || 0, "items");
+        console.log("  - Market Trends:", reportData?.marketTrends?.length || 0, "items");
+        console.log("  - Research Sources:", reportData?.researchSources?.length || 0, "items");
+
+        if (!reportData?.industryBenchmarks?.length && !reportData?.marketTrends?.length && !reportData?.researchSources?.length) {
+          console.error("⚠️ WARNING: Research was active but NO research sections were parsed!");
+          console.log("This means the AI didn't generate the sections OR the parser couldn't find them");
+        }
+      }
       addLog(`Parse complete: Charts=${reportData?.charts?.length || 0}, Metrics=${reportData?.metrics?.length || 0}`);
 
       setParsedReport(reportData);
