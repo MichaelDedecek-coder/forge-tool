@@ -51,7 +51,7 @@ Environment: Production, Preview, Development
 
 ```
 Variable: GEMINI_API_KEY
-Value: AIzaSyDV-UEsCTX0fyosDYtBpOxIL5PyugZw6QY
+Value: AIzaSyAXuB8VALJ1M8LO_Px7Vfr9hLdoUVMKxfA
 Environment: Production, Preview, Development
 ```
 
