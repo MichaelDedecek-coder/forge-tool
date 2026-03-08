@@ -226,7 +226,11 @@ CRITICAL RULES:
 - SMART INTERPRETATION: The sample_rows show representative examples - use them for context.
 - DATA TYPES: Pay attention to column types (numerical, categorical, datetime).
 - NULL HANDLING: If null_percent is high, mention data quality issues.
-- OUTLIERS: If outliers_count exists and is significant, highlight it.${exaInsights && exaInsights.length > 0 ? '\n- RESEARCH CONTEXT: Use the Exa research insights to provide industry benchmarks, trends, and external context. Compare the user\'s data to market standards when relevant.' : ''}
+- OUTLIERS: If outliers_count exists and is significant, highlight it.${exaInsights && exaInsights.length > 0 ? `\n- RESEARCH CONTEXT: You MUST use the Exa research insights to provide industry benchmarks, market trends, and external context.
+- BENCHMARKS REQUIRED: Create a dedicated insight about industry benchmarks comparing the user's data to industry standards.
+- TRENDS REQUIRED: Create a dedicated insight about market trends based on the research sources.
+- EXTERNAL COMPARISONS REQUIRED: Compare the user's metrics to external data from research sources.
+- CITE SOURCES: Always reference specific research sources when making comparisons.` : ''}
 - LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
 - CHARTS: Always include at least 2-3 charts if the data supports it.`;
 
@@ -295,7 +299,20 @@ You MUST output your response in a specific Markdown format that includes struct
 5. **Insights:** Use a \`## ${language === 'cs' ? 'Poznatky' : 'Insights'}\` section to list detailed findings.
     * Use bold for insight titles: \`- **Data Quality**: 98% of rows are complete...\`
     * Mention outliers if outliers_count > 0
-    * Comment on distributions, trends, and patterns`;
+    * Comment on distributions, trends, and patterns${exaInsights && exaInsights.length > 0 ? `
+
+**REQUIRED RESEARCH-AUGMENTED INSIGHTS (when external research is available):**
+You MUST include these specific insights when Exa research data is provided:
+
+* **📊 Industry Benchmarks**: Compare the user's key metrics (averages, totals, distributions) to industry standards mentioned in the research sources. Example: "The average price of €195 is [higher/lower] than the industry benchmark of €X mentioned in [source title]."
+
+* **📈 Market Trends**: Identify relevant market trends from the research and explain how the user's data aligns or deviates. Example: "Recent market research shows [trend from source], which [aligns/contrasts] with our data showing [specific finding]."
+
+* **🔍 External Context & Comparisons**: Provide broader context by comparing the user's data patterns to external findings. Example: "Industry analysis from [source] indicates that [context], placing our [metric] in the [percentile/category]."
+
+**Citation Format:** Always cite sources as: "According to [source title], [finding]" or "Research from [source title] shows that [benchmark]"
+
+**Integration:** These research-augmented insights should be interwoven with your data-driven insights, not in a separate section.` : ''}`;
 
     console.log("🤖 Sending to Gemini API...");
 
