@@ -31,12 +31,11 @@ export async function POST(req) {
 
     console.log(`🔍 Exa Research Query: "${searchQuery}"`);
 
-    // Perform Exa search with semantic search
+    // Perform Exa search with semantic search (NO category filter - was too restrictive)
     const searchResults = await exa.searchAndContents(searchQuery, {
-      type: "neural", // Use semantic search
+      type: "neural",
       numResults: 5,
-      text: { maxCharacters: 500 }, // Get text content
-      category: "research paper",
+      text: { maxCharacters: 500 },
     });
 
     console.log(`✅ Found ${searchResults.results.length} research insights`);

@@ -18,6 +18,7 @@ export default function Home() {
   const [language, setLanguage] = useState("cs");
   const [researchAugmented, setResearchAugmented] = useState(false);
   const [exaInsightsCount, setExaInsightsCount] = useState(0);
+  const [exaDiagnostics, setExaDiagnostics] = useState(null);
 
   // Upgrade modal state
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -167,17 +168,19 @@ export default function Home() {
       // V9: Log first 1000 chars of the response for debugging
       console.log("[DataWizard V9] API Response preview:", data.result?.substring(0, 1000));
 
+      // Store EXA diagnostics for debugging
+      if (data.exa_diagnostics) {
+        setExaDiagnostics(data.exa_diagnostics);
+        console.log("🔍 EXA DIAGNOSTICS:", JSON.stringify(data.exa_diagnostics, null, 2));
+      }
+
       // Check if research augmentation was used
       if (data.research_augmented) {
         setResearchAugmented(true);
         setExaInsightsCount(data.exa_insights?.length || 0);
         addLog(`✨ Research-augmented: ${data.exa_insights?.length || 0} insights found`);
-        console.log("🔍 EXA RESEARCH IS ACTIVE! Insights:", data.exa_insights);
-        // Show alert to user for visibility
-        console.log("✅ RESEARCH BADGE SHOULD BE VISIBLE NOW");
       } else {
-        console.log("ℹ️ EXA RESEARCH NOT ACTIVE (research_augmented=false)");
-        console.log("Possible reasons: No EXA_API_KEY, search failed, or no insights found");
+        console.log("⚠️ EXA RESEARCH NOT ACTIVE. Diagnostics:", data.exa_diagnostics);
       }
 
       setResult(data.result);
@@ -412,6 +415,28 @@ export default function Home() {
       {/* RESULTS */}
       {parsedReport && (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
+          {/* EXA Diagnostic Banner (shows when EXA failed) */}
+          {exaDiagnostics && exaDiagnostics.status !== "success" && (
+            <div style={{
+              background: exaDiagnostics.status === "not_configured" ? "#1e293b" : "#451a03",
+              padding: "12px 20px",
+              borderRadius: "10px",
+              marginBottom: "12px",
+              border: `1px solid ${exaDiagnostics.status === "not_configured" ? "#334155" : "#92400e"}`,
+              fontSize: "13px"
+            }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "not_configured" ? "#94a3b8" : "#fbbf24" }}>
+                {exaDiagnostics.status === "not_configured" && "ℹ️ EXA Research: Not configured"}
+                {exaDiagnostics.status === "error" && `⚠️ EXA Research: Error — ${exaDiagnostics.error}`}
+                {exaDiagnostics.status === "empty" && "⚠️ EXA Research: No results found"}
+                {exaDiagnostics.status === "skipped" && "ℹ️ EXA Research: Skipped"}
+              </div>
+              <div style={{ color: "#94a3b8", fontSize: "12px" }}>
+                {exaDiagnostics.hint || exaDiagnostics.reason || "Check /api/exa-status for details"}
+              </div>
+            </div>
+          )}
+
           {/* Research Augmentation Badge */}
           {researchAugmented && (
             <div style={{

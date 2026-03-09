@@ -186,13 +186,14 @@ except Exception as e:
     // 7. EXA RESEARCH-AUGMENTED ANALYSIS (AUTOMATIC!)
     let exaInsights = [];
     let researchAugmented = false;
+    let exaDiagnostics = { status: "skipped", reason: "EXA_API_KEY not configured" };
 
     if (process.env.EXA_API_KEY) {
         try {
             console.log("🔍 Fetching research insights from Exa.ai...");
             const exa = new Exa(process.env.EXA_API_KEY);
 
-            // Build research query
+            // Build research query from column names
             const columns = Object.keys(statisticalSummary.columns || {});
             const columnString = columns.join(" ").toLowerCase();
 
@@ -212,14 +213,16 @@ except Exception as e:
 
             const searchQuery = `${businessContext} trends analysis benchmark statistics industry`;
             console.log(`🔍 Exa Research Query: "${searchQuery}"`);
+            exaDiagnostics = { status: "searching", query: searchQuery };
 
-            // Perform Exa search
+            // Perform Exa search (NO category filter - was returning 0 results)
             const searchResults = await exa.searchAndContents(searchQuery, {
                 type: "neural",
                 numResults: 5,
                 text: { maxCharacters: 500 },
-                category: "research paper",
             });
+
+            console.log(`🔍 Exa raw results count: ${searchResults.results.length}`);
 
             exaInsights = searchResults.results.map((result) => ({
                 title: result.title,
@@ -231,30 +234,30 @@ except Exception as e:
 
             if (exaInsights.length > 0) {
                 researchAugmented = true;
+                exaDiagnostics = { status: "success", query: searchQuery, resultsCount: exaInsights.length };
                 console.log(`✨ Research-augmented: ${exaInsights.length} insights found`);
             } else {
-                console.log("ℹ️ No research insights found, continuing with standard analysis");
+                exaDiagnostics = { status: "empty", query: searchQuery, resultsCount: 0, reason: "Exa returned 0 results for this query" };
+                console.log("⚠️ Exa returned 0 results for query:", searchQuery);
             }
-
-            // Store the old fetch code for reference (commented out)
-            /*
-            const exaResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/exa-research`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    statisticalSummary,
-                    userQuestion,
-                    language
-                })
-            });
-
-            */
         } catch (exaError) {
-            console.log("⚠️ Exa research failed (graceful degradation):", exaError.message);
+            const errorMsg = exaError.message || "Unknown error";
+            exaDiagnostics = {
+                status: "error",
+                error: errorMsg,
+                hint: errorMsg.includes("401") || errorMsg.includes("403")
+                    ? "EXA_API_KEY is invalid or expired"
+                    : errorMsg.includes("429")
+                    ? "Exa rate limit exceeded"
+                    : "Check Vercel function logs for details"
+            };
+            console.error("❌ Exa research FAILED:", errorMsg);
+            console.error("❌ Full error:", exaError);
             // Continue without research - graceful degradation
         }
     } else {
-        console.log("ℹ️ EXA_API_KEY not configured, skipping research augmentation");
+        console.log("❌ EXA_API_KEY not configured - research features disabled");
+        exaDiagnostics = { status: "not_configured", reason: "EXA_API_KEY environment variable is not set in Vercel" };
     }
 
     const fullOutput = stdout + "\n" + stderr;
@@ -542,6 +545,7 @@ You MUST include these three sections AFTER the Insights section:
       total_rows_processed: statisticalSummary.total_rows,
       research_augmented: researchAugmented,
       exa_insights: exaInsights,
+      exa_diagnostics: exaDiagnostics,
       ai_provider: aiProvider
     });
 

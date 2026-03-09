@@ -185,8 +185,8 @@ export function markdownToReportJson(markdown) {
       })));
     }
 
-    // 5. Extract Insights
-    const insightSectionRegex = /##\s*(?:Insights|Recommendations|Analysis|Findings)([\s\S]*?)(?=\n##|$)/i;
+    // 5. Extract Insights (removed "Analysis" - too generic, could match wrong sections)
+    const insightSectionRegex = /##\s*(?:Insights|Recommendations|Findings|Poznatky|Doporučení|Závěry)([\s\S]*?)(?=\n##|$)/i;
     const insightMatch = insightSectionRegex.exec(markdown);
     if (insightMatch) {
       const insightContent = insightMatch[1];
