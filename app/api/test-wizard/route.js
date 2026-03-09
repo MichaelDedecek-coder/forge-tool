@@ -7,9 +7,9 @@ export async function POST() {
     
     // THE NEW KEY
     const genAI = new GoogleGenerativeAI("AIzaSyCPp5ZX9i5R4p1ItR71ZKEJZT6JUntmPQc");
-    
+
     // USE THIS EXACT MODEL NAME
-const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
     
     const result = await model.generateContent("Reply with one word: ALIVE");
     const text = result.response.text();

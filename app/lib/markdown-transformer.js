@@ -18,6 +18,9 @@ export function markdownToReportJson(markdown) {
     tables: [],
     charts: [],
     insights: [],
+    industryBenchmarks: [],
+    marketTrends: [],
+    researchSources: [],
     rawMarkdown: markdown || ""
   };
 
@@ -182,8 +185,8 @@ export function markdownToReportJson(markdown) {
       })));
     }
 
-    // 5. Extract Insights
-    const insightSectionRegex = /##\s*(?:Insights|Recommendations|Analysis|Findings)([\s\S]*?)(?=\n##|$)/i;
+    // 5. Extract Insights (removed "Analysis" - too generic, could match wrong sections)
+    const insightSectionRegex = /##\s*(?:Insights|Recommendations|Findings|Poznatky|Doporučení|Závěry)([\s\S]*?)(?=\n##|$)/i;
     const insightMatch = insightSectionRegex.exec(markdown);
     if (insightMatch) {
       const insightContent = insightMatch[1];
@@ -209,6 +212,85 @@ export function markdownToReportJson(markdown) {
         else if (lowerLine.includes('success') || lowerLine.includes('growth')) severity = 'success';
         report.insights.push({ title, content, severity });
       });
+    }
+
+    // 6. Extract Industry Benchmarks Section
+    console.log("[Parser] 🔍 Searching for Industry Benchmarks section...");
+    const benchmarkRegex = /##\s*(?:📊\s*)?(?:Industry Benchmarks|Srovnání s Průmyslem)([\s\S]*?)(?=\n##|$)/i;
+    const benchmarkMatch = benchmarkRegex.exec(markdown);
+    if (benchmarkMatch) {
+      console.log("[Parser] ✅ Industry Benchmarks section FOUND at position", benchmarkMatch.index);
+      const benchmarkContent = benchmarkMatch[1];
+      console.log("[Parser] Benchmark content length:", benchmarkContent.length, "chars");
+      const benchmarkLines = benchmarkContent.split(/\n(?:-|\*)\s+/).filter(line => line.trim().length > 0);
+      console.log("[Parser] Found", benchmarkLines.length, "benchmark lines");
+      benchmarkLines.forEach((line, idx) => {
+        const parts = line.split('**:');
+        let title = "Benchmark";
+        let content = line;
+        if (parts.length > 1) {
+          title = parts[0].replace(/\*\*/g, '').trim();
+          content = parts.slice(1).join('**:').trim();
+        }
+        console.log(`[Parser]   Benchmark ${idx + 1}: "${title.substring(0, 50)}..."`);
+        report.industryBenchmarks.push({ title, content });
+      });
+      console.log(`[Parser] ✅ Extracted ${report.industryBenchmarks.length} industry benchmarks`);
+    } else {
+      console.log("[Parser] ❌ Industry Benchmarks section NOT FOUND in markdown");
+    }
+
+    // 7. Extract Market Trends Section
+    console.log("[Parser] 🔍 Searching for Market Trends section...");
+    const trendsRegex = /##\s*(?:📈\s*)?(?:Market Trends|Tržní Trendy)([\s\S]*?)(?=\n##|$)/i;
+    const trendsMatch = trendsRegex.exec(markdown);
+    if (trendsMatch) {
+      console.log("[Parser] ✅ Market Trends section FOUND at position", trendsMatch.index);
+      const trendsContent = trendsMatch[1];
+      console.log("[Parser] Trends content length:", trendsContent.length, "chars");
+      const trendLines = trendsContent.split(/\n(?:-|\*)\s+/).filter(line => line.trim().length > 0);
+      console.log("[Parser] Found", trendLines.length, "trend lines");
+      trendLines.forEach((line, idx) => {
+        const parts = line.split('**:');
+        let title = "Trend";
+        let content = line;
+        if (parts.length > 1) {
+          title = parts[0].replace(/\*\*/g, '').trim();
+          content = parts.slice(1).join('**:').trim();
+        }
+        console.log(`[Parser]   Trend ${idx + 1}: "${title.substring(0, 50)}..."`);
+        report.marketTrends.push({ title, content });
+      });
+      console.log(`[Parser] ✅ Extracted ${report.marketTrends.length} market trends`);
+    } else {
+      console.log("[Parser] ❌ Market Trends section NOT FOUND in markdown");
+    }
+
+    // 8. Extract Research Sources Section
+    console.log("[Parser] 🔍 Searching for Research Sources section...");
+    const sourcesRegex = /##\s*(?:📚\s*)?(?:Research Sources|Zdroje Výzkumu)([\s\S]*?)(?=\n##|$)/i;
+    const sourcesMatch = sourcesRegex.exec(markdown);
+    if (sourcesMatch) {
+      console.log("[Parser] ✅ Research Sources section FOUND at position", sourcesMatch.index);
+      const sourcesContent = sourcesMatch[1];
+      console.log("[Parser] Sources content length:", sourcesContent.length, "chars");
+      console.log("[Parser] Sources content preview:", sourcesContent.substring(0, 200));
+      // Extract markdown links: [Title](URL)
+      const linkRegex = /\[([^\]]+)\]\(([^\)]+)\)/g;
+      let linkMatch;
+      let linkCount = 0;
+      while ((linkMatch = linkRegex.exec(sourcesContent)) !== null) {
+        linkCount++;
+        const [_, title, url] = linkMatch;
+        // Also try to extract description after the link
+        const fullLineMatch = sourcesContent.match(new RegExp(`\\[${title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]\\([^)]+\\)\\s*-?\\s*([^\\n]*)`));
+        const description = fullLineMatch ? fullLineMatch[1].trim() : "";
+        console.log(`[Parser]   Source ${linkCount}: "${title.substring(0, 50)}..." -> ${url.substring(0, 50)}...`);
+        report.researchSources.push({ title: title.trim(), url: url.trim(), description });
+      }
+      console.log(`[Parser] ✅ Extracted ${report.researchSources.length} research sources`);
+    } else {
+      console.log("[Parser] ❌ Research Sources section NOT FOUND in markdown");
     }
 
   } catch (error) {

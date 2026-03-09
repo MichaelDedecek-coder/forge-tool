@@ -1,8 +1,9 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 import ReportInterface from "../components/ReportInterface";
+import UpgradeModal from "../components/UpgradeModal";
 import { markdownToReportJson } from "../lib/markdown-transformer";
 
 export default function Home() {
@@ -15,11 +16,44 @@ export default function Home() {
   const [loadingStage, setLoadingStage] = useState("");
   const [rowCount, setRowCount] = useState(0);
   const [language, setLanguage] = useState("cs");
+  const [researchAugmented, setResearchAugmented] = useState(false);
+  const [exaInsightsCount, setExaInsightsCount] = useState(0);
+  const [exaDiagnostics, setExaDiagnostics] = useState(null);
+
+  // Upgrade modal state
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState(null);
+  const [upgradeMessage, setUpgradeMessage] = useState("");
 
   // --- DEBUG HELPER (console only) ---
   const addLog = (msg) => {
     console.log(`[DataWizard] ${msg}`);
   };
+
+  // Check EXA status on page load
+  useEffect(() => {
+    console.log('═══════════════════════════════════════');
+    console.log('🔍 CHECKING EXA CONFIGURATION...');
+    console.log('═══════════════════════════════════════');
+
+    fetch('/api/exa-status')
+      .then(res => res.json())
+      .then(data => {
+        console.log(`Status: ${data.exa_status}`);
+        console.log(`Message: ${data.message}`);
+        console.log('═══════════════════════════════════════');
+
+        if (!data.exa_configured) {
+          console.warn('⚠️  WARNING: EXA IS NOT ACTIVE!');
+          console.warn('⚠️  Research sections will NOT appear in your reports.');
+          console.warn('⚠️  To enable: Add EXA_API_KEY to your .env.local file');
+          console.warn('⚠️  Get API key from: https://exa.ai');
+        } else {
+          console.log('✅ EXA IS ACTIVE - Research sections will appear!');
+        }
+      })
+      .catch(err => console.error('Failed to check EXA status:', err));
+  }, []);
 
   // Handle File Drop
   const onDrop = useCallback((acceptedFiles) => {
@@ -78,12 +112,19 @@ export default function Home() {
           : "Performing statistical aggregation...");
       }, 1000);
 
-      // Stage 3: AI Insights
+      // Stage 3: Exa Research (AUTOMATIC!)
       setTimeout(() => {
         setLoadingStage(language === "cs"
-          ? "Generuji AI analýzu..."
-          : "Generating AI insights...");
+          ? "🔍 Automaticky hledám průmyslové benchmarky a trendy..."
+          : "🔍 Auto-fetching industry benchmarks & market trends...");
       }, 3000);
+
+      // Stage 4: AI Insights with Research Context
+      setTimeout(() => {
+        setLoadingStage(language === "cs"
+          ? "✨ Generuji analýzu s externím kontextem..."
+          : "✨ Generating analysis with external research context...");
+      }, 5000);
 
       addLog("Calling /api/datawizard...");
       const res = await fetch("/api/datawizard", {
@@ -96,26 +137,119 @@ export default function Home() {
         }),
       });
       const data = await res.json();
+
+      // Handle upgrade requirements
+      if (res.status === 403 && data.requiresUpgrade) {
+        setUpgradeReason(data.reason);
+        setUpgradeMessage(data.error);
+        setShowUpgradeModal(true);
+        setLoading(false);
+        setLoadingStage("");
+        return;
+      }
+
+      // Handle auth requirement
+      if (res.status === 401 && data.requiresAuth) {
+        alert(data.error);
+        // Redirect to login or show auth modal
+        window.location.href = '/';
+        return;
+      }
+
+      if (data.error) {
+        alert(data.error);
+        setLoading(false);
+        setLoadingStage("");
+        return;
+      }
+
       addLog(`API response received. Result length: ${data.result?.length || 0}`);
 
       // V9: Log first 1000 chars of the response for debugging
       console.log("[DataWizard V9] API Response preview:", data.result?.substring(0, 1000));
 
+      // Store EXA diagnostics for debugging
+      if (data.exa_diagnostics) {
+        setExaDiagnostics(data.exa_diagnostics);
+        console.log("🔍 EXA DIAGNOSTICS:", JSON.stringify(data.exa_diagnostics, null, 2));
+      }
+
+      // Check if research augmentation was used
+      if (data.research_augmented) {
+        setResearchAugmented(true);
+        setExaInsightsCount(data.exa_insights?.length || 0);
+        addLog(`✨ Research-augmented: ${data.exa_insights?.length || 0} insights found`);
+      } else {
+        console.log("⚠️ EXA RESEARCH NOT ACTIVE. Diagnostics:", data.exa_diagnostics);
+      }
+
       setResult(data.result);
 
       // Parse the markdown into structured data
       addLog("Parsing markdown to report...");
-      console.log("[DataWizard V9] === STARTING PARSE ===");
+      console.log("═══════════════════════════════════════════════════════");
+      console.log("[FRONTEND] Starting markdown parse...");
+      console.log("═══════════════════════════════════════════════════════");
+      console.log("Markdown length:", data.result?.length);
+      console.log("Research augmented:", data.research_augmented);
+      console.log("EXA insights count:", data.exa_insights?.length);
+
+      // Check if sections exist in raw markdown
+      const hasBenchmarksInRaw = data.result?.includes('Industry Benchmarks') || data.result?.includes('Srovnání s Průmyslem');
+      const hasTrendsInRaw = data.result?.includes('Market Trends') || data.result?.includes('Tržní Trendy');
+      const hasSourcesInRaw = data.result?.includes('Research Sources') || data.result?.includes('Zdroje Výzkumu');
+
+      console.log("Sections in RAW markdown:");
+      console.log(`  - Industry Benchmarks: ${hasBenchmarksInRaw ? '✅ YES' : '❌ NO'}`);
+      console.log(`  - Market Trends: ${hasTrendsInRaw ? '✅ YES' : '❌ NO'}`);
+      console.log(`  - Research Sources: ${hasSourcesInRaw ? '✅ YES' : '❌ NO'}`);
+
       const reportData = markdownToReportJson(data.result);
-      console.log("[DataWizard V9] === PARSE COMPLETE ===");
-      console.log("[DataWizard V9] Parsed report structure:", {
+
+      console.log("Sections in PARSED report:");
+      console.log(`  - industryBenchmarks: ${reportData?.industryBenchmarks?.length || 0} items`);
+      console.log(`  - marketTrends: ${reportData?.marketTrends?.length || 0} items`);
+      console.log(`  - researchSources: ${reportData?.researchSources?.length || 0} items`);
+
+      if (reportData?.industryBenchmarks?.length > 0) {
+        console.log("✅ Industry Benchmarks WILL BE DISPLAYED");
+        console.log("First benchmark:", reportData.industryBenchmarks[0]);
+      }
+      if (reportData?.marketTrends?.length > 0) {
+        console.log("✅ Market Trends WILL BE DISPLAYED");
+        console.log("First trend:", reportData.marketTrends[0]);
+      }
+      if (reportData?.researchSources?.length > 0) {
+        console.log("✅ Research Sources WILL BE DISPLAYED");
+        console.log("First source:", reportData.researchSources[0]);
+      }
+      console.log("═══════════════════════════════════════════════════════");
+
+      console.log("[FRONTEND] Parsed report structure:", {
         title: reportData?.title,
         summary: reportData?.summary?.substring(0, 100),
         metricsCount: reportData?.metrics?.length || 0,
         chartsCount: reportData?.charts?.length || 0,
         insightsCount: reportData?.insights?.length || 0,
-        charts: reportData?.charts
+        charts: reportData?.charts,
+        // 🔴 CRITICAL FOR DEBUGGING EXA
+        industryBenchmarksCount: reportData?.industryBenchmarks?.length || 0,
+        marketTrendsCount: reportData?.marketTrends?.length || 0,
+        researchSourcesCount: reportData?.researchSources?.length || 0
       });
+
+      // 🔴 EXPLICIT CHECK FOR RESEARCH SECTIONS
+      if (data.research_augmented) {
+        console.log("🔍 RESEARCH SECTIONS CHECK:");
+        console.log("  - Industry Benchmarks:", reportData?.industryBenchmarks?.length || 0, "items");
+        console.log("  - Market Trends:", reportData?.marketTrends?.length || 0, "items");
+        console.log("  - Research Sources:", reportData?.researchSources?.length || 0, "items");
+
+        if (!reportData?.industryBenchmarks?.length && !reportData?.marketTrends?.length && !reportData?.researchSources?.length) {
+          console.error("⚠️ WARNING: Research was active but NO research sections were parsed!");
+          console.log("This means the AI didn't generate the sections OR the parser couldn't find them");
+        }
+      }
       addLog(`Parse complete: Charts=${reportData?.charts?.length || 0}, Metrics=${reportData?.metrics?.length || 0}`);
 
       setParsedReport(reportData);
@@ -281,6 +415,64 @@ export default function Home() {
       {/* RESULTS */}
       {parsedReport && (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
+          {/* EXA Diagnostic Banner (shows when EXA failed) */}
+          {exaDiagnostics && exaDiagnostics.status !== "success" && (
+            <div style={{
+              background: exaDiagnostics.status === "not_configured" ? "#1e293b" : "#451a03",
+              padding: "12px 20px",
+              borderRadius: "10px",
+              marginBottom: "12px",
+              border: `1px solid ${exaDiagnostics.status === "not_configured" ? "#334155" : "#92400e"}`,
+              fontSize: "13px"
+            }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "not_configured" ? "#94a3b8" : "#fbbf24" }}>
+                {exaDiagnostics.status === "not_configured" && "ℹ️ EXA Research: Not configured"}
+                {exaDiagnostics.status === "error" && `⚠️ EXA Research: Error — ${exaDiagnostics.error}`}
+                {exaDiagnostics.status === "empty" && "⚠️ EXA Research: No results found"}
+                {exaDiagnostics.status === "skipped" && "ℹ️ EXA Research: Skipped"}
+              </div>
+              <div style={{ color: "#94a3b8", fontSize: "12px" }}>
+                {exaDiagnostics.hint || exaDiagnostics.reason || "Check /api/exa-status for details"}
+              </div>
+            </div>
+          )}
+
+          {/* Research Augmentation Badge */}
+          {researchAugmented && (
+            <div style={{
+              background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
+              padding: "16px 24px",
+              borderRadius: "12px",
+              marginBottom: "16px",
+              boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                <span style={{ fontSize: "24px" }}>🔍</span>
+                <div>
+                  <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    {language === "cs" ? "✨ Research-Augmented Analysis" : "✨ Research-Augmented Analysis"}
+                  </div>
+                  <div style={{ fontSize: "13px", opacity: 0.9 }}>
+                    {language === "cs"
+                      ? `Obohaceno o ${exaInsightsCount} externí${exaInsightsCount === 1 ? ' zdroj' : exaInsightsCount < 5 ? ' zdroje' : ' zdrojů'} z Exa.ai`
+                      : `Enriched with ${exaInsightsCount} external insight${exaInsightsCount === 1 ? '' : 's'} from Exa.ai`
+                    }
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature List */}
+              <div style={{ fontSize: "12px", opacity: 0.95, marginLeft: "36px", lineHeight: "1.8" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                  <div>✅ {language === "cs" ? "Srovnání s průmyslem" : "Industry benchmarks"}</div>
+                  <div>✅ {language === "cs" ? "Tržní trendy" : "Market trends"}</div>
+                  <div>✅ {language === "cs" ? "Externí kontext" : "External research context"}</div>
+                  <div>✅ {language === "cs" ? "Citované zdroje" : "Cited sources"}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
                 <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
@@ -316,12 +508,21 @@ export default function Home() {
         </div>
       )}
 
+      {/* UPGRADE MODAL */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        reason={upgradeReason}
+        message={upgradeMessage}
+        language={language}
+      />
+
       {/* FOOTER - CONTACT FOR FEEDBACK */}
       <div style={{ marginTop: "60px", textAlign: "center", color: "#475569", fontSize: "14px", paddingBottom: "20px" }}>
         <p style={{ marginBottom: "8px" }}>
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
-        <a 
+        <a
           href="mailto:michael@forgecreative.cz?subject=DataWizard%20Feedback"
           style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: "600" }}
         >

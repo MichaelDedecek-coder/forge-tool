@@ -9,13 +9,14 @@ import { cookies } from 'next/headers';
 /**
  * Create server-side Supabase client
  * Use in API routes
+ * Note: In Next.js 15+, cookies() is async
  */
-export function createServerClient() {
+export async function createServerClient() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return null;
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   return createSSRClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -45,7 +46,7 @@ export function createServerClient() {
  * Get user from server-side context
  */
 export async function getServerUser() {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   const { data: { session } } = await supabase.auth.getSession();
   return session?.user ?? null;
 }

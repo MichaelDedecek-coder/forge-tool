@@ -41,7 +41,7 @@ export async function POST(req) {
     }
 
     // Get user ID if authenticated
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const { data: { session } } = await supabase.auth.getSession();
     const user_id = session?.user?.id || null;
 

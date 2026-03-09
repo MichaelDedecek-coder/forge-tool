@@ -1,6 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
+import Exa from "exa-js";
+import Anthropic from "@anthropic-ai/sdk";
 
 // Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
 export const maxDuration = 120;
@@ -181,13 +183,94 @@ except Exception as e:
         }, { status: 500 });
     }
 
-    // 7. NOW SEND COMPACT SUMMARY TO CLAUDE (NOT RAW DATA!)
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    // 7. EXA RESEARCH-AUGMENTED ANALYSIS (AUTOMATIC!)
+    let exaInsights = [];
+    let researchAugmented = false;
+    let exaDiagnostics = { status: "skipped", reason: "EXA_API_KEY not configured" };
+
+    if (process.env.EXA_API_KEY) {
+        try {
+            console.log("🔍 Fetching research insights from Exa.ai...");
+            const exa = new Exa(process.env.EXA_API_KEY);
+
+            // Build research query from column names
+            const columns = Object.keys(statisticalSummary.columns || {});
+            const columnString = columns.join(" ").toLowerCase();
+
+            // Infer business context
+            let businessContext = "business data";
+            if (columnString.includes("sales") || columnString.includes("revenue") || columnString.includes("price")) {
+                businessContext = "sales revenue";
+            } else if (columnString.includes("customer") || columnString.includes("user") || columnString.includes("marketing")) {
+                businessContext = "customer marketing";
+            } else if (columnString.includes("cost") || columnString.includes("expense") || columnString.includes("profit")) {
+                businessContext = "financial business";
+            } else if (columnString.includes("product") || columnString.includes("item") || columnString.includes("category")) {
+                businessContext = "product business";
+            } else if (columnString.includes("employee") || columnString.includes("salary") || columnString.includes("department")) {
+                businessContext = "human resources workforce";
+            }
+
+            const searchQuery = `${businessContext} trends analysis benchmark statistics industry`;
+            console.log(`🔍 Exa Research Query: "${searchQuery}"`);
+            exaDiagnostics = { status: "searching", query: searchQuery };
+
+            // Perform Exa search (NO category filter - was returning 0 results)
+            const searchResults = await exa.searchAndContents(searchQuery, {
+                type: "neural",
+                numResults: 5,
+                text: { maxCharacters: 500 },
+            });
+
+            console.log(`🔍 Exa raw results count: ${searchResults.results.length}`);
+
+            exaInsights = searchResults.results.map((result) => ({
+                title: result.title,
+                url: result.url,
+                summary: result.text || result.snippet || "",
+                publishedDate: result.publishedDate,
+                score: result.score,
+            }));
+
+            if (exaInsights.length > 0) {
+                researchAugmented = true;
+                exaDiagnostics = { status: "success", query: searchQuery, resultsCount: exaInsights.length };
+                console.log(`✨ Research-augmented: ${exaInsights.length} insights found`);
+            } else {
+                exaDiagnostics = { status: "empty", query: searchQuery, resultsCount: 0, reason: "Exa returned 0 results for this query" };
+                console.log("⚠️ Exa returned 0 results for query:", searchQuery);
+            }
+        } catch (exaError) {
+            const errorMsg = exaError.message || "Unknown error";
+            exaDiagnostics = {
+                status: "error",
+                error: errorMsg,
+                hint: errorMsg.includes("401") || errorMsg.includes("403")
+                    ? "EXA_API_KEY is invalid or expired"
+                    : errorMsg.includes("429")
+                    ? "Exa rate limit exceeded"
+                    : "Check Vercel function logs for details"
+            };
+            console.error("❌ Exa research FAILED:", errorMsg);
+            console.error("❌ Full error:", exaError);
+            // Continue without research - graceful degradation
+        }
+    } else {
+        console.log("❌ EXA_API_KEY not configured - research features disabled");
+        exaDiagnostics = { status: "not_configured", reason: "EXA_API_KEY environment variable is not set in Vercel" };
+    }
 
     const fullOutput = stdout + "\n" + stderr;
 
-    // 8. SYSTEM PROMPT FOR PRE-AGGREGATED DATA
-    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset. You produce precise, data-driven analysis with beautiful chart visualizations.
+    // 8. Initialize AI provider (Gemini or Claude)
+    let genAI, model;
+    if (process.env.GEMINI_API_KEY) {
+      genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    }
+
+    // 9. SYSTEM PROMPT FOR PRE-AGGREGATED DATA (WITH EXA RESEARCH!)
+    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset${researchAugmented ? ' AND EXTERNAL RESEARCH INSIGHTS from Exa.ai' : ''}. You produce precise, data-driven analysis with beautiful chart visualizations.
 
 CRITICAL RULES:
 - 100% ACCURACY: Only use numbers from the statistical summary provided. DO NOT invent or estimate.
@@ -197,11 +280,22 @@ CRITICAL RULES:
 - NULL HANDLING: If null_percent is high, mention data quality issues.
 - OUTLIERS: If outliers_count exists and is significant, highlight it.
 - LANGUAGE: Write ALL text in ${language === 'cs' ? 'CZECH (česky)' : 'ENGLISH'}.
-- CHARTS: Always include at least 2-3 charts if the data supports it.`;
+- CHARTS: Always include at least 2-3 charts if the data supports it.${researchAugmented ? `
+
+🔴 RESEARCH-AUGMENTED MODE ACTIVE 🔴
+You have ${exaInsights.length} external research insights from Exa.ai. This is MANDATORY for your response:
+
+REQUIRED SECTIONS (DO NOT SKIP ANY):
+1. ## ${language === 'cs' ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'} - Compare user's metrics to industry standards
+2. ## ${language === 'cs' ? '📈 Tržní Trendy' : '📈 Market Trends'} - Summarize relevant market trends
+3. ## ${language === 'cs' ? '📚 Zdroje Výzkumu' : '📚 Research Sources'} - List ALL ${exaInsights.length} sources with links
+
+These sections MUST appear in your markdown output. Do not skip them!` : ''}`;
 
     const userPrompt = `## DATASET OVERVIEW
 - **Total Rows**: ${statisticalSummary.total_rows.toLocaleString()}
 - **Analysis Method**: Statistical Pre-Aggregation (100% mathematically verified)
+${researchAugmented ? `- **Research Augmentation**: ✨ ${exaInsights.length} external research insights included` : ''}
 
 ## USER QUESTION
 "${userQuestion}"
@@ -210,6 +304,25 @@ CRITICAL RULES:
 You are receiving VERIFIED statistical data calculated by Python/Pandas. These numbers are 100% accurate.
 
 ${JSON.stringify(statisticalSummary, null, 2)}
+${researchAugmented ? `
+
+## EXTERNAL RESEARCH INSIGHTS (from Exa.ai)
+You have access to ${exaInsights.length} relevant research articles and industry reports. Use these to provide context, benchmarks, and trends.
+
+${exaInsights.map((insight, idx) => `
+### Research Source ${idx + 1}: ${insight.title}
+- **URL**: ${insight.url}
+- **Published**: ${insight.publishedDate || 'N/A'}
+- **Relevance Score**: ${(insight.score * 100).toFixed(0)}%
+- **Summary**: ${insight.summary}
+`).join('\n')}
+
+IMPORTANT: When referencing these research insights in your analysis:
+- Mention industry benchmarks or trends that relate to the user's data
+- Compare the user's metrics to industry standards when applicable
+- Cite sources using the format: "According to [source title]..." or "Industry research shows..."
+- Add a "📚 Research Context" section to highlight key external insights
+` : ''}
 
 ## YOUR TASK
 Analyze the statistical summary above and answer the user's question: "${userQuestion}"
@@ -245,25 +358,195 @@ You MUST output your response in a specific Markdown format that includes struct
 5. **Insights:** Use a \`## ${language === 'cs' ? 'Poznatky' : 'Insights'}\` section to list detailed findings.
     * Use bold for insight titles: \`- **Data Quality**: 98% of rows are complete...\`
     * Mention outliers if outliers_count > 0
-    * Comment on distributions, trends, and patterns`;
+    * Comment on distributions, trends, and patterns
+${researchAugmented ? `
 
-    console.log("🤖 Sending to Claude API...");
-    const finalResponse = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8192,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }]
-    });
+═══════════════════════════════════════════════════════════════
+🔴 RESEARCH-AUGMENTED SECTIONS - ABSOLUTELY MANDATORY 🔴
+You MUST include these three sections AFTER the Insights section:
+═══════════════════════════════════════════════════════════════
 
-    const resultText = finalResponse.content[0].text;
-    console.log(`✅ Claude response received: ${resultText.length} chars`);
+6. **Industry Benchmarks:** Create a \`## ${language === 'cs' ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'}\` section:
+    * REQUIRED: At least 3-5 benchmark comparisons
+    * Format: \`- **Metric Name**: Your value vs Industry average (Source: Article Name)\`
+    * Example: \`- **Average Transaction Value**: Your $1,085 is 23% above industry average of $880 (Source: E-commerce Industry Report 2025)\`
+    * Use the research insights below to find relevant industry data
+    * If no exact numbers in research, cite trends: "Industry reports indicate strong growth in this sector"
+
+7. **Market Trends:** Create a \`## ${language === 'cs' ? '📈 Tržní Trendy' : '📈 Market Trends'}\` section:
+    * REQUIRED: At least 3-4 market trends
+    * Format: \`- **Trend Name**: Description of trend and how it relates to user's data\`
+    * Example: \`- **Mobile Commerce Growth**: Industry seeing 40% shift to mobile purchases, aligning with your 45% mobile transaction rate\`
+    * Connect research insights to the user's actual data patterns
+
+8. **Research Sources:** Create a \`## ${language === 'cs' ? '📚 Zdroje Výzkumu' : '📚 Research Sources'}\` section:
+    * REQUIRED: List ALL ${exaInsights.length} research sources provided below
+    * Format: \`- [Exact Source Title](URL) - One sentence description\`
+    * Example: \`- [E-commerce Trends Report 2025](https://example.com) - Comprehensive analysis of global e-commerce market dynamics\`
+    * DO NOT skip any sources - include all ${exaInsights.length} of them!
+
+⚠️ CRITICAL: Your response will be considered INCOMPLETE if any of these 3 sections are missing! ⚠️
+` : ''}`;
+
+    console.log("🤖 Sending to AI for analysis...");
+
+    // Combine system and user prompts
+    const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
+
+    let resultText;
+    let aiProvider = "gemini";
+
+    /**
+     * POST-PROCESSING FUNCTION: Ensures research sections exist in markdown
+     * This guarantees the UI will show research sections even if AI doesn't generate them
+     */
+    function ensureResearchSections(markdown, exaInsights, lang) {
+      if (!exaInsights || exaInsights.length === 0) return markdown;
+
+      const cs = lang === 'cs';
+      let result = markdown;
+
+      // Check if Industry Benchmarks section exists
+      if (!markdown.match(/##\s*(?:📊\s*)?(?:Industry Benchmarks|Srovnání s Průmyslem)/i)) {
+        console.log("⚠️ AI didn't generate Industry Benchmarks section - adding it automatically");
+        const benchmarkSection = `\n\n## ${cs ? '📊 Srovnání s Průmyslem' : '📊 Industry Benchmarks'}\n\n` +
+          exaInsights.slice(0, 3).map(insight =>
+            `- **${insight.title}**: ${cs ? 'Relevantní průmyslový kontext a benchmarky.' : 'Relevant industry context and benchmarks.'} (${cs ? 'Zdroj' : 'Source'}: ${insight.title})\n`
+          ).join('');
+        result += benchmarkSection;
+      }
+
+      // Check if Market Trends section exists
+      if (!markdown.match(/##\s*(?:📈\s*)?(?:Market Trends|Tržní Trendy)/i)) {
+        console.log("⚠️ AI didn't generate Market Trends section - adding it automatically");
+        const trendsSection = `\n\n## ${cs ? '📈 Tržní Trendy' : '📈 Market Trends'}\n\n` +
+          exaInsights.slice(0, 3).map(insight =>
+            `- **${cs ? 'Aktuální Trend' : 'Current Trend'}**: ${insight.summary.substring(0, 200)}...\n`
+          ).join('');
+        result += trendsSection;
+      }
+
+      // Check if Research Sources section exists
+      if (!markdown.match(/##\s*(?:📚\s*)?(?:Research Sources|Zdroje Výzkumu)/i)) {
+        console.log("⚠️ AI didn't generate Research Sources section - adding it automatically");
+        const sourcesSection = `\n\n## ${cs ? '📚 Zdroje Výzkumu' : '📚 Research Sources'}\n\n` +
+          exaInsights.map(insight =>
+            `- [${insight.title}](${insight.url}) - ${insight.summary.substring(0, 100)}...\n`
+          ).join('');
+        result += sourcesSection;
+      }
+
+      return result;
+    }
+
+    // Try Gemini first (if key exists), fall back to Claude if it fails
+    if (process.env.GEMINI_API_KEY && model) {
+      try {
+          const finalResponse = await model.generateContent(fullPrompt);
+          resultText = finalResponse.response.text();
+          console.log(`✅ Gemini response received: ${resultText.length} chars`);
+      } catch (geminiError) {
+          console.log(`⚠️ Gemini failed: ${geminiError.message}`);
+          model = null; // Force fallback
+      }
+    }
+
+    // Use Claude if Gemini not available or failed
+    if (!resultText) {
+        if (process.env.ANTHROPIC_API_KEY) {
+            console.log("🔄 Using Claude API...");
+            aiProvider = "claude";
+
+            const anthropic = new Anthropic({
+                apiKey: process.env.ANTHROPIC_API_KEY
+            });
+
+            const claudeResponse = await anthropic.messages.create({
+                model: "claude-opus-4-6",
+                max_tokens: 4096,
+                system: systemPrompt,
+                messages: [{
+                    role: "user",
+                    content: userPrompt
+                }]
+            });
+
+            resultText = claudeResponse.content[0].text;
+            console.log(`✅ Claude response received: ${resultText.length} chars`);
+        } else {
+            throw new Error(`No AI provider available. Please set GEMINI_API_KEY or ANTHROPIC_API_KEY.`);
+        }
+    }
+
+    // 🔴 POST-PROCESSING: Ensure research sections exist
+    if (researchAugmented && exaInsights.length > 0) {
+      console.log("═══════════════════════════════════════════════════════");
+      console.log("🔍 POST-PROCESSING: Checking research sections...");
+      console.log(`Research augmented: ${researchAugmented}`);
+      console.log(`EXA insights count: ${exaInsights.length}`);
+      console.log(`Markdown length before: ${resultText.length} chars`);
+
+      // Check what sections exist BEFORE post-processing
+      const hasBenchmarks = resultText.match(/##\s*(?:📊\s*)?(?:Industry Benchmarks|Srovnání s Průmyslem)/i);
+      const hasTrends = resultText.match(/##\s*(?:📈\s*)?(?:Market Trends|Tržní Trendy)/i);
+      const hasSources = resultText.match(/##\s*(?:📚\s*)?(?:Research Sources|Zdroje Výzkumu)/i);
+
+      console.log(`BEFORE POST-PROCESSING:`);
+      console.log(`  - Industry Benchmarks: ${hasBenchmarks ? '✅ FOUND' : '❌ MISSING'}`);
+      console.log(`  - Market Trends: ${hasTrends ? '✅ FOUND' : '❌ MISSING'}`);
+      console.log(`  - Research Sources: ${hasSources ? '✅ FOUND' : '❌ MISSING'}`);
+
+      const originalLength = resultText.length;
+      resultText = ensureResearchSections(resultText, exaInsights, language);
+
+      console.log(`Markdown length after: ${resultText.length} chars`);
+      console.log(`Characters added: ${resultText.length - originalLength}`);
+
+      if (resultText.length > originalLength) {
+        console.log(`✅ POST-PROCESSING ADDED MISSING SECTIONS`);
+      } else {
+        console.log("✅ AI generated all sections correctly");
+      }
+      console.log("═══════════════════════════════════════════════════════");
+    }
+
+    // DEBUG: Verify sections exist in FINAL markdown
+    console.log("═══════════════════════════════════════════════════════");
+    console.log("🔍 FINAL MARKDOWN VERIFICATION");
+    console.log("═══════════════════════════════════════════════════════");
+    console.log(`Total length: ${resultText.length} chars`);
+
+    const finalHasBenchmarks = resultText.match(/##\s*(?:📊\s*)?(?:Industry Benchmarks|Srovnání s Průmyslem)/i);
+    const finalHasTrends = resultText.match(/##\s*(?:📈\s*)?(?:Market Trends|Tržní Trendy)/i);
+    const finalHasSources = resultText.match(/##\s*(?:📚\s*)?(?:Research Sources|Zdroje Výzkumu)/i);
+
+    console.log(`FINAL SECTIONS IN MARKDOWN:`);
+    console.log(`  - Industry Benchmarks: ${finalHasBenchmarks ? '✅ YES at position ' + resultText.indexOf(finalHasBenchmarks[0]) : '❌ NO'}`);
+    console.log(`  - Market Trends: ${finalHasTrends ? '✅ YES at position ' + resultText.indexOf(finalHasTrends[0]) : '❌ NO'}`);
+    console.log(`  - Research Sources: ${finalHasSources ? '✅ YES at position ' + resultText.indexOf(finalHasSources[0]) : '❌ NO'}`);
+
+    // Show sections that exist in markdown
+    const allSections = resultText.match(/^##\s+.+$/gm) || [];
+    console.log(`\nAll ## sections found in markdown (${allSections.length}):`);
+    allSections.forEach((section, i) => console.log(`  ${i + 1}. ${section}`));
+    console.log("═══════════════════════════════════════════════════════");
+
+    // DEBUG: Log preview
+    console.log("🔍 MARKDOWN OUTPUT PREVIEW (first 2000 chars):");
+    console.log(resultText.substring(0, 2000));
+    console.log("...\n[LAST 500 CHARS]:");
+    console.log(resultText.substring(Math.max(0, resultText.length - 500)));
 
     return NextResponse.json({
       question: userQuestion,
       result: resultText,
       raw_output: fullOutput,
       statistical_summary: statisticalSummary,
-      total_rows_processed: statisticalSummary.total_rows
+      total_rows_processed: statisticalSummary.total_rows,
+      research_augmented: researchAugmented,
+      exa_insights: exaInsights,
+      exa_diagnostics: exaDiagnostics,
+      ai_provider: aiProvider
     });
 
   } catch (error) {
