@@ -22,7 +22,7 @@ import { getCurrentUsage, incrementUsage } from "../lib/supabase-client";
 
 export default function Home() {
   // Auth state
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, signOut } = useAuth();
 
   // File state
   const [csvData, setCsvData] = useState(null);
@@ -113,8 +113,8 @@ export default function Home() {
     }
 
     // TIER LOGIC: Check limits BEFORE running analysis
-    if (user && profile) {
-      const tier = profile.tier || 'free';
+    if (user) {
+      const tier = profile?.tier || 'free';
       const limits = checkTierLimits(tier, usage.analysis_count, rowCount);
 
       if (!limits.allowed) {
@@ -124,7 +124,7 @@ export default function Home() {
         return;
       }
     } else {
-      // Anonymous user - check if this would be 2nd upload
+      // Anonymous user (not signed in) - check if this would be 2nd upload
       if (shouldShowSignupWall(false)) {
         setShowAuthModal(true);
         return;
@@ -246,7 +246,7 @@ export default function Home() {
       setParsedReport(reportData);
 
       // USAGE TRACKING: Increment counters AFTER successful analysis
-      if (user && profile) {
+      if (user) {
         try {
           await incrementUsage(user.id, rowCount);
           const newUsage = await getCurrentUsage(user.id);
@@ -256,7 +256,7 @@ export default function Home() {
           console.error('Error updating usage:', error);
         }
       } else {
-        // Anonymous - increment localStorage counter
+        // Anonymous (not signed in) - increment localStorage counter
         const count = incrementAnonymousUpload();
         addLog(`Anonymous upload ${count} recorded`);
 
@@ -411,7 +411,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Sign In button (if not authenticated) */}
+        {/* Sign In / Sign Out button */}
         {!user && !authLoading && (
           <button
             onClick={() => setShowAuthModal(true)}
@@ -427,6 +427,29 @@ export default function Home() {
             }}
           >
             {language === 'cs' ? 'Přihlásit se' : 'Sign In'}
+          </button>
+        )}
+        {user && (
+          <button
+            onClick={async () => {
+              try {
+                await signOut();
+                window.location.href = '/';
+              } catch (error) {
+                console.error('Sign out error:', error);
+              }
+            }}
+            style={{
+              background: 'none',
+              color: '#94a3b8',
+              border: '1px solid #334155',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '13px'
+            }}
+          >
+            {language === 'cs' ? 'Odhlásit' : 'Sign Out'}
           </button>
         )}
       </div>
