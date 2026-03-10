@@ -460,7 +460,14 @@ export default function DataPaloLanding() {
                   {language === 'cz' ? 'Analyzovat' : 'Analyze'}
                 </a>
                 <button
-                  onClick={signOut}
+                  onClick={async () => {
+                    try {
+                      await signOut();
+                      window.location.href = '/';
+                    } catch (error) {
+                      console.error('Sign out error:', error);
+                    }
+                  }}
                   style={{
                     background: "none",
                     border: "1px solid rgba(255,255,255,0.15)",
