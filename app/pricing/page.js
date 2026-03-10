@@ -450,6 +450,7 @@ export default function PricingPage() {
           }
         }}
         language={language === 'cz' ? 'cs' : 'en'}
+        defaultMode="signin"
       />
     </div>
   );

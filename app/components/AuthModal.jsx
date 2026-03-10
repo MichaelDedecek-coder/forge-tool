@@ -10,8 +10,8 @@ import { useState } from 'react';
 import { useAuth } from '../lib/auth-context';
 import { X } from 'lucide-react';
 
-export default function AuthModal({ isOpen, onClose, language = 'en' }) {
-  const [mode, setMode] = useState('signup'); // 'signup' or 'signin'
+export default function AuthModal({ isOpen, onClose, language = 'en', defaultMode = 'signup' }) {
+  const [mode, setMode] = useState(defaultMode); // 'signup' or 'signin'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
