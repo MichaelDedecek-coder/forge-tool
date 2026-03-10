@@ -1,13 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TIER_LIMITS } from "../lib/tier-config";
+import { useAuth } from "../lib/auth-context";
+import AuthModal from "../components/AuthModal";
 
 export default function PricingPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [language, setLanguage] = useState('en');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingCheckout, setPendingCheckout] = useState(false);
 
   const t = {
     en: {
@@ -92,14 +97,17 @@ export default function PricingPage() {
 
   const c = t[language];
 
-  const handleUpgrade = async (tier) => {
-    if (tier === 'free') {
-      router.push('/datapalo');
-      return;
+  // Auto-proceed to checkout after sign-in if user was trying to upgrade
+  useEffect(() => {
+    if (user && pendingCheckout) {
+      setPendingCheckout(false);
+      startCheckout();
     }
+  }, [user, pendingCheckout]);
 
+  const startCheckout = async () => {
     setLoading(true);
-    setSelectedPlan(tier);
+    setSelectedPlan('pro');
 
     try {
       const response = await fetch('/api/stripe/checkout', {
@@ -112,6 +120,7 @@ export default function PricingPage() {
       if (data.error) {
         alert(data.error);
         setLoading(false);
+        setSelectedPlan(null);
         return;
       }
 
@@ -123,6 +132,22 @@ export default function PricingPage() {
       setLoading(false);
       setSelectedPlan(null);
     }
+  };
+
+  const handleUpgrade = async (tier) => {
+    if (tier === 'free') {
+      router.push('/datapalo');
+      return;
+    }
+
+    // If not signed in, show auth modal first
+    if (!user) {
+      setPendingCheckout(true);
+      setShowAuthModal(true);
+      return;
+    }
+
+    await startCheckout();
   };
 
   return (
@@ -414,6 +439,18 @@ export default function PricingPage() {
           {c.company}
         </p>
       </div>
+
+      {/* Auth Modal - shows when user tries to upgrade without being signed in */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => {
+          setShowAuthModal(false);
+          if (!user) {
+            setPendingCheckout(false);
+          }
+        }}
+        language={language === 'cz' ? 'cs' : 'en'}
+      />
     </div>
   );
 }
