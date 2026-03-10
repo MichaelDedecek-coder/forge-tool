@@ -112,13 +112,13 @@ async function sendEmailNotification({ feedback_type, message, email, page_url, 
     }
 
     const { data, error } = await resend.emails.send({
-      from: 'DataWizard <onboarding@resend.dev>',
+      from: 'DataPalo <onboarding@resend.dev>',
       to: ['michael@forgecreative.cz'],
-      subject: `[DataWizard Feedback] ${getTypeLabel(feedback_type)}`,
+      subject: `[DataPalo Feedback] ${getTypeLabel(feedback_type)}`,
       html: `
         <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 10px;">
-            New DataWizard Feedback
+            New DataPalo Feedback
           </h2>
 
           <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">

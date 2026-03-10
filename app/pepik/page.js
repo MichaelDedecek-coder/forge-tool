@@ -121,14 +121,14 @@ export default function Home() {
       already: "Already have a PIN?",
       enter: "Enter here",
       footer_brand: "FORGE CREATIVE | AI Job Agency",
-      footer_tag: "DataWizard — Precision Insights. Instant.",
+      footer_tag: "DataPalo — Precision Insights. Instant.",
       // App Translations
       drop_ready: "Ready:",
       drop_hint: "Drag & drop a file here",
       analyzing: "✨ Analyzing...",
       get_insight: "✨ Auto-Discover Insights",
       download: "⬇️ Download Report",
-      pin_title: "DataWizard Access",
+      pin_title: "DataPalo Access",
       unlock: "Unlock",
       back: "← Back to Home"
     },
@@ -154,14 +154,14 @@ export default function Home() {
       already: "Máte už PIN?",
       enter: "Vstoupit zde",
       footer_brand: "FORGE CREATIVE | AI Job Agency",
-      footer_tag: "DataWizard — Přesné vhledy. Okamžitě.",
+      footer_tag: "DataPalo — Přesné vhledy. Okamžitě.",
       // App Translations
       drop_ready: "Připraveno:",
       drop_hint: "Přetáhněte soubor sem",
       analyzing: "✨ Analyzuji...",
       get_insight: "✨ Získat Insight",
       download: "⬇️ Stáhnout Report",
-      pin_title: "Vstup do DataWizard",
+      pin_title: "Vstup do DataPalo",
       unlock: "Odemknout",
       back: "← Zpět na úvod"
     }
@@ -180,7 +180,7 @@ export default function Home() {
   const handleRequestAccess = (e) => {
     e.preventDefault();
     if (!emailInput) return alert("Please enter an email");
-    window.location.href = `mailto:michael@agentforge.tech?subject=DataWizard Access Request&body=Please send me a PIN code for: ${emailInput}`;
+    window.location.href = `mailto:michael@agentforge.tech?subject=DataPalo Access Request&body=Please send me a PIN code for: ${emailInput}`;
   };
 
   // --- DEMO MODE LOGIC ---
@@ -242,7 +242,7 @@ export default function Home() {
       : "Analyze this data. Tell me the most important trends, totals, or outliers.";
 
     try {
-      const res = await fetch("/api/datawizard", {
+      const res = await fetch("/api/datapalo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: question, csvData: csvData, language: language }),
@@ -260,7 +260,7 @@ export default function Home() {
     const element = document.createElement("a");
     const file = new Blob([result.result], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = `DataWizard_Report_${new Date().toISOString().slice(0,10)}.txt`;
+    element.download = `DataPalo_Report_${new Date().toISOString().slice(0,10)}.txt`;
     document.body.appendChild(element);
     element.click();
   };
@@ -305,7 +305,7 @@ export default function Home() {
             </div>
             
             <h1 style={{ marginTop: "40px", fontSize: "40px" }}>
-                <span style={{color: "#06b6d4"}}>Data</span>Wizard 
+                <span style={{color: "#06b6d4"}}>Data</span>Palo 
                 {isDemoMode && <span style={{fontSize: "14px", background: "#333", padding: "4px 10px", borderRadius: "10px", marginLeft: "10px", verticalAlign: "middle"}}>DEMO MODE</span>}
             </h1>
             
@@ -334,7 +334,7 @@ export default function Home() {
                 <div style={{ marginTop: "40px", width: "100%", maxWidth: "800px" }}>
                     <div style={{ background: "#111", padding: "30px", borderRadius: "12px", border: "1px solid #333" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <h3 style={{ marginTop: 0, color: "#10b981" }}>📊 Wizard Analysis</h3>
+                            <h3 style={{ marginTop: 0, color: "#10b981" }}>📊 Palo Analysis</h3>
                             <button onClick={downloadReport} style={{ background: "#333", color: "#fff", border: "1px solid #555", padding: "8px 15px", borderRadius: "5px", cursor: "pointer" }}>{txt.download}</button>
                         </div>
                         <pre style={{ fontSize: "14px", marginTop: "20px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "#ddd" }}>{result.result}</pre>
@@ -356,7 +356,7 @@ export default function Home() {
         <header>
             <div className="logo">
                 <div className="logo-icon">🧙‍♂️</div>
-                <span className="logo-text">DataWizard</span>
+                <span className="logo-text">DataPalo</span>
             </div>
             <div className="lang-toggle">
                 <button onClick={() => setLanguage("cs")} className={`lang-btn ${language === "cs" ? "active" : ""}`}>CZ 🇨🇿</button>

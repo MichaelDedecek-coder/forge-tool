@@ -1,7 +1,7 @@
-// ADD THIS useEffect TO app/datawizard/page.js
+// ADD THIS useEffect TO app/datapalo/page.js
 // After line 49 (after the addLog function)
 
 // Persist language choice to localStorage for FeedbackButton
 useEffect(() => {
-  localStorage.setItem('datawizard_language', language);
+  localStorage.setItem('datapalo_language', language);
 }, [language]);

@@ -129,7 +129,7 @@ export default function UpgradeModal({ isOpen, onClose, reason, message, languag
             marginBottom: '15px',
             textAlign: 'center'
           }}>
-            DataWizard PRO
+            DataPalo PRO
           </h3>
           <ul style={{
             listStyle: 'none',

@@ -4,7 +4,7 @@
       "maxDuration": 60,
       "memory": 1024
     },
-    "app/api/datawizard/route.js": {
+    "app/api/datapalo/route.js": {
       "maxDuration": 120,
       "memory": 1024
     }
