@@ -121,8 +121,17 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     if (!supabase) throw new Error('Authentication not configured');
 
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut({ scope: 'local' });
     if (error) throw error;
+
+    // Clear Supabase SSR cookies manually to prevent middleware from refreshing the session
+    document.cookie.split(';').forEach((c) => {
+      const name = c.trim().split('=')[0];
+      if (name.startsWith('sb-')) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      }
+    });
+
     setUser(null);
     setProfile(null);
   };
