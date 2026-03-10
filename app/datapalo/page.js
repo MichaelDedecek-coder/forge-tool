@@ -4,56 +4,76 @@ import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 import ReportInterface from "../components/ReportInterface";
 import UpgradeModal from "../components/UpgradeModal";
+import AuthModal from "../components/AuthModal";
 import { markdownToReportJson } from "../lib/markdown-transformer";
+import { useAuth } from "../lib/auth-context";
+import {
+  incrementAnonymousUpload,
+  shouldShowSignupWall,
+  clearAnonymousSession
+} from "../lib/anonymous-session";
+import {
+  checkTierLimits,
+  canExport,
+  canUseExaResearch,
+  TIER_LIMITS
+} from "../lib/tier-config";
+import { getCurrentUsage, incrementUsage } from "../lib/supabase-client";
 
 export default function Home() {
-  // --- APP STATE (OPEN ACCESS - NO PIN) ---
+  // Auth state
+  const { user, profile, loading: authLoading } = useAuth();
+
+  // File state
   const [csvData, setCsvData] = useState(null);
   const [fileName, setFileName] = useState(null);
+  const [rowCount, setRowCount] = useState(0);
+
+  // Analysis state
   const [result, setResult] = useState(null);
   const [parsedReport, setParsedReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingStage, setLoadingStage] = useState("");
-  const [rowCount, setRowCount] = useState(0);
-  const [language, setLanguage] = useState("cs");
+
+  // Exa Research state
   const [researchAugmented, setResearchAugmented] = useState(false);
   const [exaInsightsCount, setExaInsightsCount] = useState(0);
   const [exaDiagnostics, setExaDiagnostics] = useState(null);
 
-  // Upgrade modal state
+  // Modal state
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState(null);
   const [upgradeMessage, setUpgradeMessage] = useState("");
 
-  // --- DEBUG HELPER (console only) ---
-  const addLog = (msg) => {
-    console.log(`[DataPalo] ${msg}`);
-  };
+  // Usage tracking
+  const [usage, setUsage] = useState({ analysis_count: 0, total_rows_processed: 0 });
 
-  // Check EXA status on page load
+  // UI state
+  const [language, setLanguage] = useState("cs");
+
+  const addLog = (msg) => console.log(`[DataPalo] ${msg}`);
+
+  // Load user's usage on mount and when profile changes
   useEffect(() => {
-    console.log('═══════════════════════════════════════');
-    console.log('🔍 CHECKING EXA CONFIGURATION...');
-    console.log('═══════════════════════════════════════');
-
-    fetch('/api/exa-status')
-      .then(res => res.json())
-      .then(data => {
-        console.log(`Status: ${data.exa_status}`);
-        console.log(`Message: ${data.message}`);
-        console.log('═══════════════════════════════════════');
-
-        if (!data.exa_configured) {
-          console.warn('⚠️  WARNING: EXA IS NOT ACTIVE!');
-          console.warn('⚠️  Research sections will NOT appear in your reports.');
-          console.warn('⚠️  To enable: Add EXA_API_KEY to your .env.local file');
-          console.warn('⚠️  Get API key from: https://exa.ai');
-        } else {
-          console.log('✅ EXA IS ACTIVE - Research sections will appear!');
+    async function loadUsage() {
+      if (user && profile) {
+        try {
+          const currentUsage = await getCurrentUsage(user.id);
+          setUsage(currentUsage);
+          addLog(`Usage loaded: ${currentUsage.analysis_count} analyses this month`);
+        } catch (error) {
+          console.error('Error loading usage:', error);
         }
-      })
-      .catch(err => console.error('Failed to check EXA status:', err));
-  }, []);
+      }
+    }
+    loadUsage();
+  }, [user, profile]);
+
+  // Clear anonymous session after signup
+  useEffect(() => {
+    if (user) clearAnonymousSession();
+  }, [user]);
 
   // Handle File Drop
   const onDrop = useCallback((acceptedFiles) => {
@@ -69,7 +89,6 @@ export default function Home() {
       const worksheet = workbook.Sheets[firstSheetName];
       const csvText = XLSX.utils.sheet_to_csv(worksheet);
 
-      // Count rows (excluding header)
       const rows = csvText.split('\n').filter(row => row.trim());
       const totalRows = rows.length - 1;
 
@@ -80,21 +99,46 @@ export default function Home() {
     reader.readAsBinaryString(file);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
-    onDrop, 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
     accept: {
-      'text/csv': ['.csv'], 
+      'text/csv': ['.csv'],
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
-    } 
+    }
   });
 
   async function runAnalysis() {
-    if (!csvData) return alert(language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!");
+    if (!csvData) {
+      return alert(language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!");
+    }
+
+    // TIER LOGIC: Check limits BEFORE running analysis
+    if (user && profile) {
+      const tier = profile.tier || 'free';
+      const limits = checkTierLimits(tier, usage.analysis_count, rowCount);
+
+      if (!limits.allowed) {
+        setUpgradeReason(limits.reason);
+        setUpgradeMessage(limits.message);
+        setShowUpgradeModal(true);
+        return;
+      }
+    } else {
+      // Anonymous user - check if this would be 2nd upload
+      if (shouldShowSignupWall(false)) {
+        setShowAuthModal(true);
+        return;
+      }
+    }
+
+    // Proceed with analysis
     setLoading(true);
     setResult(null);
     setParsedReport(null);
+    setResearchAugmented(false);
+    setExaInsightsCount(0);
+    setExaDiagnostics(null);
 
-    // PROGRESSIVE LOADING STAGES
     setLoadingStage(language === "cs"
       ? `Načítám ${rowCount.toLocaleString()} řádků...`
       : `Reading ${rowCount.toLocaleString()} rows...`);
@@ -104,6 +148,10 @@ export default function Home() {
       ? "Analyzuj tato data. Řekni mi nejdůležitější trendy, součty a odlehlé hodnoty."
       : "Analyze this data. Tell me the most important trends, totals, or outliers.";
 
+    // Determine if user has PRO Exa access for loading stage messaging
+    const currentTier = profile?.tier || 'free';
+    const hasExaAccess = canUseExaResearch(currentTier);
+
     try {
       // Stage 2: Statistical Aggregation
       setTimeout(() => {
@@ -112,33 +160,43 @@ export default function Home() {
           : "Performing statistical aggregation...");
       }, 1000);
 
-      // Stage 3: Exa Research (AUTOMATIC!)
-      setTimeout(() => {
-        setLoadingStage(language === "cs"
-          ? "🔍 Automaticky hledám průmyslové benchmarky a trendy..."
-          : "🔍 Auto-fetching industry benchmarks & market trends...");
-      }, 3000);
+      if (hasExaAccess) {
+        // Stage 3: Exa Research (PRO only)
+        setTimeout(() => {
+          setLoadingStage(language === "cs"
+            ? "🔍 Automaticky hledám průmyslové benchmarky a trendy..."
+            : "🔍 Auto-fetching industry benchmarks & market trends...");
+        }, 3000);
 
-      // Stage 4: AI Insights with Research Context
-      setTimeout(() => {
-        setLoadingStage(language === "cs"
-          ? "✨ Generuji analýzu s externím kontextem..."
-          : "✨ Generating analysis with external research context...");
-      }, 5000);
+        // Stage 4: AI Insights with Research Context
+        setTimeout(() => {
+          setLoadingStage(language === "cs"
+            ? "✨ Generuji analýzu s externím kontextem..."
+            : "✨ Generating analysis with external research context...");
+        }, 5000);
+      } else {
+        // Stage 3: Basic AI (FREE)
+        setTimeout(() => {
+          setLoadingStage(language === "cs"
+            ? "Generuji AI analýzu..."
+            : "Generating AI insights...");
+        }, 3000);
+      }
 
       addLog("Calling /api/datapalo...");
       const res = await fetch("/api/datapalo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            message: question,
-            csvData: csvData,
-            language: language
+          message: question,
+          csvData: csvData,
+          language: language,
+          userId: user?.id,
         }),
       });
       const data = await res.json();
 
-      // Handle upgrade requirements
+      // Handle 403: upgrade required (from server-side tier check)
       if (res.status === 403 && data.requiresUpgrade) {
         setUpgradeReason(data.reason);
         setUpgradeMessage(data.error);
@@ -148,11 +206,11 @@ export default function Home() {
         return;
       }
 
-      // Handle auth requirement
+      // Handle 401: auth required
       if (res.status === 401 && data.requiresAuth) {
-        alert(data.error);
-        // Redirect to login or show auth modal
-        window.location.href = '/';
+        setShowAuthModal(true);
+        setLoading(false);
+        setLoadingStage("");
         return;
       }
 
@@ -165,95 +223,49 @@ export default function Home() {
 
       addLog(`API response received. Result length: ${data.result?.length || 0}`);
 
-      // V9: Log first 1000 chars of the response for debugging
-      console.log("[DataPalo V9] API Response preview:", data.result?.substring(0, 1000));
-
-      // Store EXA diagnostics for debugging
+      // Store EXA diagnostics
       if (data.exa_diagnostics) {
         setExaDiagnostics(data.exa_diagnostics);
-        console.log("🔍 EXA DIAGNOSTICS:", JSON.stringify(data.exa_diagnostics, null, 2));
+        addLog(`Exa diagnostics: ${data.exa_diagnostics.status}`);
       }
 
       // Check if research augmentation was used
       if (data.research_augmented) {
         setResearchAugmented(true);
         setExaInsightsCount(data.exa_insights?.length || 0);
-        addLog(`✨ Research-augmented: ${data.exa_insights?.length || 0} insights found`);
-      } else {
-        console.log("⚠️ EXA RESEARCH NOT ACTIVE. Diagnostics:", data.exa_diagnostics);
+        addLog(`Research-augmented: ${data.exa_insights?.length || 0} insights found`);
       }
 
       setResult(data.result);
 
       // Parse the markdown into structured data
       addLog("Parsing markdown to report...");
-      console.log("═══════════════════════════════════════════════════════");
-      console.log("[FRONTEND] Starting markdown parse...");
-      console.log("═══════════════════════════════════════════════════════");
-      console.log("Markdown length:", data.result?.length);
-      console.log("Research augmented:", data.research_augmented);
-      console.log("EXA insights count:", data.exa_insights?.length);
-
-      // Check if sections exist in raw markdown
-      const hasBenchmarksInRaw = data.result?.includes('Industry Benchmarks') || data.result?.includes('Srovnání s Průmyslem');
-      const hasTrendsInRaw = data.result?.includes('Market Trends') || data.result?.includes('Tržní Trendy');
-      const hasSourcesInRaw = data.result?.includes('Research Sources') || data.result?.includes('Zdroje Výzkumu');
-
-      console.log("Sections in RAW markdown:");
-      console.log(`  - Industry Benchmarks: ${hasBenchmarksInRaw ? '✅ YES' : '❌ NO'}`);
-      console.log(`  - Market Trends: ${hasTrendsInRaw ? '✅ YES' : '❌ NO'}`);
-      console.log(`  - Research Sources: ${hasSourcesInRaw ? '✅ YES' : '❌ NO'}`);
-
       const reportData = markdownToReportJson(data.result);
-
-      console.log("Sections in PARSED report:");
-      console.log(`  - industryBenchmarks: ${reportData?.industryBenchmarks?.length || 0} items`);
-      console.log(`  - marketTrends: ${reportData?.marketTrends?.length || 0} items`);
-      console.log(`  - researchSources: ${reportData?.researchSources?.length || 0} items`);
-
-      if (reportData?.industryBenchmarks?.length > 0) {
-        console.log("✅ Industry Benchmarks WILL BE DISPLAYED");
-        console.log("First benchmark:", reportData.industryBenchmarks[0]);
-      }
-      if (reportData?.marketTrends?.length > 0) {
-        console.log("✅ Market Trends WILL BE DISPLAYED");
-        console.log("First trend:", reportData.marketTrends[0]);
-      }
-      if (reportData?.researchSources?.length > 0) {
-        console.log("✅ Research Sources WILL BE DISPLAYED");
-        console.log("First source:", reportData.researchSources[0]);
-      }
-      console.log("═══════════════════════════════════════════════════════");
-
-      console.log("[FRONTEND] Parsed report structure:", {
-        title: reportData?.title,
-        summary: reportData?.summary?.substring(0, 100),
-        metricsCount: reportData?.metrics?.length || 0,
-        chartsCount: reportData?.charts?.length || 0,
-        insightsCount: reportData?.insights?.length || 0,
-        charts: reportData?.charts,
-        // 🔴 CRITICAL FOR DEBUGGING EXA
-        industryBenchmarksCount: reportData?.industryBenchmarks?.length || 0,
-        marketTrendsCount: reportData?.marketTrends?.length || 0,
-        researchSourcesCount: reportData?.researchSources?.length || 0
-      });
-
-      // 🔴 EXPLICIT CHECK FOR RESEARCH SECTIONS
-      if (data.research_augmented) {
-        console.log("🔍 RESEARCH SECTIONS CHECK:");
-        console.log("  - Industry Benchmarks:", reportData?.industryBenchmarks?.length || 0, "items");
-        console.log("  - Market Trends:", reportData?.marketTrends?.length || 0, "items");
-        console.log("  - Research Sources:", reportData?.researchSources?.length || 0, "items");
-
-        if (!reportData?.industryBenchmarks?.length && !reportData?.marketTrends?.length && !reportData?.researchSources?.length) {
-          console.error("⚠️ WARNING: Research was active but NO research sections were parsed!");
-          console.log("This means the AI didn't generate the sections OR the parser couldn't find them");
-        }
-      }
       addLog(`Parse complete: Charts=${reportData?.charts?.length || 0}, Metrics=${reportData?.metrics?.length || 0}`);
 
       setParsedReport(reportData);
-      
+
+      // USAGE TRACKING: Increment counters AFTER successful analysis
+      if (user && profile) {
+        try {
+          await incrementUsage(user.id, rowCount);
+          const newUsage = await getCurrentUsage(user.id);
+          setUsage(newUsage);
+          addLog(`Usage updated: ${newUsage.analysis_count} analyses`);
+        } catch (error) {
+          console.error('Error updating usage:', error);
+        }
+      } else {
+        // Anonymous - increment localStorage counter
+        const count = incrementAnonymousUpload();
+        addLog(`Anonymous upload ${count} recorded`);
+
+        // Show signup wall after first analysis completes
+        if (count === 1) {
+          setTimeout(() => setShowAuthModal(true), 2000);
+        }
+      }
+
     } catch (e) {
       addLog(`ERROR: ${e.message}`);
       alert("Error: " + e.message);
@@ -275,11 +287,20 @@ export default function Home() {
   const downloadPDF = () => {
     if (!parsedReport) return;
 
-    try {
-      // CROSS-ORIGIN SOLUTION: Use postMessage instead of localStorage
-      // This works even if domains are different (forgecreative.cz vs vercel.app)
+    // Check if user has PRO tier for PDF export
+    const tier = profile?.tier || 'free';
+    if (!canExport(tier, 'pdf')) {
+      setUpgradeReason('pdf_export');
+      setUpgradeMessage(
+        language === 'cs'
+          ? 'Export PDF je dostupný pouze pro PRO uživatele. Přejděte na PRO pro neomezené exporty.'
+          : 'PDF export is only available for PRO users. Upgrade to PRO for unlimited exports.'
+      );
+      setShowUpgradeModal(true);
+      return;
+    }
 
-      // Open print window
+    try {
       const printUrl = `${window.location.origin}/datapalo/print`;
       const printWindow = window.open(printUrl, "_blank");
 
@@ -290,30 +311,21 @@ export default function Home() {
         return;
       }
 
-      // Listen for "ready" message from print window
       const handleMessage = (event) => {
-        // Security: verify message is from print window
         if (event.data?.type === "PRINT_PAGE_READY") {
           addLog("Print window ready, sending data...");
-
-          // Send report data to print window
           printWindow.postMessage({
             type: "DATAWIZARD_PRINT_DATA",
             data: parsedReport,
             language: language
-          }, "*"); // Use "*" to allow any origin (print window might be on different domain)
-
-          // Clean up listener
+          }, "*");
           window.removeEventListener("message", handleMessage);
         }
       };
 
       window.addEventListener("message", handleMessage);
-
-      // Fallback: Also try localStorage (works if same origin)
       localStorage.setItem("datapalo_print_data", JSON.stringify(parsedReport));
       localStorage.setItem("datapalo_print_language", language);
-
       addLog("Opening print preview...");
     } catch (error) {
       addLog(`Error: ${error.message}`);
@@ -321,123 +333,218 @@ export default function Home() {
     }
   };
 
-  // --- CLEAN UI - INSTANT ACCESS ---
+  // Get tier info for display
+  const tier = profile?.tier || 'free';
+  const tierLimits = TIER_LIMITS[tier];
+  const analysesRemaining = tierLimits.analysesPerMonth === Infinity
+    ? '∞'
+    : Math.max(0, tierLimits.analysesPerMonth - usage.analysis_count);
+
   return (
     <div style={{ padding: "40px", fontFamily: "sans-serif", backgroundColor: "#0f172a", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
-      
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        language={language}
+      />
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        reason={upgradeReason}
+        message={upgradeMessage}
+        language={language}
+      />
+
       {/* BACK TO HOME */}
-      <button 
+      <button
         onClick={() => window.location.href = '/'}
-        style={{ 
-          position: "absolute", top: "20px", left: "20px", 
-          background: "none", border: "1px solid rgba(255,255,255,0.2)", 
-          color: "rgba(255,255,255,0.7)", padding: "8px 16px", 
+        style={{
+          position: "absolute", top: "20px", left: "20px",
+          background: "none", border: "1px solid rgba(255,255,255,0.2)",
+          color: "rgba(255,255,255,0.7)", padding: "8px 16px",
           borderRadius: "8px", cursor: "pointer", fontSize: "14px"
         }}
       >
         ← {language === "cs" ? "Zpět" : "Back"}
       </button>
 
-      {/* LANGUAGE TOGGLE */}
-      <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", gap: "4px", background: "#1e293b", padding: "4px", borderRadius: "20px" }}>
-        <button 
+      {/* TIER BADGE + USER INFO (top right) */}
+      <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
+        {/* Language Toggle */}
+        <div style={{ display: "flex", gap: "4px", background: "#1e293b", padding: "4px", borderRadius: "20px" }}>
+          <button
             onClick={() => setLanguage("cs")}
-            style={{ 
-                background: language === "cs" ? "#3b82f6" : "transparent", 
-                color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
+            style={{
+              background: language === "cs" ? "#3b82f6" : "transparent",
+              color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
             }}
-        >CZ 🇨🇿</button>
-        <button 
+          >CZ 🇨🇿</button>
+          <button
             onClick={() => setLanguage("en")}
-            style={{ 
-                background: language === "en" ? "#3b82f6" : "transparent", 
-                color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
+            style={{
+              background: language === "en" ? "#3b82f6" : "transparent",
+              color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
             }}
-        >EN 🇬🇧</button>
+          >EN 🇬🇧</button>
+        </div>
+
+        {/* Tier Badge */}
+        {user && profile && (
+          <div style={{
+            background: tier === 'pro' ? 'linear-gradient(135deg, #0ea5e9 0%, #10b981 100%)' : '#64748b',
+            color: 'white',
+            padding: '6px 14px',
+            borderRadius: '20px',
+            fontSize: '13px',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span>{tier.toUpperCase()}</span>
+            <span style={{ opacity: 0.8 }}>•</span>
+            <span>{analysesRemaining} {language === 'cs' ? 'zbývá' : 'left'}</span>
+          </div>
+        )}
+
+        {/* Sign In button (if not authenticated) */}
+        {!user && !authLoading && (
+          <button
+            onClick={() => setShowAuthModal(true)}
+            style={{
+              background: '#334155',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '600'
+            }}
+          >
+            {language === 'cs' ? 'Přihlásit se' : 'Sign In'}
+          </button>
+        )}
       </div>
 
       {/* HEADER */}
       <div style={{ marginTop: "40px", textAlign: "center" }}>
         <h1 style={{ marginBottom: "10px", fontSize: "2.2rem" }}>
-          <span style={{ color: "#E06792" }}>Data</span><span style={{ fontWeight: "bold", color: "white" }}>Palo</span>
+          <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold", color: "white" }}>Palo</span>
         </h1>
         <p style={{ color: "#64748b", marginBottom: "30px" }}>
-            {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
+          {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
         </p>
       </div>
-      
+
       {/* DROP ZONE */}
-      <div {...getRootProps()} style={{ 
-          width: "100%", maxWidth: "550px", padding: "50px 40px", 
-          border: "2px dashed #334155", borderRadius: "16px", 
-          textAlign: "center", cursor: "pointer",
-          backgroundColor: isDragActive ? "#1e293b" : "transparent",
-          transition: "all 0.2s"
+      <div {...getRootProps()} style={{
+        width: "100%", maxWidth: "550px", padding: "50px 40px",
+        border: "2px dashed #334155", borderRadius: "16px",
+        textAlign: "center", cursor: "pointer",
+        backgroundColor: isDragActive ? "#1e293b" : "transparent",
+        transition: "all 0.2s"
       }}>
         <input {...getInputProps()} />
         {fileName ? (
-            <div>
-                <div style={{ fontSize: "48px", marginBottom: "15px" }}>📄</div>
-                <p style={{ fontSize: "18px", color: "#10b981", fontWeight: "600" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
-                <p style={{ fontSize: "15px", color: "#0ea5e9", marginTop: "8px", fontWeight: "600" }}>
-                  {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"}
-                </p>
-                <p style={{ fontSize: "13px", color: "#475569", marginTop: "8px" }}>{language === "cs" ? "Klikněte na tlačítko níže pro analýzu" : "Click the button below to analyze"}</p>
-            </div>
+          <div>
+            <div style={{ fontSize: "48px", marginBottom: "15px" }}>📄</div>
+            <p style={{ fontSize: "18px", color: "#10b981", fontWeight: "600" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
+            <p style={{ fontSize: "15px", color: "#0ea5e9", marginTop: "8px", fontWeight: "600" }}>
+              {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"}
+            </p>
+            <p style={{ fontSize: "13px", color: "#475569", marginTop: "8px" }}>{language === "cs" ? "Klikněte na tlačítko níže pro analýzu" : "Click the button below to analyze"}</p>
+          </div>
         ) : (
-            <div>
-                <div style={{ fontSize: "48px", marginBottom: "15px" }}>📥</div>
-                <p style={{ color: "#94a3b8", fontSize: "16px" }}>{language === "cs" ? "Přetáhněte soubor sem nebo klikněte" : "Drag & drop a file here, or click"}</p>
-                <p style={{ fontSize: "13px", color: "#475569", marginTop: "10px" }}>CSV, Excel (.xlsx)</p>
-            </div>
+          <div>
+            <div style={{ fontSize: "48px", marginBottom: "15px" }}>📥</div>
+            <p style={{ color: "#94a3b8", fontSize: "16px" }}>{language === "cs" ? "Přetáhněte soubor sem nebo klikněte" : "Drag & drop a file here, or click"}</p>
+            <p style={{ fontSize: "13px", color: "#475569", marginTop: "10px" }}>CSV, Excel (.xlsx)</p>
+          </div>
         )}
       </div>
 
       {/* ANALYZE BUTTON */}
       {fileName && (
-          <button 
-            onClick={runAnalysis} 
-            disabled={loading}
-            style={{ 
-                marginTop: "25px", padding: "16px 50px", fontSize: "17px", 
-                background: loading ? "#475569" : "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)", 
-                color: "white", border: "none", borderRadius: "30px", cursor: loading ? "not-allowed" : "pointer",
-                fontWeight: "bold", boxShadow: "0 4px 20px rgba(16, 185, 129, 0.3)",
-                transition: "all 0.2s"
-            }}
-          >
-            {loading
-                ? `✨ ${loadingStage}`
-                : (language === "cs" ? "✨ Analyzovat" : "✨ Analyze")}
-          </button>
+        <button
+          onClick={runAnalysis}
+          disabled={loading}
+          style={{
+            marginTop: "25px", padding: "16px 50px", fontSize: "17px",
+            background: loading ? "#475569" : "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)",
+            color: "white", border: "none", borderRadius: "30px", cursor: loading ? "not-allowed" : "pointer",
+            fontWeight: "bold", boxShadow: "0 4px 20px rgba(16, 185, 129, 0.3)",
+            transition: "all 0.2s"
+          }}
+        >
+          {loading
+            ? `✨ ${loadingStage}`
+            : (language === "cs" ? "✨ Analyzovat" : "✨ Analyze")}
+        </button>
       )}
 
       {/* RESULTS */}
       {parsedReport && (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "1200px" }}>
-          {/* EXA Diagnostic Banner (shows when EXA failed) */}
+
+          {/* Exa Diagnostic Banner (shows when Exa had issues or is PRO-only) */}
           {exaDiagnostics && exaDiagnostics.status !== "success" && (
             <div style={{
-              background: exaDiagnostics.status === "not_configured" ? "#1e293b" : "#451a03",
+              background: exaDiagnostics.status === "pro_only" ? "#1e1b4b" : exaDiagnostics.status === "not_configured" ? "#1e293b" : "#451a03",
               padding: "12px 20px",
               borderRadius: "10px",
               marginBottom: "12px",
-              border: `1px solid ${exaDiagnostics.status === "not_configured" ? "#334155" : "#92400e"}`,
+              border: `1px solid ${exaDiagnostics.status === "pro_only" ? "#4338ca" : exaDiagnostics.status === "not_configured" ? "#334155" : "#92400e"}`,
               fontSize: "13px"
             }}>
-              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "not_configured" ? "#94a3b8" : "#fbbf24" }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "pro_only" ? "#a78bfa" : exaDiagnostics.status === "not_configured" ? "#94a3b8" : "#fbbf24" }}>
+                {exaDiagnostics.status === "pro_only" && (language === "cs"
+                  ? "🔒 Research-Augmented Analysis je PRO funkce"
+                  : "🔒 Research-Augmented Analysis is a PRO feature")}
                 {exaDiagnostics.status === "not_configured" && "ℹ️ EXA Research: Not configured"}
                 {exaDiagnostics.status === "error" && `⚠️ EXA Research: Error — ${exaDiagnostics.error}`}
                 {exaDiagnostics.status === "empty" && "⚠️ EXA Research: No results found"}
                 {exaDiagnostics.status === "skipped" && "ℹ️ EXA Research: Skipped"}
               </div>
               <div style={{ color: "#94a3b8", fontSize: "12px" }}>
-                {exaDiagnostics.hint || exaDiagnostics.reason || "Check /api/exa-status for details"}
+                {exaDiagnostics.status === "pro_only"
+                  ? (language === "cs"
+                    ? "Přejděte na PRO pro průmyslové benchmarky, tržní trendy a citované zdroje."
+                    : "Upgrade to PRO for industry benchmarks, market trends, and cited sources.")
+                  : (exaDiagnostics.hint || exaDiagnostics.reason || "")}
               </div>
+              {exaDiagnostics.status === "pro_only" && (
+                <button
+                  onClick={() => {
+                    setUpgradeReason('exa_research');
+                    setUpgradeMessage(language === "cs"
+                      ? "Odemkněte Research-Augmented Analysis s DataPalo PRO. Vaše analýzy budou obohaceny o průmyslové benchmarky, tržní trendy a citované zdroje z Exa.ai."
+                      : "Unlock Research-Augmented Analysis with DataPalo PRO. Your analyses will be enriched with industry benchmarks, market trends, and cited sources from Exa.ai.");
+                    setShowUpgradeModal(true);
+                  }}
+                  style={{
+                    marginTop: "8px",
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)",
+                    color: "white",
+                    border: "none",
+                    padding: "6px 16px",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    cursor: "pointer"
+                  }}
+                >
+                  {language === "cs" ? "🚀 Upgradovat na PRO" : "🚀 Upgrade to PRO"}
+                </button>
+              )}
             </div>
           )}
 
-          {/* Research Augmentation Badge */}
+          {/* Research Augmentation Badge (shows when Exa successfully enriched the analysis) */}
           {researchAugmented && (
             <div style={{
               background: "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
@@ -450,7 +557,7 @@ export default function Home() {
                 <span style={{ fontSize: "24px" }}>🔍</span>
                 <div>
                   <div style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    {language === "cs" ? "✨ Research-Augmented Analysis" : "✨ Research-Augmented Analysis"}
+                    ✨ Research-Augmented Analysis
                   </div>
                   <div style={{ fontSize: "13px", opacity: 0.9 }}>
                     {language === "cs"
@@ -460,8 +567,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
-              {/* Feature List */}
               <div style={{ fontSize: "12px", opacity: 0.95, marginLeft: "36px", lineHeight: "1.8" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
                   <div>✅ {language === "cs" ? "Srovnání s průmyslem" : "Industry benchmarks"}</div>
@@ -473,23 +578,40 @@ export default function Home() {
             </div>
           )}
 
+          {/* Report Card */}
           <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
-                <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
-                <div style={{ display: "flex", gap: "10px" }}>
-                    <button
-                        onClick={downloadPDF}
-                        style={{ background: "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)", color: "#fff", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px", fontWeight: "600", boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)" }}
-                    >
-                        {language === "cs" ? "📄 Stáhnout PDF" : "📄 Download PDF"}
-                    </button>
-                    <button
-                        onClick={downloadReport}
-                        style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
-                    >
-                        {language === "cs" ? "📝 Stáhnout TXT" : "📝 Download TXT"}
-                    </button>
-                </div>
+              <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  onClick={downloadPDF}
+                  style={{
+                    background: canExport(tier, 'pdf')
+                      ? "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)"
+                      : "#334155",
+                    color: "#fff",
+                    border: "none",
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    boxShadow: canExport(tier, 'pdf') ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  {language === "cs" ? "📄 Stáhnout PDF" : "📄 Download PDF"}
+                  {!canExport(tier, 'pdf') && <span style={{ fontSize: '12px', opacity: 0.7 }}>🔒 PRO</span>}
+                </button>
+                <button
+                  onClick={downloadReport}
+                  style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
+                >
+                  {language === "cs" ? "📝 Stáhnout TXT" : "📝 Download TXT"}
+                </button>
+              </div>
             </div>
             <ReportInterface data={parsedReport} />
           </div>
@@ -508,16 +630,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* UPGRADE MODAL */}
-      <UpgradeModal
-        isOpen={showUpgradeModal}
-        onClose={() => setShowUpgradeModal(false)}
-        reason={upgradeReason}
-        message={upgradeMessage}
-        language={language}
-      />
-
-      {/* FOOTER - CONTACT FOR FEEDBACK */}
+      {/* FOOTER */}
       <div style={{ marginTop: "60px", textAlign: "center", color: "#475569", fontSize: "14px", paddingBottom: "20px" }}>
         <p style={{ marginBottom: "8px" }}>
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
