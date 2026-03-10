@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from './lib/auth-context';
+import AuthModal from './components/AuthModal';
 
 export default function DataPaloLanding() {
   const [language, setLanguage] = useState('en');
   const [mounted, setMounted] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [visibleSections, setVisibleSections] = useState({});
+  const [showAuth, setShowAuth] = useState(false);
+  const { user, signOut } = useAuth();
   const sectionRefs = useRef({});
 
   useEffect(() => {
@@ -389,28 +393,110 @@ export default function DataPaloLanding() {
 
           <div style={{
             display: "flex",
-            gap: "4px",
-            fontSize: "0.75rem",
-            fontWeight: "500",
-            fontFamily: "'JetBrains Mono', monospace",
-            letterSpacing: "0.06em",
+            alignItems: "center",
+            gap: "16px",
           }}>
-            {['en', 'cz'].map((lang) => (
-              <span
-                key={lang}
-                onClick={() => setLanguage(lang)}
+            {/* Language switcher */}
+            <div style={{
+              display: "flex",
+              gap: "4px",
+              fontSize: "0.75rem",
+              fontWeight: "500",
+              fontFamily: "'JetBrains Mono', monospace",
+              letterSpacing: "0.06em",
+            }}>
+              {['en', 'cz'].map((lang) => (
+                <span
+                  key={lang}
+                  onClick={() => setLanguage(lang)}
+                  style={{
+                    cursor: "pointer",
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    color: language === lang ? "white" : "rgba(255,255,255,0.3)",
+                    background: language === lang ? "rgba(224, 103, 146, 0.15)" : "transparent",
+                    border: language === lang ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent",
+                    transition: "all 0.3s ease",
+                    textTransform: "uppercase",
+                  }}
+                >{lang}</span>
+              ))}
+            </div>
+
+            {/* Pricing link */}
+            <a
+              href="/pricing"
+              style={{
+                color: "rgba(255,255,255,0.7)",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                textDecoration: "none",
+                transition: "color 0.2s ease",
+              }}
+              onMouseEnter={(e) => e.target.style.color = "white"}
+              onMouseLeave={(e) => e.target.style.color = "rgba(255,255,255,0.7)"}
+            >
+              {language === 'cz' ? 'Ceník' : 'Pricing'}
+            </a>
+
+            {/* Sign In / User menu */}
+            {user ? (
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <a
+                  href="/datapalo"
+                  style={{
+                    padding: "8px 18px",
+                    background: "linear-gradient(135deg, #E06792 0%, #A855F7 100%)",
+                    color: "white",
+                    borderRadius: "8px",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    textDecoration: "none",
+                    transition: "opacity 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => e.target.style.opacity = "0.85"}
+                  onMouseLeave={(e) => e.target.style.opacity = "1"}
+                >
+                  {language === 'cz' ? 'Analyzovat' : 'Analyze'}
+                </a>
+                <button
+                  onClick={signOut}
+                  style={{
+                    background: "none",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "rgba(255,255,255,0.6)",
+                    padding: "8px 14px",
+                    borderRadius: "8px",
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.3)"; e.target.style.color = "white"; }}
+                  onMouseLeave={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.15)"; e.target.style.color = "rgba(255,255,255,0.6)"; }}
+                >
+                  {language === 'cz' ? 'Odhlásit' : 'Sign Out'}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowAuth(true)}
                 style={{
-                  cursor: "pointer",
-                  padding: "6px 12px",
+                  padding: "8px 20px",
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  color: "white",
                   borderRadius: "8px",
-                  color: language === lang ? "white" : "rgba(255,255,255,0.3)",
-                  background: language === lang ? "rgba(224, 103, 146, 0.15)" : "transparent",
-                  border: language === lang ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent",
-                  transition: "all 0.3s ease",
-                  textTransform: "uppercase",
+                  fontSize: "0.85rem",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
                 }}
-              >{lang}</span>
-            ))}
+                onMouseEnter={(e) => { e.target.style.background = "rgba(255,255,255,0.12)"; e.target.style.borderColor = "rgba(255,255,255,0.25)"; }}
+                onMouseLeave={(e) => { e.target.style.background = "rgba(255,255,255,0.08)"; e.target.style.borderColor = "rgba(255,255,255,0.15)"; }}
+              >
+                {language === 'cz' ? 'Přihlásit se' : 'Sign In'}
+              </button>
+            )}
           </div>
         </nav>
 
@@ -1112,6 +1198,13 @@ export default function DataPaloLanding() {
           </a>
         </footer>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        language={language === 'cz' ? 'cs' : 'en'}
+      />
     </>
   );
 }
