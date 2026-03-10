@@ -38,27 +38,27 @@ export async function POST(request) {
 
     console.log(`[Webhook] Received: ${event.type}`);
 
-    // Handle different event types
+    // Handle different event types — pass supabaseAdmin to each handler
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(event.data.object);
+        await handleCheckoutCompleted(event.data.object, supabaseAdmin);
         break;
 
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
-        await handleSubscriptionUpdate(event.data.object);
+        await handleSubscriptionUpdate(event.data.object, supabaseAdmin);
         break;
 
       case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object);
+        await handleSubscriptionDeleted(event.data.object, supabaseAdmin);
         break;
 
       case 'invoice.payment_succeeded':
-        await handlePaymentSucceeded(event.data.object);
+        await handlePaymentSucceeded(event.data.object, supabaseAdmin);
         break;
 
       case 'invoice.payment_failed':
-        await handlePaymentFailed(event.data.object);
+        await handlePaymentFailed(event.data.object, supabaseAdmin);
         break;
 
       default:
@@ -79,7 +79,7 @@ export async function POST(request) {
 /**
  * Handle successful checkout session
  */
-async function handleCheckoutCompleted(session) {
+async function handleCheckoutCompleted(session, supabaseAdmin) {
   const userId = session.client_reference_id || session.metadata?.userId;
   const customerId = session.customer;
   const subscriptionId = session.subscription;
@@ -99,7 +99,7 @@ async function handleCheckoutCompleted(session) {
       tier: 'pro',
       stripe_customer_id: customerId,
       stripe_subscription_id: subscriptionId,
-      subscription_status: 'trialing', // Will be updated by subscription.created event
+      subscription_status: 'trialing',
       updated_at: new Date().toISOString()
     }, {
       onConflict: 'user_id'
@@ -109,7 +109,7 @@ async function handleCheckoutCompleted(session) {
 /**
  * Handle subscription created/updated
  */
-async function handleSubscriptionUpdate(subscription) {
+async function handleSubscriptionUpdate(subscription, supabaseAdmin) {
   const customerId = subscription.customer;
   const subscriptionId = subscription.id;
   const status = subscription.status;
@@ -153,7 +153,7 @@ async function handleSubscriptionUpdate(subscription) {
 /**
  * Handle subscription cancellation/deletion
  */
-async function handleSubscriptionDeleted(subscription) {
+async function handleSubscriptionDeleted(subscription, supabaseAdmin) {
   const subscriptionId = subscription.id;
 
   console.log(`[Webhook] Subscription deleted: ${subscriptionId}`);
@@ -172,7 +172,7 @@ async function handleSubscriptionDeleted(subscription) {
 /**
  * Handle successful payment
  */
-async function handlePaymentSucceeded(invoice) {
+async function handlePaymentSucceeded(invoice, supabaseAdmin) {
   const subscriptionId = invoice.subscription;
 
   console.log(`[Webhook] Payment succeeded for subscription: ${subscriptionId}`);
@@ -191,7 +191,7 @@ async function handlePaymentSucceeded(invoice) {
 /**
  * Handle failed payment
  */
-async function handlePaymentFailed(invoice) {
+async function handlePaymentFailed(invoice, supabaseAdmin) {
   const subscriptionId = invoice.subscription;
 
   console.log(`[Webhook] Payment failed for subscription: ${subscriptionId}`);
@@ -204,6 +204,4 @@ async function handlePaymentFailed(invoice) {
       updated_at: new Date().toISOString()
     })
     .eq('stripe_subscription_id', subscriptionId);
-
-  // TODO: Send email notification to user
 }
