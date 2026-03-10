@@ -1,16 +1,100 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TIER_LIMITS } from "../lib/tier-config";
 
 export default function PricingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [language, setLanguage] = useState(searchParams.get('lang') === 'cz' ? 'cz' : 'en');
+
+  const t = {
+    en: {
+      back: '← Back',
+      title: 'DataPalo',
+      subtitle: 'Your first AI employee — a data analyst at a fraction of the cost',
+      freeBadge: 'FREE',
+      proBadge: 'PRO',
+      recommended: '⭐ RECOMMENDED',
+      perMonth: '/month',
+      freeDesc: 'Try it out',
+      trialDesc: '🎁 14 days free trial',
+      freeFeatures: [
+        `${TIER_LIMITS.free.analysesPerMonth} analyses per month`,
+        `Max ${TIER_LIMITS.free.maxRows.toLocaleString()} rows`,
+        'Basic AI analysis',
+        'Text export',
+        'Email support'
+      ],
+      freeDisabled: ['PDF export', 'Analysis history', 'Priority processing'],
+      proFeatures: [
+        '∞ Unlimited analyses',
+        '∞ Unlimited rows',
+        '🔬 Exa neural search + citations',
+        '📊 Industry benchmarks',
+        'PDF + PPT export',
+        '90-day history',
+        'Priority processing'
+      ],
+      freeCta: 'Start free',
+      proCta: '🚀 Start PRO trial',
+      proCtaLoading: '⏳ Loading...',
+      whyTitle: '💰 Why it\'s a great deal',
+      humanTitle: '👨‍💼 Human analyst',
+      humanDesc: 'Average salary: <strong>€2,000 – €3,200/month</strong><br/>+ health insurance, holidays, training...',
+      aiTitle: '🤖 DataPalo PRO',
+      aiDesc: 'Price: <strong>€29/month</strong><br/>= <strong>70x cheaper</strong> than a human employee<br/>✓ Available 24/7 ✓ Instant results ✓ No errors',
+      footer: '✅ Cancel anytime | 🔒 Secure payments via Stripe | 🇪🇺 VAT included',
+      question: 'Questions? Email',
+      company: 'FORGE CREATIVE | AI Job Agency'
+    },
+    cz: {
+      back: '← Zpět',
+      title: 'DataPalo',
+      subtitle: 'Váš první AI zaměstnanec – datový analytik za zlomek ceny lidského zaměstnance',
+      freeBadge: 'FREE',
+      proBadge: 'PRO',
+      recommended: '⭐ DOPORUČENO',
+      perMonth: '/měsíc',
+      freeDesc: 'Pro vyzkoušení',
+      trialDesc: '🎁 14 dní zdarma na vyzkoušení',
+      freeFeatures: [
+        `${TIER_LIMITS.free.analysesPerMonth} analýz měsíčně`,
+        `Max ${TIER_LIMITS.free.maxRows.toLocaleString()} řádků`,
+        'Základní analýzy',
+        'Textový export',
+        'Email podpora'
+      ],
+      freeDisabled: ['PDF export', 'Historie analýz', 'Prioritní zpracování'],
+      proFeatures: [
+        '∞ Neomezené analýzy',
+        '∞ Neomezený počet řádků',
+        '🔬 Exa neural search + citace',
+        '📊 Industry benchmarky',
+        'PDF + PPT export',
+        'Historie 90 dní',
+        'Prioritní zpracování'
+      ],
+      freeCta: 'Začít zdarma',
+      proCta: '🚀 Začít PRO trial',
+      proCtaLoading: '⏳ Načítám...',
+      whyTitle: '💰 Proč je to výhodné?',
+      humanTitle: '👨‍💼 Lidský analytik',
+      humanDesc: 'Průměrná mzda: <strong>50 000 - 80 000 Kč/měsíc</strong><br/>+ zdravotní pojištění, dovolená, školení...',
+      aiTitle: '🤖 DataPalo PRO',
+      aiDesc: 'Cena: <strong>725 Kč/měsíc (€29)</strong><br/>= <strong>70x levnější</strong> než lidský zaměstnanec<br/>✓ Dostupný 24/7 ✓ Okamžité výsledky ✓ Žádné chyby',
+      footer: '✅ Zrušit kdykoliv | 🔒 Bezpečné platby přes Stripe | 🇪🇺 Včetně DPH',
+      question: 'Máte otázky? Napište na',
+      company: 'FORGE CREATIVE | AI Job Agency'
+    }
+  };
+
+  const c = t[language];
 
   const handleUpgrade = async (tier) => {
     if (tier === 'free') {
-      // Redirect to datapalo
       router.push('/datapalo');
       return;
     }
@@ -32,7 +116,6 @@ export default function PricingPage() {
         return;
       }
 
-      // Redirect to Stripe checkout
       window.location.href = data.url;
 
     } catch (error) {
@@ -52,23 +135,42 @@ export default function PricingPage() {
     }}>
       {/* Header */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', marginBottom: '60px' }}>
-        <button
-          onClick={() => router.push('/')}
-          style={{
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            color: 'white',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '14px'
-          }}
-        >
-          ← Zpět
-        </button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+          <button
+            onClick={() => router.push('/')}
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: 'white',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            {c.back}
+          </button>
+
+          {/* Language Toggle */}
+          <div style={{ display: 'flex', gap: '4px', fontSize: '0.8rem', fontWeight: '500' }}>
+            {['en', 'cz'].map((lang) => (
+              <span
+                key={lang}
+                onClick={() => setLanguage(lang)}
+                style={{
+                  cursor: 'pointer',
+                  padding: '6px 14px',
+                  borderRadius: '8px',
+                  color: language === lang ? 'white' : 'rgba(255,255,255,0.4)',
+                  background: language === lang ? 'rgba(14, 165, 233, 0.2)' : 'transparent',
+                  border: language === lang ? '1px solid rgba(14, 165, 233, 0.3)' : '1px solid transparent',
+                  transition: 'all 0.3s ease',
+                  textTransform: 'uppercase',
+                }}
+              >{lang}</span>
+            ))}
+          </div>
+        </div>
 
         <h1 style={{
           fontSize: '3rem',
@@ -84,7 +186,7 @@ export default function PricingPage() {
           maxWidth: '700px',
           margin: '0 auto'
         }}>
-          Váš první AI zaměstnanec – datový analytik za zlomek ceny lidského zaměstnance
+          {c.subtitle}
         </p>
       </div>
 
@@ -119,23 +221,17 @@ export default function PricingPage() {
               fontWeight: '600',
               marginBottom: '15px'
             }}>
-              FREE
+              {c.freeBadge}
             </div>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: '10px 0' }}>
-              €0<span style={{ fontSize: '1rem', color: '#64748b', fontWeight: 'normal' }}>/měsíc</span>
+              €0<span style={{ fontSize: '1rem', color: '#64748b', fontWeight: 'normal' }}>{c.perMonth}</span>
             </h2>
-            <p style={{ color: '#64748b', fontSize: '15px' }}>Pro vyzkoušení</p>
+            <p style={{ color: '#64748b', fontSize: '15px' }}>{c.freeDesc}</p>
           </div>
 
           <div style={{ flex: 1, marginBottom: '30px' }}>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {[
-                `${TIER_LIMITS.free.analysesPerMonth} analýz měsíčně`,
-                `Max ${TIER_LIMITS.free.maxRows.toLocaleString()} řádků`,
-                'Základní analýzy',
-                'Textový export',
-                'Email podpora'
-              ].map((feature, idx) => (
+              {c.freeFeatures.map((feature, idx) => (
                 <li key={idx} style={{
                   padding: '12px 0',
                   color: '#94a3b8',
@@ -148,11 +244,7 @@ export default function PricingPage() {
                   <span style={{ color: '#10b981' }}>✓</span> {feature}
                 </li>
               ))}
-              {[
-                'PDF export',
-                'Historie analýz',
-                'Prioritní zpracování'
-              ].map((feature, idx) => (
+              {c.freeDisabled.map((feature, idx) => (
                 <li key={idx} style={{
                   padding: '12px 0',
                   color: '#475569',
@@ -185,7 +277,7 @@ export default function PricingPage() {
             onMouseOver={(e) => e.target.style.background = '#475569'}
             onMouseOut={(e) => e.target.style.background = '#334155'}
           >
-            Začít zdarma
+            {c.freeCta}
           </button>
         </div>
 
@@ -214,7 +306,7 @@ export default function PricingPage() {
             fontWeight: '700',
             boxShadow: '0 4px 12px rgba(251, 191, 36, 0.4)'
           }}>
-            ⭐ DOPORUČENO
+            {c.recommended}
           </div>
 
           <div style={{ marginBottom: '20px' }}>
@@ -228,27 +320,19 @@ export default function PricingPage() {
               fontWeight: '600',
               marginBottom: '15px'
             }}>
-              PRO
+              {c.proBadge}
             </div>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: '10px 0' }}>
-              €29<span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.8)', fontWeight: 'normal' }}>/měsíc</span>
+              €29<span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.8)', fontWeight: 'normal' }}>{c.perMonth}</span>
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '600' }}>
-              🎁 14 dní zdarma na vyzkoušení
+              {c.trialDesc}
             </p>
           </div>
 
           <div style={{ flex: 1, marginBottom: '30px' }}>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {[
-                '∞ Neomezené analýzy',
-                '∞ Neomezený počet řádků',
-                '🔬 Exa neural search + citace',
-                '📊 Industry benchmarky',
-                'PDF + PPT export',
-                'Historie 90 dní',
-                'Prioritní zpracování'
-              ].map((feature, idx) => (
+              {c.proFeatures.map((feature, idx) => (
                 <li key={idx} style={{
                   padding: '12px 0',
                   color: 'white',
@@ -284,7 +368,7 @@ export default function PricingPage() {
             onMouseOver={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
             onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
           >
-            {loading && selectedPlan === 'pro' ? '⏳ Načítám...' : '🚀 Začít PRO trial'}
+            {loading && selectedPlan === 'pro' ? c.proCtaLoading : c.proCta}
           </button>
         </div>
       </div>
@@ -299,43 +383,36 @@ export default function PricingPage() {
         border: '1px solid #334155'
       }}>
         <h3 style={{ color: 'white', fontSize: '1.8rem', marginBottom: '30px', textAlign: 'center' }}>
-          💰 Proč je to výhodné?
+          {c.whyTitle}
         </h3>
 
         <div style={{ display: 'grid', gap: '20px' }}>
           <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px' }}>
-            <h4 style={{ color: '#10b981', marginBottom: '10px' }}>👨‍💼 Lidský analytik</h4>
-            <p style={{ color: '#94a3b8', margin: 0 }}>
-              Průměrná mzda: <strong style={{ color: 'white' }}>50 000 - 80 000 Kč/měsíc</strong><br/>
-              + zdravotní pojištění, dovolená, školení...
-            </p>
+            <h4 style={{ color: '#10b981', marginBottom: '10px' }}>{c.humanTitle}</h4>
+            <p style={{ color: '#94a3b8', margin: 0 }} dangerouslySetInnerHTML={{ __html: c.humanDesc }} />
           </div>
 
           <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '2px solid #10b981' }}>
-            <h4 style={{ color: '#0ea5e9', marginBottom: '10px' }}>🤖 DataPalo PRO</h4>
-            <p style={{ color: '#94a3b8', margin: 0 }}>
-              Cena: <strong style={{ color: '#10b981', fontSize: '1.2rem' }}>725 Kč/měsíc (€29)</strong><br/>
-              = <strong style={{ color: '#10b981' }}>70x levnější</strong> než lidský zaměstnanec<br/>
-              ✓ Dostupný 24/7 ✓ Okamžité výsledky ✓ Žádné chyby
-            </p>
+            <h4 style={{ color: '#0ea5e9', marginBottom: '10px' }}>{c.aiTitle}</h4>
+            <p style={{ color: '#94a3b8', margin: 0 }} dangerouslySetInnerHTML={{ __html: c.aiDesc }} />
           </div>
         </div>
 
         <div style={{ marginTop: '30px', textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
-          <p>✅ Zrušit kdykoliv | 🔒 Bezpečné platby přes Stripe | 🇪🇺 Včetně DPH</p>
+          <p>{c.footer}</p>
         </div>
       </div>
 
       {/* Footer CTA */}
       <div style={{ textAlign: 'center', marginTop: '60px', color: '#64748b' }}>
         <p style={{ fontSize: '14px', marginBottom: '10px' }}>
-          Máte otázky? Napište na{' '}
+          {c.question}{' '}
           <a href="mailto:michael@forgecreative.cz" style={{ color: '#0ea5e9', textDecoration: 'none' }}>
             michael@forgecreative.cz
           </a>
         </p>
         <p style={{ fontSize: '12px', color: '#475569' }}>
-          FORGE CREATIVE | AI Job Agency
+          {c.company}
         </p>
       </div>
     </div>
