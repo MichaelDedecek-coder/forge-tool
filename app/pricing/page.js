@@ -1,14 +1,13 @@
 "use client";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { TIER_LIMITS } from "../lib/tier-config";
 
 export default function PricingPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [language, setLanguage] = useState(searchParams.get('lang') === 'cz' ? 'cz' : 'en');
+  const [language, setLanguage] = useState('en');
 
   const t = {
     en: {
