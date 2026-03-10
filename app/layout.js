@@ -4,13 +4,11 @@ import "./globals.css";
 import "./print.css";
 import Script from "next/script";
 import { Providers } from "./providers";
-import FeedbackWrapper from "./components/FeedbackWrapper";
-
 // const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "DataWizard - AI Data Analyst",
-  description: "Your first AI Employee. Precision Insights. Instant.",
+  title: "DataPalo - AI Data Analyst",
+  description: "The friend who understands your numbers. Instant insights from any spreadsheet.",
 };
 
 export default function RootLayout({ children }) {
@@ -19,7 +17,6 @@ export default function RootLayout({ children }) {
       <body style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
         <Providers>
           {children}
-          <FeedbackWrapper />
         </Providers>
         
         {/* --- GOOGLE ANALYTICS (Traffic) --- */}

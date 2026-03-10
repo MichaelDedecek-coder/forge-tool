@@ -270,7 +270,7 @@ except Exception as e:
     }
 
     // 9. SYSTEM PROMPT FOR PRE-AGGREGATED DATA (WITH EXA RESEARCH!)
-    const systemPrompt = `You are DataWizard, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset${researchAugmented ? ' AND EXTERNAL RESEARCH INSIGHTS from Exa.ai' : ''}. You produce precise, data-driven analysis with beautiful chart visualizations.
+    const systemPrompt = `You are DataPalo, a professional Data Analyst with access to a PRE-AGGREGATED STATISTICAL SUMMARY of a large dataset${researchAugmented ? ' AND EXTERNAL RESEARCH INSIGHTS from Exa.ai' : ''}. You produce precise, data-driven analysis with beautiful chart visualizations.
 
 CRITICAL RULES:
 - 100% ACCURACY: Only use numbers from the statistical summary provided. DO NOT invent or estimate.

@@ -4,7 +4,7 @@
  * Triggers signup wall after first upload
  */
 
-const STORAGE_KEY = 'datawizard_anonymous_uploads';
+const STORAGE_KEY = 'datapalo_anonymous_uploads';
 
 /**
  * Check if user has uploaded before (anonymous)

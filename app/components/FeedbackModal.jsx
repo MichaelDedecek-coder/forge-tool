@@ -22,7 +22,7 @@ export default function FeedbackModal({ isOpen, onClose, language = 'en' }) {
   const content = {
     en: {
       title: 'Send Feedback',
-      subtitle: 'Help us improve DataWizard with your feedback.',
+      subtitle: 'Help us improve DataPalo with your feedback.',
       typeLabel: 'Feedback Type',
       types: {
         bug: 'Bug Report',
@@ -44,7 +44,7 @@ export default function FeedbackModal({ isOpen, onClose, language = 'en' }) {
     },
     cs: {
       title: 'Odeslat zpětnou vazbu',
-      subtitle: 'Pomozte nám vylepšit DataWizard vaší zpětnou vazbou.',
+      subtitle: 'Pomozte nám vylepšit DataPalo vaší zpětnou vazbou.',
       typeLabel: 'Typ zpětné vazby',
       types: {
         bug: 'Hlášení chyby',

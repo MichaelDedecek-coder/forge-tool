@@ -1,6 +1,6 @@
 /**
  * Tier Configuration & Limits
- * DataWizard Pricing Tiers
+ * DataPalo Pricing Tiers
  */
 
 export const TIER_LIMITS = {

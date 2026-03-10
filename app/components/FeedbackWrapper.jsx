@@ -13,8 +13,8 @@ export default function FeedbackWrapper() {
 
   // Detect language from localStorage or browser
   useEffect(() => {
-    // Try to get language from localStorage (set by datawizard page)
-    const savedLang = localStorage.getItem('datawizard_language');
+    // Try to get language from localStorage (set by datapalo page)
+    const savedLang = localStorage.getItem('datapalo_language');
     if (savedLang) {
       setLanguage(savedLang);
     } else {

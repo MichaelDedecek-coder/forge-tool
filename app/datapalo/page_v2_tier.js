@@ -45,7 +45,7 @@ export default function Home() {
   const [language, setLanguage] = useState("cs");
 
   const addLog = (msg) => {
-    console.log(`[DataWizard] ${msg}`);
+    console.log(`[DataPalo] ${msg}`);
   };
 
   // Load user's usage on mount and when profile changes
@@ -157,8 +157,8 @@ export default function Home() {
           : "Generating AI insights...");
       }, 3000);
 
-      addLog("Calling /api/datawizard...");
-      const res = await fetch("/api/datawizard", {
+      addLog("Calling /api/datapalo...");
+      const res = await fetch("/api/datapalo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -171,7 +171,7 @@ export default function Home() {
       const data = await res.json();
       addLog(`API response received. Result length: ${data.result?.length || 0}`);
 
-      console.log("[DataWizard V10] API Response preview:", data.result?.substring(0, 1000));
+      console.log("[DataPalo V10] API Response preview:", data.result?.substring(0, 1000));
 
       setResult(data.result);
 
@@ -220,7 +220,7 @@ export default function Home() {
     const element = document.createElement("a");
     const file = new Blob([result], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = `DataWizard_Report_${new Date().toISOString().slice(0,10)}.txt`;
+    element.download = `DataPalo_Report_${new Date().toISOString().slice(0,10)}.txt`;
     document.body.appendChild(element);
     element.click();
   };
@@ -247,7 +247,7 @@ export default function Home() {
     }
 
     try {
-      const printUrl = `${window.location.origin}/datawizard/print`;
+      const printUrl = `${window.location.origin}/datapalo/print`;
       const printWindow = window.open(printUrl, "_blank");
 
       if (!printWindow) {
@@ -270,8 +270,8 @@ export default function Home() {
       };
 
       window.addEventListener("message", handleMessage);
-      localStorage.setItem("datawizard_print_data", JSON.stringify(parsedReport));
-      localStorage.setItem("datawizard_print_language", language);
+      localStorage.setItem("datapalo_print_data", JSON.stringify(parsedReport));
+      localStorage.setItem("datapalo_print_language", language);
       addLog("Opening print preview...");
     } catch (error) {
       addLog(`Error: ${error.message}`);
@@ -444,7 +444,7 @@ export default function Home() {
       {/* HEADER */}
       <div style={{ marginTop: "40px", textAlign: "center" }}>
         <h1 style={{ marginBottom: "10px", fontSize: "2.2rem" }}>
-          <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold", color: "white" }}>Wizard</span>
+          <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold", color: "white" }}>Palo</span>
         </h1>
         <p style={{ color: "#64748b", marginBottom: "30px" }}>
           {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
@@ -557,7 +557,7 @@ export default function Home() {
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
         <a
-          href="mailto:michael@forgecreative.cz?subject=DataWizard%20Feedback"
+          href="mailto:michael@forgecreative.cz?subject=DataPalo%20Feedback"
           style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: "600" }}
         >
           michael@forgecreative.cz

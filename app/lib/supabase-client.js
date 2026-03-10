@@ -1,6 +1,6 @@
 /**
  * Supabase Client Configuration
- * DataWizard Tier System
+ * DataPalo Tier System
  */
 
 import { createBrowserClient } from '@supabase/ssr';

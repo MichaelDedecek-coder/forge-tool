@@ -110,7 +110,7 @@ export function AuthProvider({ children }) {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/datawizard`,
+        redirectTo: `${window.location.origin}/datapalo`,
       },
     });
 

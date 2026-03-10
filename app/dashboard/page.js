@@ -144,7 +144,7 @@ export default function DashboardPage() {
         <div style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
           <div>
             <h1 style={{ fontSize: '2.5rem', color: 'white', marginBottom: '10px' }}>
-              <span style={{ color: '#0ea5e9' }}>Data</span>Wizard Dashboard
+              <span style={{ color: '#0ea5e9' }}>Data</span>Palo Dashboard
             </h1>
             <p style={{ color: '#64748b', fontSize: '16px' }}>
               Vítejte, {user?.email}
@@ -152,7 +152,7 @@ export default function DashboardPage() {
           </div>
 
           <button
-            onClick={() => router.push('/datawizard')}
+            onClick={() => router.push('/datapalo')}
             style={{
               padding: '12px 24px',
               background: 'linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)',

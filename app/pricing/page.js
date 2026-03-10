@@ -10,8 +10,8 @@ export default function PricingPage() {
 
   const handleUpgrade = async (tier) => {
     if (tier === 'free') {
-      // Redirect to datawizard
-      router.push('/datawizard');
+      // Redirect to datapalo
+      router.push('/datapalo');
       return;
     }
 
@@ -76,7 +76,7 @@ export default function PricingPage() {
           color: 'white',
           marginBottom: '20px'
         }}>
-          <span style={{ color: '#0ea5e9' }}>Data</span>Wizard
+          <span style={{ color: '#0ea5e9' }}>Data</span>Palo
         </h1>
         <p style={{
           fontSize: '1.3rem',
@@ -312,7 +312,7 @@ export default function PricingPage() {
           </div>
 
           <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '2px solid #10b981' }}>
-            <h4 style={{ color: '#0ea5e9', marginBottom: '10px' }}>🤖 DataWizard PRO</h4>
+            <h4 style={{ color: '#0ea5e9', marginBottom: '10px' }}>🤖 DataPalo PRO</h4>
             <p style={{ color: '#94a3b8', margin: 0 }}>
               Cena: <strong style={{ color: '#10b981', fontSize: '1.2rem' }}>1 250 Kč/měsíc (€49)</strong><br/>
               = <strong style={{ color: '#10b981' }}>40x levnější</strong> než lidský zaměstnanec<br/>

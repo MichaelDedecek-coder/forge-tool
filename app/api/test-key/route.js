@@ -5,7 +5,7 @@ async function testKey() {
   try {
     console.log("🧪 TESTING GOOGLE KEY...");
 
-    // Use environment variable (NEW key from DataWizard 2026)
+    // Use environment variable (NEW key from DataPalo 2026)
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {

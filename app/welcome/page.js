@@ -33,10 +33,10 @@ export default function WelcomePage() {
       }}>
         <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
           <span style={{ color: "#0ea5e9" }}>Data</span>
-          <span style={{ color: "white" }}>Wizard</span>
+          <span style={{ color: "white" }}>Palo</span>
         </div>
         <button
-          onClick={() => window.location.href = '/datawizard'}
+          onClick={() => window.location.href = '/datapalo'}
           style={{
             background: "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)",
             color: "white",
@@ -110,7 +110,7 @@ export default function WelcomePage() {
 
           <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap" }}>
             <button
-              onClick={() => window.location.href = '/datawizard'}
+              onClick={() => window.location.href = '/datapalo'}
               style={{
                 padding: "18px 50px",
                 fontSize: "1.1rem",
@@ -399,10 +399,10 @@ export default function WelcomePage() {
             color: "#94a3b8",
             marginBottom: "40px"
           }}>
-            Join hundreds of users who save hours every week with DataWizard
+            Join hundreds of users who save hours every week with DataPalo
           </p>
           <button
-            onClick={() => window.location.href = '/datawizard'}
+            onClick={() => window.location.href = '/datapalo'}
             style={{
               padding: "20px 60px",
               fontSize: "1.2rem",
@@ -450,7 +450,7 @@ export default function WelcomePage() {
           Feedback? Ideas? Want to collaborate?
         </p>
         <a
-          href="mailto:michael@forgecreative.cz?subject=DataWizard%20Feedback"
+          href="mailto:michael@forgecreative.cz?subject=DataPalo%20Feedback"
           style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: "600" }}
         >
           michael@forgecreative.cz
