@@ -1,13 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TIER_LIMITS } from "../lib/tier-config";
 import { useAuth } from "../lib/auth-context";
 import AuthModal from "../components/AuthModal";
 
 export default function PricingPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [language, setLanguage] = useState('en');
@@ -97,13 +98,20 @@ export default function PricingPage() {
 
   const c = t[language];
 
-  // Auto-proceed to checkout after sign-in if user was trying to upgrade
+  // Auto-proceed to checkout after sign-in (email/password)
   useEffect(() => {
     if (user && pendingCheckout) {
       setPendingCheckout(false);
       startCheckout();
     }
   }, [user, pendingCheckout]);
+
+  // Auto-proceed to checkout after Google OAuth redirect (?checkout=pro)
+  useEffect(() => {
+    if (user && !authLoading && searchParams.get('checkout') === 'pro') {
+      startCheckout();
+    }
+  }, [user, authLoading, searchParams]);
 
   const startCheckout = async () => {
     setLoading(true);
@@ -451,6 +459,7 @@ export default function PricingPage() {
         }}
         language={language === 'cz' ? 'cs' : 'en'}
         defaultMode="signin"
+        googleRedirectTo={typeof window !== 'undefined' ? `${window.location.origin}/pricing?checkout=pro` : undefined}
       />
     </div>
   );

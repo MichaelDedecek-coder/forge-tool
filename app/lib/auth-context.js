@@ -104,13 +104,13 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (redirectTo) => {
     if (!supabase) throw new Error('Authentication not configured');
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/datapalo`,
+        redirectTo: redirectTo || `${window.location.origin}/datapalo`,
       },
     });
 

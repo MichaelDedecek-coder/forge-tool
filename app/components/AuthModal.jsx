@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useAuth } from '../lib/auth-context';
 import { X } from 'lucide-react';
 
-export default function AuthModal({ isOpen, onClose, language = 'en', defaultMode = 'signup' }) {
+export default function AuthModal({ isOpen, onClose, language = 'en', defaultMode = 'signup', googleRedirectTo }) {
   const [mode, setMode] = useState(defaultMode); // 'signup' or 'signin'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -106,7 +106,7 @@ export default function AuthModal({ isOpen, onClose, language = 'en', defaultMod
     setLoading(true);
 
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(googleRedirectTo);
       // Redirect will happen automatically
     } catch (err) {
       console.error('Google sign-in error:', err);
