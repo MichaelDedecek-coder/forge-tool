@@ -97,23 +97,18 @@ export default function PricingPage() {
 
   const c = t[language];
 
-  // Auto-proceed to checkout after sign-in (email/password)
+  // Auto-proceed to checkout after sign-in (email/password or Google OAuth)
   useEffect(() => {
-    if (user && pendingCheckout) {
-      setPendingCheckout(false);
-      startCheckout();
-    }
-  }, [user, pendingCheckout]);
-
-  // Auto-proceed to checkout after Google OAuth redirect (?checkout=pro)
-  useEffect(() => {
-    if (user && !authLoading && typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('checkout') === 'pro') {
+    if (user && !authLoading) {
+      // Check both React state (email sign-in) and localStorage (Google OAuth)
+      const stored = typeof window !== 'undefined' && localStorage.getItem('pendingCheckout');
+      if (pendingCheckout || stored === 'pro') {
+        setPendingCheckout(false);
+        if (stored) localStorage.removeItem('pendingCheckout');
         startCheckout();
       }
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, pendingCheckout]);
 
   const startCheckout = async () => {
     setLoading(true);
@@ -153,6 +148,7 @@ export default function PricingPage() {
     // If not signed in, show auth modal first
     if (!user) {
       setPendingCheckout(true);
+      localStorage.setItem('pendingCheckout', 'pro');
       setShowAuthModal(true);
       return;
     }
@@ -457,11 +453,12 @@ export default function PricingPage() {
           setShowAuthModal(false);
           if (!user) {
             setPendingCheckout(false);
+            localStorage.removeItem('pendingCheckout');
           }
         }}
         language={language === 'cz' ? 'cs' : 'en'}
         defaultMode="signin"
-        googleRedirectTo={typeof window !== 'undefined' ? `${window.location.origin}/pricing?checkout=pro` : undefined}
+        googleRedirectTo={typeof window !== 'undefined' ? `${window.location.origin}/pricing` : undefined}
       />
     </div>
   );
