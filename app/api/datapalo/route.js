@@ -24,7 +24,7 @@ export async function POST(req) {
     const headerRow = dataRows[0];
     const totalRows = dataRows.length - 1; // Exclude header
 
-    console.log(`DATAWIZARD INPUT: Received ${totalRows} rows. Lang: ${language}`);
+    console.log(`DATAPALO INPUT: Received ${totalRows} rows. Lang: ${language}`);
 
     // 2. CREATE E2B SANDBOX FOR STATISTICAL PRE-AGGREGATION
     console.log("🚀 Stage 1/3: Initializing Python Sandbox...");
@@ -183,12 +183,42 @@ except Exception as e:
         }, { status: 500 });
     }
 
-    // 7. EXA RESEARCH-AUGMENTED ANALYSIS (AUTOMATIC!)
+    // 6.5. SERVER-SIDE TIER CHECK (for Exa gating)
+    let userTier = 'free';
+    let userSubscriptionStatus = null;
+    const userId = body.userId;
+
+    if (userId && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseAdmin = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL,
+          process.env.SUPABASE_SERVICE_ROLE_KEY
+        );
+        const { data: sub } = await supabaseAdmin
+          .from('users_subscriptions')
+          .select('tier, subscription_status')
+          .eq('user_id', userId)
+          .single();
+
+        if (sub) {
+          userTier = sub.tier || 'free';
+          userSubscriptionStatus = sub.subscription_status;
+        }
+      } catch (tierError) {
+        console.log('[Tier] Could not check tier, defaulting to free:', tierError.message);
+      }
+    }
+
+    const isProUser = userTier === 'pro' &&
+      (userSubscriptionStatus === 'active' || userSubscriptionStatus === 'trialing');
+
+    // 7. EXA RESEARCH-AUGMENTED ANALYSIS (PRO-only)
     let exaInsights = [];
     let researchAugmented = false;
     let exaDiagnostics = { status: "skipped", reason: "EXA_API_KEY not configured" };
 
-    if (process.env.EXA_API_KEY) {
+    if (process.env.EXA_API_KEY && isProUser) {
         try {
             console.log("🔍 Fetching research insights from Exa.ai...");
             const exa = new Exa(process.env.EXA_API_KEY);
@@ -255,6 +285,9 @@ except Exception as e:
             console.error("❌ Full error:", exaError);
             // Continue without research - graceful degradation
         }
+    } else if (process.env.EXA_API_KEY && !isProUser) {
+        console.log("🔒 Exa research skipped — PRO feature only");
+        exaDiagnostics = { status: "pro_only", reason: "Research-Augmented Analysis is a DataPalo PRO feature" };
     } else {
         console.log("❌ EXA_API_KEY not configured - research features disabled");
         exaDiagnostics = { status: "not_configured", reason: "EXA_API_KEY environment variable is not set in Vercel" };
@@ -546,7 +579,8 @@ You MUST include these three sections AFTER the Insights section:
       research_augmented: researchAugmented,
       exa_insights: exaInsights,
       exa_diagnostics: exaDiagnostics,
-      ai_provider: aiProvider
+      ai_provider: aiProvider,
+      user_tier: userTier
     });
 
   } catch (error) {

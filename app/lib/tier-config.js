@@ -14,6 +14,7 @@ export const TIER_LIMITS = {
     storageDays: 0,
     priorityProcessing: false,
     apiAccess: false,
+    exaResearch: false, // Exa neural search is PRO-only
     price: 0,
     trialDays: 0
   },
@@ -27,9 +28,10 @@ export const TIER_LIMITS = {
     storageDays: 90, // 3 months storage
     priorityProcessing: true,
     apiAccess: false,
-    price: 49, // EUR per month
-    priceUSD: 49, // USD per month
-    trialDays: 7, // 7-day free trial
+    exaResearch: true, // Exa neural search, cited sources, industry benchmarks
+    price: 29, // EUR per month
+    priceUSD: 29, // USD per month
+    trialDays: 14, // 14-day free trial
     stripeProductId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID,
     stripePriceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID
   }
@@ -126,6 +128,14 @@ export function getTierInfo(tier) {
         : 'No storage'
     }
   };
+}
+
+/**
+ * Check if user can use Exa research (PRO-only)
+ */
+export function canUseExaResearch(tier) {
+  const limits = TIER_LIMITS[tier] || TIER_LIMITS.free;
+  return limits.exaResearch;
 }
 
 /**

@@ -15,14 +15,15 @@ export default function UpgradeModal({ isOpen, onClose, reason, message, languag
       title: "🚀 Čas upgradovat!",
       rowLimitTitle: "📊 Příliš velký soubor",
       analysisLimitTitle: "⚡ Vyčerpali jste FREE limit",
-      upgradeButton: "Přejít na PRO za €49/měs",
+      upgradeButton: "Přejít na PRO za €29/měs",
       closeButton: "Možná později",
       proFeatures: [
         "∞ Neomezené analýzy",
         "∞ Neomezený počet řádků",
-        "🎁 7 dní zdarma na vyzkoušení",
+        "🔬 Exa neural search + citace",
+        "📊 Industry benchmarky",
+        "🎁 14 dní zdarma na vyzkoušení",
         "📄 PDF + PPT export",
-        "💾 Historie 90 dní",
         "⚡ Prioritní zpracování"
       ]
     },
@@ -30,14 +31,15 @@ export default function UpgradeModal({ isOpen, onClose, reason, message, languag
       title: "🚀 Time to Upgrade!",
       rowLimitTitle: "📊 File Too Large",
       analysisLimitTitle: "⚡ FREE Limit Reached",
-      upgradeButton: "Upgrade to PRO €49/mo",
+      upgradeButton: "Upgrade to PRO €29/mo",
       closeButton: "Maybe Later",
       proFeatures: [
         "∞ Unlimited analyses",
         "∞ Unlimited rows",
-        "🎁 7-day free trial",
+        "🔬 Exa neural search + citations",
+        "📊 Industry benchmarks",
+        "🎁 14-day free trial",
         "📄 PDF + PPT export",
-        "💾 90-day history",
         "⚡ Priority processing"
       ]
     }

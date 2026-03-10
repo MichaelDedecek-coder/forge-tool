@@ -1,14 +1,12 @@
 /**
  * Client-side Providers
  * Wraps the app with necessary context providers
- *
- * NOTE: AuthProvider removed for datapalo-2026 deployment
- * This project is auth-free - DataPalo is completely public
  */
 
 'use client';
 
+import { AuthProvider } from './lib/auth-context';
+
 export function Providers({ children }) {
-  // No auth provider - DataPalo is public
-  return <>{children}</>;
+  return <AuthProvider>{children}</AuthProvider>;
 }

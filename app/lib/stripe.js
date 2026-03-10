@@ -24,21 +24,20 @@ export async function createCheckoutSession(userId, email, customerId = null) {
 
   const sessionParams = {
     mode: 'subscription',
-    payment_method_types: ['card'],
     line_items: [
       {
         price: priceId,
         quantity: 1,
       },
     ],
-    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?success=true`,
+    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/datapalo?success=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pricing?canceled=true`,
     client_reference_id: userId,
     metadata: {
       userId: userId,
     },
     subscription_data: {
-      trial_period_days: 7, // 7-day free trial
+      trial_period_days: 14, // 14-day free trial
       metadata: {
         userId: userId,
       },
@@ -65,7 +64,7 @@ export async function createCheckoutSession(userId, email, customerId = null) {
 export async function createPortalSession(customerId) {
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`,
+    return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/datapalo`,
   });
   return session.url;
 }

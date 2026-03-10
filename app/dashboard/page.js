@@ -181,7 +181,7 @@ export default function DashboardPage() {
             textAlign: 'center',
             boxShadow: '0 4px 20px rgba(251, 191, 36, 0.4)'
           }}>
-            🎁 Máte aktivní 7denní trial PRO verze! Zbývá {trialDaysLeft} {trialDaysLeft === 1 ? 'den' : 'dny'}
+            🎁 Máte aktivní 14denní trial PRO verze! Zbývá {trialDaysLeft} {trialDaysLeft === 1 ? 'den' : 'dní'}
           </div>
         )}
 
@@ -349,7 +349,7 @@ export default function DashboardPage() {
               {[
                 { icon: '∞', title: 'Neomezené analýzy', desc: 'Analyzujte kolikrát chcete' },
                 { icon: '📊', title: 'Neomezené řádky', desc: 'Žádné limity na velikost dat' },
-                { icon: '🎁', title: '7 dní zdarma', desc: 'Vyzkoušejte bez závazků' },
+                { icon: '🎁', title: '14 dní zdarma', desc: 'Vyzkoušejte bez závazků' },
                 { icon: '📄', title: 'PDF + PPT export', desc: 'Profesionální reporty' }
               ].map((feature, idx) => (
                 <div key={idx} style={{
@@ -383,7 +383,7 @@ export default function DashboardPage() {
                   opacity: actionLoading ? 0.7 : 1
                 }}
               >
-                {actionLoading ? '⏳ Načítám...' : '🚀 Upgradovat za €49/měsíc'}
+                {actionLoading ? '⏳ Načítám...' : '🚀 Upgradovat za €29/měsíc'}
               </button>
               <p style={{ color: '#64748b', fontSize: '13px', marginTop: '15px' }}>
                 ✓ Zrušit kdykoliv | ✓ Bez závazků | ✓ Bezpečné platby

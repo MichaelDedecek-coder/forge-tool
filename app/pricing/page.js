@@ -231,10 +231,10 @@ export default function PricingPage() {
               PRO
             </div>
             <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white', margin: '10px 0' }}>
-              €49<span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.8)', fontWeight: 'normal' }}>/měsíc</span>
+              €29<span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.8)', fontWeight: 'normal' }}>/měsíc</span>
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '15px', fontWeight: '600' }}>
-              🎁 7 dní zdarma na vyzkoušení
+              🎁 14 dní zdarma na vyzkoušení
             </p>
           </div>
 
@@ -243,11 +243,11 @@ export default function PricingPage() {
               {[
                 '∞ Neomezené analýzy',
                 '∞ Neomezený počet řádků',
-                'Pokročilé AI analýzy',
+                '🔬 Exa neural search + citace',
+                '📊 Industry benchmarky',
                 'PDF + PPT export',
                 'Historie 90 dní',
-                'Prioritní zpracování',
-                'Prioritní podpora 24/7'
+                'Prioritní zpracování'
               ].map((feature, idx) => (
                 <li key={idx} style={{
                   padding: '12px 0',
@@ -314,8 +314,8 @@ export default function PricingPage() {
           <div style={{ background: '#0f172a', padding: '20px', borderRadius: '12px', border: '2px solid #10b981' }}>
             <h4 style={{ color: '#0ea5e9', marginBottom: '10px' }}>🤖 DataPalo PRO</h4>
             <p style={{ color: '#94a3b8', margin: 0 }}>
-              Cena: <strong style={{ color: '#10b981', fontSize: '1.2rem' }}>1 250 Kč/měsíc (€49)</strong><br/>
-              = <strong style={{ color: '#10b981' }}>40x levnější</strong> než lidský zaměstnanec<br/>
+              Cena: <strong style={{ color: '#10b981', fontSize: '1.2rem' }}>725 Kč/měsíc (€29)</strong><br/>
+              = <strong style={{ color: '#10b981' }}>70x levnější</strong> než lidský zaměstnanec<br/>
               ✓ Dostupný 24/7 ✓ Okamžité výsledky ✓ Žádné chyby
             </p>
           </div>
