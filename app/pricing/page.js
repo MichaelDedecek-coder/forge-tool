@@ -1,13 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { TIER_LIMITS } from "../lib/tier-config";
 import { useAuth } from "../lib/auth-context";
 import AuthModal from "../components/AuthModal";
 
 export default function PricingPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -108,10 +107,13 @@ export default function PricingPage() {
 
   // Auto-proceed to checkout after Google OAuth redirect (?checkout=pro)
   useEffect(() => {
-    if (user && !authLoading && searchParams.get('checkout') === 'pro') {
-      startCheckout();
+    if (user && !authLoading && typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('checkout') === 'pro') {
+        startCheckout();
+      }
     }
-  }, [user, authLoading, searchParams]);
+  }, [user, authLoading]);
 
   const startCheckout = async () => {
     setLoading(true);
