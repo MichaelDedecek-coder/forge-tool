@@ -104,6 +104,16 @@ async function handleCheckoutCompleted(session, supabaseAdmin) {
     }, {
       onConflict: 'user_id'
     });
+
+  // Also update the profiles table (used by client-side auth)
+  await supabaseAdmin
+    .from('profiles')
+    .update({
+      tier: 'pro',
+      stripe_customer_id: customerId,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', userId);
 }
 
 /**
@@ -148,6 +158,12 @@ async function handleSubscriptionUpdate(subscription, supabaseAdmin) {
       updated_at: new Date().toISOString()
     })
     .eq('user_id', userSub.user_id);
+
+  // Sync tier to profiles table
+  await supabaseAdmin
+    .from('profiles')
+    .update({ tier: tier, updated_at: new Date().toISOString() })
+    .eq('id', userSub.user_id);
 }
 
 /**
@@ -159,14 +175,24 @@ async function handleSubscriptionDeleted(subscription, supabaseAdmin) {
   console.log(`[Webhook] Subscription deleted: ${subscriptionId}`);
 
   // Downgrade user to FREE
-  await supabaseAdmin
+  const { data: subRecord } = await supabaseAdmin
     .from('users_subscriptions')
     .update({
       tier: 'free',
       subscription_status: 'canceled',
       updated_at: new Date().toISOString()
     })
-    .eq('stripe_subscription_id', subscriptionId);
+    .eq('stripe_subscription_id', subscriptionId)
+    .select('user_id')
+    .single();
+
+  // Sync tier to profiles table
+  if (subRecord?.user_id) {
+    await supabaseAdmin
+      .from('profiles')
+      .update({ tier: 'free', updated_at: new Date().toISOString() })
+      .eq('id', subRecord.user_id);
+  }
 }
 
 /**
@@ -178,14 +204,24 @@ async function handlePaymentSucceeded(invoice, supabaseAdmin) {
   console.log(`[Webhook] Payment succeeded for subscription: ${subscriptionId}`);
 
   // Ensure subscription is marked as active
-  await supabaseAdmin
+  const { data: activeSub } = await supabaseAdmin
     .from('users_subscriptions')
     .update({
       subscription_status: 'active',
       tier: 'pro',
       updated_at: new Date().toISOString()
     })
-    .eq('stripe_subscription_id', subscriptionId);
+    .eq('stripe_subscription_id', subscriptionId)
+    .select('user_id')
+    .single();
+
+  // Sync tier to profiles table
+  if (activeSub?.user_id) {
+    await supabaseAdmin
+      .from('profiles')
+      .update({ tier: 'pro', updated_at: new Date().toISOString() })
+      .eq('id', activeSub.user_id);
+  }
 }
 
 /**
