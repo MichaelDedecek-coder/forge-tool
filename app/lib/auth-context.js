@@ -121,10 +121,20 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     if (!supabase) throw new Error('Authentication not configured');
 
-    const { error } = await supabase.auth.signOut({ scope: 'local' });
-    if (error) throw error;
+    // 1. Server-side sign-out: properly clears SSR cookies that client JS can't access
+    try {
+      await fetch('/api/auth/signout', { method: 'POST' });
+    } catch (e) {
+      console.error('[Auth] Server signout error:', e);
+    }
 
-    // Clear Supabase SSR cookies manually to prevent middleware from refreshing the session
+    // 2. Client-side sign-out: revokes session globally (default scope)
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('[Auth] Client signout error:', error);
+    }
+
+    // 3. Clear any remaining client-accessible cookies as a fallback
     document.cookie.split(';').forEach((c) => {
       const name = c.trim().split('=')[0];
       if (name.startsWith('sb-')) {
