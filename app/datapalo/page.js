@@ -85,7 +85,8 @@ export default function Home() {
           if (data.tier === 'pro') {
             addLog('Tier synced to PRO from Stripe');
             setSyncedTier('pro'); // Local backup — works even if refreshProfile fails
-            await refreshProfile();
+            // Try to refresh profile from DB, but don't depend on it
+            refreshProfile().catch(() => {});
             if (isCheckoutReturn) {
               window.history.replaceState({}, '', '/datapalo');
             }
@@ -446,8 +447,8 @@ export default function Home() {
           >EN 🇬🇧</button>
         </div>
 
-        {/* Tier Badge */}
-        {user && profile && (
+        {/* Tier Badge — show when user is signed in AND we have tier info from profile OR sync */}
+        {user && (profile || syncedTier) && (
           <div style={{
             background: tier === 'pro' ? 'linear-gradient(135deg, #0ea5e9 0%, #10b981 100%)' : '#64748b',
             color: 'white',

@@ -73,10 +73,20 @@ export function AuthProvider({ children }) {
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
-      setProfile(data);
+      if (error) {
+        console.error('[Auth] Profile query error:', error.message, error.code);
+        throw error;
+      }
+
+      if (data) {
+        setProfile(data);
+      } else {
+        // Query succeeded but returned no data — set fallback
+        console.warn('[Auth] Profile query returned null data for', userId);
+        setProfile(prev => prev || { id: userId, tier: 'free' });
+      }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('[Auth] Error fetching profile:', error);
       // Set a minimal fallback profile so downstream code doesn't break.
       // The sync-tier effect on /datapalo will correct the tier from Stripe.
       setProfile(prev => prev || { id: userId, tier: 'free' });
