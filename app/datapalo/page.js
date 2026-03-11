@@ -22,7 +22,7 @@ import { getCurrentUsage, incrementUsage } from "../lib/supabase-client";
 
 export default function Home() {
   // Auth state
-  const { user, profile, loading: authLoading, signOut } = useAuth();
+  const { user, profile, loading: authLoading, signOut, refreshProfile } = useAuth();
 
   // File state
   const [csvData, setCsvData] = useState(null);
@@ -53,6 +53,32 @@ export default function Home() {
   const [language, setLanguage] = useState("cs");
 
   const addLog = (msg) => console.log(`[DataPalo] ${msg}`);
+
+  // Sync tier from Stripe after checkout redirect or if profile is free
+  useEffect(() => {
+    async function syncTier() {
+      if (!user || authLoading) return;
+      const isCheckoutReturn = typeof window !== 'undefined' && window.location.search.includes('success=true');
+      const isFree = profile?.tier === 'free' || !profile?.tier;
+      if (isCheckoutReturn || (isFree && profile)) {
+        try {
+          const res = await fetch('/api/stripe/sync-tier', { method: 'POST' });
+          const data = await res.json();
+          if (data.tier === 'pro') {
+            addLog('Tier synced to PRO from Stripe');
+            await refreshProfile();
+            // Clean up the ?success=true from URL
+            if (isCheckoutReturn) {
+              window.history.replaceState({}, '', '/datapalo');
+            }
+          }
+        } catch (err) {
+          console.error('Tier sync error:', err);
+        }
+      }
+    }
+    syncTier();
+  }, [user, authLoading, profile]);
 
   // Load user's usage on mount and when profile changes
   useEffect(() => {
