@@ -169,7 +169,7 @@ export default function Home() {
 
     // TIER LOGIC: Check limits BEFORE running analysis
     if (user) {
-      const tier = profile?.tier || syncedTier || 'free';
+      const tier = syncedTier || profile?.tier || 'free';
       const limits = checkTierLimits(tier, usage.analysis_count, rowCount);
 
       if (!limits.allowed) {
@@ -204,7 +204,7 @@ export default function Home() {
       : "Analyze this data. Tell me the most important trends, totals, or outliers.";
 
     // Determine if user has PRO Exa access for loading stage messaging
-    const currentTier = profile?.tier || syncedTier || 'free';
+    const currentTier = syncedTier || profile?.tier || 'free';
     const hasExaAccess = canUseExaResearch(currentTier);
 
     try {
@@ -343,7 +343,7 @@ export default function Home() {
     if (!parsedReport) return;
 
     // Check if user has PRO tier for PDF export
-    const tier = profile?.tier || syncedTier || 'free';
+    const tier = syncedTier || profile?.tier || 'free';
     if (!canExport(tier, 'pdf')) {
       setUpgradeReason('pdf_export');
       setUpgradeMessage(
@@ -389,7 +389,7 @@ export default function Home() {
   };
 
   // Get tier info for display — use syncedTier as backup if profile fetch failed
-  const tier = profile?.tier || syncedTier || 'free';
+  const tier = syncedTier || profile?.tier || 'free';
   const tierLimits = TIER_LIMITS[tier];
   const analysesRemaining = tierLimits.analysesPerMonth === Infinity
     ? '∞'

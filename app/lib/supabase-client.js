@@ -6,18 +6,35 @@
 import { createBrowserClient } from '@supabase/ssr';
 
 /**
- * Client-side Supabase client
+ * Client-side Supabase client (singleton)
  * Use this in React components
+ *
+ * Note: createBrowserClient from @supabase/ssr already returns a singleton
+ * when called with the same URL+key, but we cache it explicitly to be safe.
  */
+let _client = null;
+
 export function createClient() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return null;
   }
 
-  return createBrowserClient(
+  if (_client) return _client;
+
+  _client = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      auth: {
+        // Use cookie storage (managed by @supabase/ssr) instead of navigator.locks
+        // which causes "Lock broken by steal" errors on page refresh
+        flowType: 'pkce',
+        persistSession: true,
+      },
+    }
   );
+
+  return _client;
 }
 
 /**

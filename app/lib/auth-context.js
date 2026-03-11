@@ -23,25 +23,9 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // Get initial session
-    const getInitialSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (session?.user) {
-          setUser(session.user);
-          await fetchProfile(session.user.id);
-        }
-      } catch (error) {
-        console.error('Error getting session:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getInitialSession();
-
-    // Listen for auth changes
+    // Use onAuthStateChange as the SINGLE source of truth.
+    // Calling getSession() separately causes a lock race condition:
+    // "Lock broken by another request with the 'steal' option"
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('[Auth] Event:', event);
