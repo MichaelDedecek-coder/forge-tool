@@ -77,6 +77,9 @@ export function AuthProvider({ children }) {
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
+      // Set a minimal fallback profile so downstream code doesn't break.
+      // The sync-tier effect on /datapalo will correct the tier from Stripe.
+      setProfile(prev => prev || { id: userId, tier: 'free' });
     }
   };
 

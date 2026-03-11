@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 import ReportInterface from "../components/ReportInterface";
@@ -49,36 +49,58 @@ export default function Home() {
   // Usage tracking
   const [usage, setUsage] = useState({ analysis_count: 0, total_rows_processed: 0 });
 
+  // Synced tier from Stripe (local backup in case fetchProfile fails)
+  const [syncedTier, setSyncedTier] = useState(null);
+  const syncInProgressRef = useRef(false);
+
   // UI state
   const [language, setLanguage] = useState("cs");
 
   const addLog = (msg) => console.log(`[DataPalo] ${msg}`);
 
-  // Sync tier from Stripe after checkout redirect or if profile is free
+  // Sync tier from Stripe — runs once per mount for signed-in users.
+  // Uses a ref to prevent duplicate calls and a local state backup
+  // so the page works even if fetchProfile() fails on the client.
   useEffect(() => {
     async function syncTier() {
       if (!user || authLoading) return;
+      if (syncInProgressRef.current) return; // Prevent parallel calls
+
       const isCheckoutReturn = typeof window !== 'undefined' && window.location.search.includes('success=true');
-      const isFree = profile?.tier === 'free' || !profile?.tier;
-      if (isCheckoutReturn || (isFree && profile)) {
+      // Treat null profile OR free tier as needing sync
+      const currentTier = profile?.tier;
+      const isFree = !currentTier || currentTier === 'free';
+
+      // Already PRO in both profile and local backup — skip
+      if (!isCheckoutReturn && !isFree && syncedTier === 'pro') return;
+
+      // Need sync: either checkout return, free tier, OR no profile loaded yet
+      if (isCheckoutReturn || isFree) {
+        syncInProgressRef.current = true;
         try {
+          addLog(`Syncing tier from Stripe (profile.tier=${currentTier}, syncedTier=${syncedTier})...`);
           const res = await fetch('/api/stripe/sync-tier', { method: 'POST' });
           const data = await res.json();
+          addLog(`Sync result: ${JSON.stringify(data)}`);
           if (data.tier === 'pro') {
             addLog('Tier synced to PRO from Stripe');
+            setSyncedTier('pro'); // Local backup — works even if refreshProfile fails
             await refreshProfile();
-            // Clean up the ?success=true from URL
             if (isCheckoutReturn) {
               window.history.replaceState({}, '', '/datapalo');
             }
+          } else {
+            setSyncedTier(data.tier || 'free');
           }
         } catch (err) {
           console.error('Tier sync error:', err);
+        } finally {
+          syncInProgressRef.current = false;
         }
       }
     }
     syncTier();
-  }, [user, authLoading, profile]);
+  }, [user, authLoading, profile?.tier]);
 
   // Load user's usage on mount and when profile changes
   useEffect(() => {
@@ -146,7 +168,7 @@ export default function Home() {
 
     // TIER LOGIC: Check limits BEFORE running analysis
     if (user) {
-      const tier = profile?.tier || 'free';
+      const tier = profile?.tier || syncedTier || 'free';
       const limits = checkTierLimits(tier, usage.analysis_count, rowCount);
 
       if (!limits.allowed) {
@@ -181,7 +203,7 @@ export default function Home() {
       : "Analyze this data. Tell me the most important trends, totals, or outliers.";
 
     // Determine if user has PRO Exa access for loading stage messaging
-    const currentTier = profile?.tier || 'free';
+    const currentTier = profile?.tier || syncedTier || 'free';
     const hasExaAccess = canUseExaResearch(currentTier);
 
     try {
@@ -320,7 +342,7 @@ export default function Home() {
     if (!parsedReport) return;
 
     // Check if user has PRO tier for PDF export
-    const tier = profile?.tier || 'free';
+    const tier = profile?.tier || syncedTier || 'free';
     if (!canExport(tier, 'pdf')) {
       setUpgradeReason('pdf_export');
       setUpgradeMessage(
@@ -365,8 +387,8 @@ export default function Home() {
     }
   };
 
-  // Get tier info for display
-  const tier = profile?.tier || 'free';
+  // Get tier info for display — use syncedTier as backup if profile fetch failed
+  const tier = profile?.tier || syncedTier || 'free';
   const tierLimits = TIER_LIMITS[tier];
   const analysesRemaining = tierLimits.analysesPerMonth === Infinity
     ? '∞'
