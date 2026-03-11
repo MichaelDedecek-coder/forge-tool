@@ -112,6 +112,9 @@ export default function Home() {
       return alert(language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!");
     }
 
+    // Wait for auth to finish loading before deciding user vs anonymous
+    if (authLoading) return;
+
     // TIER LOGIC: Check limits BEFORE running analysis
     if (user) {
       const tier = profile?.tier || 'free';
@@ -495,11 +498,11 @@ export default function Home() {
       {fileName && (
         <button
           onClick={runAnalysis}
-          disabled={loading}
+          disabled={loading || authLoading}
           style={{
             marginTop: "25px", padding: "16px 50px", fontSize: "17px",
-            background: loading ? "#475569" : "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)",
-            color: "white", border: "none", borderRadius: "30px", cursor: loading ? "not-allowed" : "pointer",
+            background: (loading || authLoading) ? "#475569" : "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)",
+            color: "white", border: "none", borderRadius: "30px", cursor: (loading || authLoading) ? "not-allowed" : "pointer",
             fontWeight: "bold", boxShadow: "0 4px 20px rgba(16, 185, 129, 0.3)",
             transition: "all 0.2s"
           }}
