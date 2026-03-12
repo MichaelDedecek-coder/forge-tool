@@ -186,6 +186,20 @@ export default function Home() {
       }
     }
 
+    // ── PRE-FLIGHT SIZE CHECK ──
+    // Vercel serverless has a hard 4.5 MB request body limit.
+    // The JSON payload includes csvData + other fields + JSON overhead.
+    // Reject early with a helpful message instead of a cryptic 413.
+    const csvBytes = new Blob([csvData]).size;
+    const MAX_CSV_BYTES = 3.5 * 1024 * 1024; // 3.5 MB (leaves ~1 MB for JSON overhead)
+    if (csvBytes > MAX_CSV_BYTES) {
+      const sizeMB = (csvBytes / 1024 / 1024).toFixed(1);
+      alert(language === "cs"
+        ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Pro nejlepší výsledky zmenšete soubor pod 30 000 řádků.`
+        : `File is too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). For best results, reduce the file to under 30,000 rows.`);
+      return;
+    }
+
     // Proceed with analysis
     setLoading(true);
     setResult(null);
@@ -249,7 +263,44 @@ export default function Home() {
           userId: user?.id,
         }),
       });
-      const data = await res.json();
+
+      // ── SAFE RESPONSE PARSING ──
+      // Infrastructure errors (413 Too Large, 504 Timeout, etc.)
+      // return plain text/HTML — not JSON. Guard against that.
+      let data;
+      const contentType = res.headers.get("content-type") || "";
+      if (!res.ok && !contentType.includes("application/json")) {
+        const raw = await res.text();
+        addLog(`Non-JSON error (${res.status}): ${raw.substring(0, 200)}`);
+        const friendlyMsg = res.status === 413
+          ? (language === "cs"
+              ? `Soubor je příliš velký pro zpracování (${rowCount.toLocaleString()} řádků). Zkuste zmenšit soubor pod 30 000 řádků.`
+              : `File is too large to process (${rowCount.toLocaleString()} rows). Please reduce the file to under 30,000 rows.`)
+          : res.status === 504 || res.status === 524
+            ? (language === "cs"
+                ? "Analýza vypršela — soubor je příliš velký. Zkuste zmenšit počet řádků."
+                : "Analysis timed out — the file is too large. Try reducing the number of rows.")
+            : (language === "cs"
+                ? `Chyba serveru (${res.status}). Zkuste to prosím znovu.`
+                : `Server error (${res.status}). Please try again.`);
+        alert(friendlyMsg);
+        setLoading(false);
+        setLoadingStage("");
+        return;
+      }
+
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        addLog(`JSON parse failed: ${parseErr.message}`);
+        const fallbackMsg = language === "cs"
+          ? "Server vrátil neočekávanou odpověď. Zkuste to prosím znovu."
+          : "Server returned an unexpected response. Please try again.";
+        alert(fallbackMsg);
+        setLoading(false);
+        setLoadingStage("");
+        return;
+      }
 
       // Handle 403: upgrade required (from server-side tier check)
       if (res.status === 403 && data.requiresUpgrade) {

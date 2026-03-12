@@ -19,12 +19,27 @@ export async function POST(req) {
       return NextResponse.json({ error: "No data provided." }, { status: 400 });
     }
 
+    // ── EARLY SIZE GUARD ──
+    // Vercel serverless has a ~4.5MB body limit by default.
+    // Catch oversized payloads HERE with a clean JSON error
+    // before infrastructure returns a plain-text 413.
+    const csvByteSize = new TextEncoder().encode(dynamicData).length;
+    const CSV_MAX_BYTES = 30 * 1024 * 1024; // 30 MB hard ceiling
+    if (csvByteSize > CSV_MAX_BYTES) {
+      console.warn(`DATAPALO REJECTED: CSV too large (${(csvByteSize / 1024 / 1024).toFixed(1)} MB)`);
+      return NextResponse.json({
+        error: language === "cs"
+          ? `Soubor je příliš velký (${(csvByteSize / 1024 / 1024).toFixed(1)} MB). Maximum je 30 MB.`
+          : `File is too large (${(csvByteSize / 1024 / 1024).toFixed(1)} MB). Maximum is 30 MB.`
+      }, { status: 413 });
+    }
+
     // 1. PREPARE METADATA
     const dataRows = dynamicData.split('\n').filter(row => row.trim());
     const headerRow = dataRows[0];
     const totalRows = dataRows.length - 1; // Exclude header
 
-    console.log(`DATAPALO INPUT: Received ${totalRows} rows. Lang: ${language}`);
+    console.log(`DATAPALO INPUT: Received ${totalRows} rows (${(csvByteSize / 1024 / 1024).toFixed(1)} MB). Lang: ${language}`);
 
     // 2. CREATE E2B SANDBOX FOR STATISTICAL PRE-AGGREGATION
     console.log("🚀 Stage 1/3: Initializing Python Sandbox...");
