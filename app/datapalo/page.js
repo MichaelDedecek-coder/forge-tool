@@ -467,7 +467,9 @@ export default function Home() {
     element.click();
   };
 
-  const downloadPDF = () => {
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+
+  const downloadPDF = async () => {
     if (!parsedReport) return;
 
     // Check if user has PRO tier for PDF export
@@ -484,35 +486,48 @@ export default function Home() {
     }
 
     try {
-      const printUrl = `${window.location.origin}/datapalo/print`;
-      const printWindow = window.open(printUrl, "_blank");
+      setPdfGenerating(true);
+      addLog("Generating PDF...");
 
-      if (!printWindow) {
-        alert(language === "cs"
-          ? "Povolte vyskakovací okna pro tisk PDF"
-          : "Please allow pop-ups to open print preview");
-        return;
+      const res = await fetch("/api/export-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reportData: parsedReport,
+          fileName: parsedReport.title || "DataPalo_Report",
+          language,
+        }),
+      });
+
+      if (!res.ok) {
+        const contentType = res.headers.get("content-type") || "";
+        let errorMsg = `PDF generation failed (${res.status})`;
+        if (contentType.includes("application/json")) {
+          const err = await res.json();
+          errorMsg = err.error || errorMsg;
+        }
+        throw new Error(errorMsg);
       }
 
-      const handleMessage = (event) => {
-        if (event.data?.type === "PRINT_PAGE_READY") {
-          addLog("Print window ready, sending data...");
-          printWindow.postMessage({
-            type: "DATAWIZARD_PRINT_DATA",
-            data: parsedReport,
-            language: language
-          }, "*");
-          window.removeEventListener("message", handleMessage);
-        }
-      };
+      // Download the PDF blob
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `DataPalo_Report_${new Date().toISOString().slice(0, 10)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-      window.addEventListener("message", handleMessage);
-      localStorage.setItem("datapalo_print_data", JSON.stringify(parsedReport));
-      localStorage.setItem("datapalo_print_language", language);
-      addLog("Opening print preview...");
+      addLog("PDF downloaded successfully");
     } catch (error) {
-      addLog(`Error: ${error.message}`);
-      alert(language === "cs" ? "Chyba při otevírání náhledu tisku" : "Error opening print preview");
+      addLog(`PDF error: ${error.message}`);
+      alert(language === "cs"
+        ? `Chyba při generování PDF: ${error.message}`
+        : `Error generating PDF: ${error.message}`);
+    } finally {
+      setPdfGenerating(false);
     }
   };
 
@@ -791,25 +806,31 @@ export default function Home() {
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   onClick={downloadPDF}
+                  disabled={pdfGenerating}
                   style={{
-                    background: canExport(tier, 'pdf')
-                      ? "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)"
-                      : "#334155",
+                    background: pdfGenerating
+                      ? "#475569"
+                      : canExport(tier, 'pdf')
+                        ? "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)"
+                        : "#334155",
                     color: "#fff",
                     border: "none",
                     padding: "10px 20px",
                     borderRadius: "8px",
-                    cursor: "pointer",
+                    cursor: pdfGenerating ? "wait" : "pointer",
                     fontSize: "14px",
                     fontWeight: "600",
-                    boxShadow: canExport(tier, 'pdf') ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
+                    boxShadow: canExport(tier, 'pdf') && !pdfGenerating ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px"
+                    gap: "6px",
+                    opacity: pdfGenerating ? 0.7 : 1,
                   }}
                 >
-                  {language === "cs" ? "📄 Stáhnout PDF" : "📄 Download PDF"}
-                  {!canExport(tier, 'pdf') && <span style={{ fontSize: '12px', opacity: 0.7 }}>🔒 PRO</span>}
+                  {pdfGenerating
+                    ? (language === "cs" ? "⏳ Generuji PDF..." : "⏳ Generating PDF...")
+                    : (language === "cs" ? "📄 Stáhnout PDF" : "📄 Download PDF")}
+                  {!canExport(tier, 'pdf') && !pdfGenerating && <span style={{ fontSize: '12px', opacity: 0.7 }}>🔒 PRO</span>}
                 </button>
                 <button
                   onClick={downloadReport}
