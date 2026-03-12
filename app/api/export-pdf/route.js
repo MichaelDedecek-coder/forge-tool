@@ -99,10 +99,12 @@ export async function POST(req) {
   }
 }
 
-// Sanitize file name for Content-Disposition header
+// Sanitize file name for Content-Disposition header (ASCII-only required)
 function sanitizeFileName(name) {
   return String(name)
-    .replace(/[^a-zA-Z0-9\u00C0-\u024F _\-]/g, "")
+    .normalize("NFD")                      // decompose: č → c + combining mark
+    .replace(/[\u0300-\u036f]/g, "")       // strip combining diacritical marks
+    .replace(/[^a-zA-Z0-9 _\-]/g, "")     // keep only ASCII-safe chars
     .replace(/\s+/g, "_")
     .slice(0, 100);
 }
