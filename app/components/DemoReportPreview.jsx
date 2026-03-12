@@ -182,6 +182,8 @@ export default function DemoReportPreview({ language = 'en' }) {
         }
 
         @media (max-width: 768px) {
+          #demo { padding-left: 16px !important; padding-right: 16px !important; padding-bottom: 60px !important; }
+          .demo-section-inner { padding: 0 !important; }
           .demo-metrics-row {
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
@@ -189,12 +191,16 @@ export default function DemoReportPreview({ language = 'en' }) {
           }
           .demo-mid-row { flex-direction: column !important; }
           .exa-content-row { flex-direction: column !important; gap: 24px !important; }
-          .exa-inner { padding: 28px 18px !important; }
+          .exa-inner { padding: 24px 14px !important; overflow: visible !important; }
+          .exa-glow { display: none !important; }
           .metric-card { min-width: 0 !important; padding: 20px 16px !important; }
           .demo-cta-btn { width: 100% !important; justify-content: center !important; }
-          .demo-section-inner { padding: 0 16px !important; }
-          .bench-table td, .bench-table th { font-size: 0.72rem !important; padding: 10px 4px !important; }
-          .bench-table th:first-child, .bench-table td:first-child { padding-left: 0 !important; }
+          .bench-table { table-layout: fixed !important; width: 100% !important; min-width: 0 !important; }
+          .bench-table td, .bench-table th { font-size: 0.68rem !important; padding: 8px 3px !important; word-break: break-word !important; }
+          .bench-table th:first-child, .bench-table td:first-child { width: 28% !important; padding-left: 0 !important; }
+          .bench-table th:nth-child(2), .bench-table td:nth-child(2) { width: 22% !important; }
+          .bench-table th:nth-child(3), .bench-table td:nth-child(3) { width: 22% !important; }
+          .bench-table th:last-child, .bench-table td:last-child { width: 28% !important; }
         }
       `}</style>
 
@@ -486,6 +492,7 @@ export default function DemoReportPreview({ language = 'en' }) {
                     marginBottom: "18px",
                   }}>{s.benchTitle}</div>
 
+                  <div className="bench-table-wrap">
                   <table className="bench-table">
                     <thead>
                       <tr>
@@ -527,6 +534,7 @@ export default function DemoReportPreview({ language = 'en' }) {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
 
                 {/* Right: Trends + Sources */}
