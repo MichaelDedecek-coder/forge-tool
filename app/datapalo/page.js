@@ -20,6 +20,40 @@ import {
 } from "../lib/tier-config";
 import { getCurrentUsage, incrementUsage } from "../lib/supabase-client";
 
+// ── GZIP COMPRESSION FOR LARGE CSV PAYLOADS ──
+// Vercel serverless has a 4.5 MB body limit.
+// PRO users can upload up to 10 MB CSV files.
+// We gzip + base64 encode on the client so 10 MB CSV → ~1-2 MB payload.
+async function compressCSV(csvText) {
+  if (typeof CompressionStream === 'undefined') return null; // Safari < 16.4 fallback
+
+  const readable = new ReadableStream({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode(csvText));
+      controller.close();
+    }
+  }).pipeThrough(new CompressionStream('gzip'));
+
+  const reader = readable.getReader();
+  const chunks = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+
+  const buffer = await new Blob(chunks).arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+
+  // Convert to base64 in chunks to avoid call-stack overflow on large buffers
+  let binary = '';
+  const CHUNK = 8192;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(binary);
+}
+
 export default function Home() {
   // Auth state
   const { user, profile, loading: authLoading, signOut, refreshProfile } = useAuth();
@@ -186,27 +220,24 @@ export default function Home() {
       }
     }
 
-    // ── PRE-FLIGHT SIZE CHECK ──
-    // Vercel serverless has a hard 4.5 MB request body limit.
-    // The JSON payload includes csvData + other fields + JSON overhead.
-    // Tier-aware: FREE users are already capped at 10K rows by checkTierLimits above,
-    // but PRO users can upload large files that still exceed Vercel's body limit.
+    // ── PRE-FLIGHT SIZE CHECK (tier-aware) ──
+    // FREE: capped at 10K rows by checkTierLimits above, 3.5 MB hard ceiling.
+    // PRO:  up to 10 MB — we gzip-compress large payloads to fit Vercel's 4.5 MB body limit.
     const csvBytes = new Blob([csvData]).size;
     const currentTierForSize = syncedTier || profile?.tier || 'free';
-    const MAX_CSV_BYTES = currentTierForSize === 'pro'
-      ? 3.5 * 1024 * 1024   // PRO: 3.5 MB (Vercel hard limit minus JSON overhead)
-      : 3.5 * 1024 * 1024;  // FREE: same limit (but 10K row cap catches most cases first)
+    const isPro = currentTierForSize === 'pro';
+    const MAX_CSV_BYTES = isPro
+      ? 10 * 1024 * 1024    // PRO: 10 MB
+      : 3.5 * 1024 * 1024;  // FREE: 3.5 MB (10K row cap catches most cases first)
     if (csvBytes > MAX_CSV_BYTES) {
       const sizeMB = (csvBytes / 1024 / 1024).toFixed(1);
-      if (currentTierForSize === 'pro') {
-        alert(language === "cs"
-          ? `Soubor je příliš velký pro online zpracování (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zkuste prosím soubor pod 30 000 řádků — pracujeme na podpoře větších datasetů!`
-          : `File is too large for online processing (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Please try a file under 30,000 rows — we're working on supporting larger datasets!`);
-      } else {
-        alert(language === "cs"
-          ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Pro nejlepší výsledky zmenšete soubor pod 10 000 řádků, nebo přejděte na PRO.`
-          : `File is too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). For best results, reduce to under 10,000 rows or upgrade to PRO.`);
-      }
+      alert(isPro
+        ? (language === "cs"
+            ? `Soubor přesahuje PRO limit 10 MB (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zkuste prosím zmenšit soubor.`
+            : `File exceeds the PRO limit of 10 MB (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Please reduce the file size.`)
+        : (language === "cs"
+            ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Přejděte na PRO pro soubory až do 10 MB.`
+            : `File is too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Upgrade to PRO for files up to 10 MB.`));
       return;
     }
 
@@ -262,16 +293,50 @@ export default function Home() {
         }, 3000);
       }
 
-      addLog("Calling /api/datapalo...");
-      const res = await fetch("/api/datapalo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      // ── COMPRESS LARGE CSVs ──
+      // Vercel serverless has a 4.5 MB body limit.
+      // For CSVs > 3 MB, gzip + base64 encode to shrink the payload.
+      // CSV compresses ~5-10x, so 10 MB → ~1-2 MB base64.
+      const COMPRESS_THRESHOLD = 3 * 1024 * 1024; // 3 MB
+      let requestBody;
+      if (csvBytes > COMPRESS_THRESHOLD) {
+        addLog(`Large CSV (${(csvBytes / 1024 / 1024).toFixed(1)} MB) — compressing...`);
+        setLoadingStage(language === "cs"
+          ? "Komprimuji velký soubor..."
+          : "Compressing large file...");
+        const compressed = await compressCSV(csvData);
+        if (compressed) {
+          addLog(`Compressed: ${(csvBytes / 1024 / 1024).toFixed(1)} MB → ${(compressed.length / 1024 / 1024).toFixed(1)} MB (base64)`);
+          requestBody = JSON.stringify({
+            message: question,
+            csvDataCompressed: compressed,
+            language: language,
+            userId: user?.id,
+          });
+        } else {
+          // CompressionStream not supported — send raw (may hit 4.5 MB limit)
+          addLog("CompressionStream unavailable — sending uncompressed");
+          requestBody = JSON.stringify({
+            message: question,
+            csvData: csvData,
+            language: language,
+            userId: user?.id,
+          });
+        }
+      } else {
+        requestBody = JSON.stringify({
           message: question,
           csvData: csvData,
           language: language,
           userId: user?.id,
-        }),
+        });
+      }
+
+      addLog("Calling /api/datapalo...");
+      const res = await fetch("/api/datapalo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: requestBody,
       });
 
       // ── SAFE RESPONSE PARSING ──
