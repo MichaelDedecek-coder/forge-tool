@@ -20,6 +20,8 @@ const t = {
     cta: "Try With Your Own Data",
     proBadge: "PRO",
     severity: { high: "Action needed", medium: "Opportunity", low: "Insight" },
+    trustBadges: ["GDPR", "No data stored", "Made in EU"],
+    poweredBy: "Powered by EXA Research AI",
   },
   cz: {
     label: "PODÍVEJTE SE",
@@ -37,6 +39,8 @@ const t = {
     cta: "Zkuste se svými daty",
     proBadge: "PRO",
     severity: { high: "Vyžaduje akci", medium: "Příležitost", low: "Poznatek" },
+    trustBadges: ["GDPR", "Žádná data neuložena", "Vyrobeno v EU"],
+    poweredBy: "Poháněno EXA Research AI",
   },
 };
 
@@ -615,7 +619,7 @@ export default function DemoReportPreview({ language = 'en' }) {
             </div>
           </div>
 
-          {/* ── CTA ── */}
+          {/* ── CTA + TRUST BADGES ── */}
           <div style={{
             textAlign: "center",
             opacity: visible ? 1 : 0,
@@ -631,6 +635,51 @@ export default function DemoReportPreview({ language = 'en' }) {
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </button>
+
+            {/* Trust badges */}
+            <div style={{
+              display: "flex",
+              gap: "28px",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              marginTop: "40px",
+              marginBottom: "20px",
+            }}>
+              {s.trustBadges.map((item, i) => (
+                <span key={i} style={{
+                  fontSize: "0.72rem",
+                  fontWeight: "500",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  color: "rgba(255,255,255,0.2)",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "7px",
+                }}>
+                  <span style={{
+                    width: "5px",
+                    height: "5px",
+                    borderRadius: "50%",
+                    background: "#A1C50A",
+                    display: "inline-block",
+                    opacity: 0.5,
+                  }} />
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            <div style={{
+              fontSize: "0.7rem",
+              fontWeight: "500",
+              fontFamily: "'JetBrains Mono', monospace",
+              color: "rgba(161, 197, 10, 0.28)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+            }}>
+              {s.poweredBy}
+            </div>
           </div>
         </div>
       </section>
