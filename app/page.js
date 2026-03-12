@@ -352,6 +352,11 @@ export default function DataPaloLanding() {
             font-size: 0.78rem !important;
           }
           nav > div:first-child { font-size: 1.2rem !important; }
+          .lang-switcher {
+            position: absolute !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+          }
 
           /* ── HERO ── */
           .hero-section {
@@ -443,7 +448,7 @@ export default function DataPaloLanding() {
             gap: "16px",
           }}>
             {/* Language switcher */}
-            <div style={{
+            <div className="lang-switcher" style={{
               display: "flex",
               gap: "4px",
               fontSize: "0.75rem",
