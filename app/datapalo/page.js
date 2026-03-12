@@ -202,7 +202,28 @@ export default function Home() {
       return;
     }
 
-    // TIER LOGIC: Check limits BEFORE running analysis
+    // ── 1. SIZE CHECK FIRST — before any auth/tier gates ──
+    // This must run before signup wall so users see "file too large"
+    // instead of "create account" when their file exceeds limits.
+    const csvBytes = new Blob([csvData]).size;
+    const currentTierForSize = user ? (syncedTier || profile?.tier || 'free') : 'anonymous';
+    const isPro = currentTierForSize === 'pro';
+    const MAX_CSV_BYTES = isPro
+      ? 10 * 1024 * 1024     // PRO: 10 MB
+      : 3.5 * 1024 * 1024;   // FREE / anonymous: 3.5 MB
+    if (csvBytes > MAX_CSV_BYTES) {
+      const sizeMB = (csvBytes / 1024 / 1024).toFixed(1);
+      alert(isPro
+        ? (language === "cs"
+            ? `Soubor přesahuje PRO limit 10 MB (${sizeMB} MB). Zkuste prosím zmenšit soubor.`
+            : `File exceeds the PRO limit of 10 MB (${sizeMB} MB). Please reduce the file size.`)
+        : (language === "cs"
+            ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zmenšete pod 10 000 řádků / 3.5 MB, nebo přejděte na PRO.`
+            : `File too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Reduce to under 10,000 rows / 3.5 MB or upgrade to PRO.`));
+      return;
+    }
+
+    // ── 2. TIER / AUTH GATES ──
     if (user) {
       const tier = syncedTier || profile?.tier || 'free';
       const limits = checkTierLimits(tier, usage.analysis_count, rowCount);
@@ -214,32 +235,11 @@ export default function Home() {
         return;
       }
     } else {
-      // Anonymous user (not signed in) - check if this would be 2nd upload
+      // Anonymous user (not signed in) - check if they've used their free analyses
       if (shouldShowSignupWall(false)) {
         setShowAuthModal(true);
         return;
       }
-    }
-
-    // ── PRE-FLIGHT SIZE CHECK (tier-aware) ──
-    // FREE: capped at 10K rows by checkTierLimits above, 3.5 MB hard ceiling.
-    // PRO:  up to 10 MB — we gzip-compress large payloads to fit Vercel's 4.5 MB body limit.
-    const csvBytes = new Blob([csvData]).size;
-    const currentTierForSize = syncedTier || profile?.tier || 'free';
-    const isPro = currentTierForSize === 'pro';
-    const MAX_CSV_BYTES = isPro
-      ? 10 * 1024 * 1024    // PRO: 10 MB
-      : 3.5 * 1024 * 1024;  // FREE: 3.5 MB (10K row cap catches most cases first)
-    if (csvBytes > MAX_CSV_BYTES) {
-      const sizeMB = (csvBytes / 1024 / 1024).toFixed(1);
-      alert(isPro
-        ? (language === "cs"
-            ? `Soubor přesahuje PRO limit 10 MB (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zkuste prosím zmenšit soubor.`
-            : `File exceeds the PRO limit of 10 MB (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Please reduce the file size.`)
-        : (language === "cs"
-            ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Přejděte na PRO pro soubory až do 10 MB.`
-            : `File is too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Upgrade to PRO for files up to 10 MB.`));
-      return;
     }
 
     // Proceed with analysis
