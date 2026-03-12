@@ -189,14 +189,24 @@ export default function Home() {
     // ── PRE-FLIGHT SIZE CHECK ──
     // Vercel serverless has a hard 4.5 MB request body limit.
     // The JSON payload includes csvData + other fields + JSON overhead.
-    // Reject early with a helpful message instead of a cryptic 413.
+    // Tier-aware: FREE users are already capped at 10K rows by checkTierLimits above,
+    // but PRO users can upload large files that still exceed Vercel's body limit.
     const csvBytes = new Blob([csvData]).size;
-    const MAX_CSV_BYTES = 3.5 * 1024 * 1024; // 3.5 MB (leaves ~1 MB for JSON overhead)
+    const currentTierForSize = syncedTier || profile?.tier || 'free';
+    const MAX_CSV_BYTES = currentTierForSize === 'pro'
+      ? 3.5 * 1024 * 1024   // PRO: 3.5 MB (Vercel hard limit minus JSON overhead)
+      : 3.5 * 1024 * 1024;  // FREE: same limit (but 10K row cap catches most cases first)
     if (csvBytes > MAX_CSV_BYTES) {
       const sizeMB = (csvBytes / 1024 / 1024).toFixed(1);
-      alert(language === "cs"
-        ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Pro nejlepší výsledky zmenšete soubor pod 30 000 řádků.`
-        : `File is too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). For best results, reduce the file to under 30,000 rows.`);
+      if (currentTierForSize === 'pro') {
+        alert(language === "cs"
+          ? `Soubor je příliš velký pro online zpracování (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zkuste prosím soubor pod 30 000 řádků — pracujeme na podpoře větších datasetů!`
+          : `File is too large for online processing (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Please try a file under 30,000 rows — we're working on supporting larger datasets!`);
+      } else {
+        alert(language === "cs"
+          ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Pro nejlepší výsledky zmenšete soubor pod 10 000 řádků, nebo přejděte na PRO.`
+          : `File is too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). For best results, reduce to under 10,000 rows or upgrade to PRO.`);
+      }
       return;
     }
 
@@ -272,10 +282,11 @@ export default function Home() {
       if (!res.ok && !contentType.includes("application/json")) {
         const raw = await res.text();
         addLog(`Non-JSON error (${res.status}): ${raw.substring(0, 200)}`);
+        const tierLabel = currentTierForSize === 'pro' ? 'PRO' : 'FREE';
         const friendlyMsg = res.status === 413
           ? (language === "cs"
-              ? `Soubor je příliš velký pro zpracování (${rowCount.toLocaleString()} řádků). Zkuste zmenšit soubor pod 30 000 řádků.`
-              : `File is too large to process (${rowCount.toLocaleString()} rows). Please reduce the file to under 30,000 rows.`)
+              ? `Soubor je příliš velký pro online zpracování (${rowCount.toLocaleString()} řádků). Zkuste zmenšit soubor pod 30 000 řádků — pracujeme na podpoře větších datasetů!`
+              : `File is too large for online processing (${rowCount.toLocaleString()} rows). Please try under 30,000 rows — we're working on supporting larger datasets!`)
           : res.status === 504 || res.status === 524
             ? (language === "cs"
                 ? "Analýza vypršela — soubor je příliš velký. Zkuste zmenšit počet řádků."
