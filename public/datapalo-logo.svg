@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="bubbleGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <!-- Speech bubble body -->
+  <path d="M100 20 C145 20 175 50 175 88 C175 126 145 156 100 156 C88 156 77 153 67 148 L42 170 L50 142 C32 130 25 112 25 88 C25 50 55 20 100 20Z" fill="url(#bubbleGrad)"/>
+  <!-- Trend arrow -->
+  <path d="M58 118 L82 88 L102 105 L138 62" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Arrow head -->
+  <path d="M126 58 L142 60 L140 76" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Spark lines -->
+  <line x1="142" y1="52" x2="148" y2="42" stroke="white" stroke-width="5" stroke-linecap="round"/>
+  <line x1="148" y1="58" x2="158" y2="54" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <line x1="144" y1="62" x2="152" y2="68" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+</svg>
