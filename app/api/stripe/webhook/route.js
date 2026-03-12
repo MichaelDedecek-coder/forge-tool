@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { constructWebhookEvent } from '@/app/lib/stripe';
+import { sendProWelcomeEmail } from '@/app/lib/email';
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to get Supabase admin client
@@ -114,6 +115,14 @@ async function handleCheckoutCompleted(session, supabaseAdmin) {
       updated_at: new Date().toISOString()
     })
     .eq('id', userId);
+
+  // Send PRO welcome email (non-blocking — don't fail the webhook if email fails)
+  const customerEmail = session.customer_details?.email || session.customer_email;
+  if (customerEmail) {
+    sendProWelcomeEmail(customerEmail, /* isTrial */ true).catch(err =>
+      console.error('[Webhook] Welcome email error (non-blocking):', err)
+    );
+  }
 }
 
 /**
