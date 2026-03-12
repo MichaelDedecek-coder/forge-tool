@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from './lib/auth-context';
 import AuthModal from './components/AuthModal';
+import DemoReportPreview from './components/DemoReportPreview';
 
 export default function DataPaloLanding() {
   const [language, setLanguage] = useState('en');
@@ -27,7 +28,7 @@ export default function DataPaloLanding() {
       { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
     );
 
-    const ids = ['problem', 'solution', 'features', 'raa', 'usecases', 'trust', 'final-cta'];
+    const ids = ['demo', 'problem', 'solution', 'features', 'raa', 'usecases', 'trust', 'final-cta'];
     ids.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
@@ -645,6 +646,11 @@ export default function DataPaloLanding() {
             {t.powered}
           </div>
         </section>
+
+        {/* ============================================ */}
+        {/* DEMO REPORT PREVIEW */}
+        {/* ============================================ */}
+        <DemoReportPreview language={language} />
 
         {/* ============================================ */}
         {/* PROBLEM */}

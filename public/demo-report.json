@@ -1,0 +1,42 @@
+{
+  "title": "Tech Products Sales Analysis",
+  "summary": "Analysis of 901 transactions across 4 product categories revealing strong growth patterns and actionable optimization opportunities.",
+  "metrics": [
+    { "label": "Total Revenue", "value": "$2.4M", "trend": "+18%", "icon": "revenue" },
+    { "label": "Avg Order Value", "value": "$2,670", "trend": "+5%", "icon": "aov" },
+    { "label": "Top Category", "value": "Laptops", "trend": "42% share", "icon": "category" },
+    { "label": "Growth Rate", "value": "18% YoY", "trend": "accelerating", "icon": "growth" }
+  ],
+  "chart": {
+    "type": "bar",
+    "title": "Revenue by Category",
+    "data": [
+      { "name": "Laptops", "value": 1008000, "color": "#E06792" },
+      { "name": "Smartphones", "value": 624000, "color": "#3F51B5" },
+      { "name": "Tablets", "value": 432000, "color": "#A1C50A" },
+      { "name": "Accessories", "value": 336000, "color": "#8B5CF6" }
+    ]
+  },
+  "insights": [
+    { "severity": "high", "text": "Laptop margins declining 3% QoQ — renegotiate supplier terms" },
+    { "severity": "medium", "text": "Smartphone sales spike 40% in Q4 — increase holiday inventory" },
+    { "severity": "low", "text": "Accessories bundle attach rate at 23% — cross-sell opportunity" }
+  ],
+  "exaResearch": {
+    "benchmarks": [
+      { "metric": "Avg order value", "yours": "$2,670", "industry": "$2,100", "verdict": "Above average" },
+      { "metric": "Return rate", "yours": "3.2%", "industry": "5.8%", "verdict": "Excellent" },
+      { "metric": "Repeat purchase", "yours": "34%", "industry": "28%", "verdict": "Strong" }
+    ],
+    "marketTrends": [
+      "Global consumer electronics market projected to reach $1.1T by 2027",
+      "AI-powered accessories segment growing 34% annually",
+      "Laptop refresh cycles shortening from 4.2 to 3.1 years"
+    ],
+    "sources": [
+      { "title": "IDC Worldwide Quarterly Tracker", "publisher": "IDC" },
+      { "title": "Gartner Market Analysis 2026", "publisher": "Gartner" },
+      { "title": "Consumer Electronics Outlook", "publisher": "Deloitte" }
+    ]
+  }
+}
