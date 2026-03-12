@@ -10,7 +10,8 @@ import { useAuth } from "../lib/auth-context";
 import {
   incrementAnonymousUpload,
   shouldShowSignupWall,
-  clearAnonymousSession
+  clearAnonymousSession,
+  ANONYMOUS_FREE_LIMIT
 } from "../lib/anonymous-session";
 import {
   checkTierLimits,
@@ -440,11 +441,11 @@ export default function Home() {
       } else {
         // Anonymous (not signed in) - increment localStorage counter
         const count = incrementAnonymousUpload();
-        addLog(`Anonymous upload ${count} recorded`);
+        addLog(`Anonymous upload ${count}/${ANONYMOUS_FREE_LIMIT} recorded`);
 
-        // Show signup wall after first analysis completes
-        if (count === 1) {
-          setTimeout(() => setShowAuthModal(true), 2000);
+        // Gentle nudge after 2nd analysis — they've seen the value, now ask
+        if (count >= ANONYMOUS_FREE_LIMIT) {
+          setTimeout(() => setShowAuthModal(true), 3000);
         }
       }
 
