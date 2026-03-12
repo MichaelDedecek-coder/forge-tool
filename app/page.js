@@ -428,10 +428,13 @@ export default function DataPaloLanding() {
             letterSpacing: "-0.03em",
             display: "flex",
             alignItems: "center",
-            gap: "0",
+            gap: "10px",
           }}>
-            <span style={{ color: "#E06792" }}>Data</span>
-            <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
+            <img src="/datapalo-logo.svg" alt="" style={{ width: "28px", height: "28px" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: "0" }}>
+              <span style={{ color: "#E06792" }}>Data</span>
+              <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
+            </div>
           </div>
 
           <div style={{
@@ -566,6 +569,18 @@ export default function DataPaloLanding() {
           position: "relative",
           zIndex: 5,
         }}>
+          {/* Logo */}
+          <img
+            src="/datapalo-logo.svg"
+            alt="DataPalo"
+            className={mounted ? 'anim-1' : ''}
+            style={{
+              width: "80px",
+              height: "80px",
+              marginBottom: "32px",
+              filter: "drop-shadow(0 0 30px rgba(16, 185, 129, 0.3))",
+            }}
+          />
           <h1 className={`hero-h1 ${mounted ? 'anim-2' : ''}`} style={{
             fontSize: "clamp(2.8rem, 6.5vw, 4.8rem)",
             fontFamily: "'Instrument Serif', Georgia, serif",
