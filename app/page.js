@@ -357,6 +357,9 @@ export default function DataPaloLanding() {
             left: 50% !important;
             transform: translateX(-50%) !important;
           }
+          .nav-pricing {
+            display: none !important;
+          }
 
           /* ── HERO ── */
           .hero-section {
@@ -476,6 +479,7 @@ export default function DataPaloLanding() {
 
             {/* Pricing link */}
             <a
+              className="nav-pricing"
               href="/pricing"
               style={{
                 color: "rgba(255,255,255,0.7)",
