@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Include @sparticuz/chromium binary in the export-pdf serverless function
+  outputFileTracingIncludes: {
+    '/api/export-pdf': ['./node_modules/@sparticuz/chromium/bin/**'],
+  },
   async headers() {
     return [
       {
