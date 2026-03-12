@@ -3,6 +3,7 @@ import { Sandbox } from "@e2b/code-interpreter";
 import { NextResponse } from "next/server";
 import Exa from "exa-js";
 import Anthropic from "@anthropic-ai/sdk";
+import { gunzipSync } from "zlib";
 
 // Allow up to 120 seconds for enterprise-scale datasets (50K+ rows)
 export const maxDuration = 120;
@@ -11,12 +12,41 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const userQuestion = body.message || "Analyze the sales trend.";
-    const dynamicData = body.csvData;
     const language = body.language || "en";
     const onProgress = body.onProgress; // For progressive loading
 
+    // ── DECOMPRESS IF CLIENT GZIPPED THE CSV ──
+    // PRO users can upload up to 10 MB CSVs. The client gzip + base64 encodes
+    // payloads > 3 MB so they fit under Vercel's 4.5 MB body limit.
+    let dynamicData;
+    if (body.csvDataCompressed) {
+      try {
+        const compressedBuf = Buffer.from(body.csvDataCompressed, 'base64');
+        dynamicData = gunzipSync(compressedBuf).toString('utf-8');
+        console.log(`DATAPALO: Decompressed CSV — ${(compressedBuf.length / 1024).toFixed(0)} KB compressed → ${(dynamicData.length / 1024 / 1024).toFixed(1)} MB raw`);
+      } catch (decompErr) {
+        console.error("DATAPALO: Decompression failed:", decompErr.message);
+        return NextResponse.json({ error: "Failed to decompress CSV data." }, { status: 400 });
+      }
+    } else {
+      dynamicData = body.csvData;
+    }
+
     if (!dynamicData) {
       return NextResponse.json({ error: "No data provided." }, { status: 400 });
+    }
+
+    // ── EARLY SIZE GUARD ──
+    // Hard ceiling for the raw (decompressed) CSV.
+    const csvByteSize = new TextEncoder().encode(dynamicData).length;
+    const CSV_MAX_BYTES = 10 * 1024 * 1024; // 10 MB — matches PRO client limit
+    if (csvByteSize > CSV_MAX_BYTES) {
+      console.warn(`DATAPALO REJECTED: CSV too large (${(csvByteSize / 1024 / 1024).toFixed(1)} MB)`);
+      return NextResponse.json({
+        error: language === "cs"
+          ? `Soubor je příliš velký (${(csvByteSize / 1024 / 1024).toFixed(1)} MB). Maximum je 10 MB.`
+          : `File is too large (${(csvByteSize / 1024 / 1024).toFixed(1)} MB). Maximum is 10 MB.`
+      }, { status: 413 });
     }
 
     // 1. PREPARE METADATA
@@ -24,7 +54,7 @@ export async function POST(req) {
     const headerRow = dataRows[0];
     const totalRows = dataRows.length - 1; // Exclude header
 
-    console.log(`DATAPALO INPUT: Received ${totalRows} rows. Lang: ${language}`);
+    console.log(`DATAPALO INPUT: Received ${totalRows} rows (${(csvByteSize / 1024 / 1024).toFixed(1)} MB). Lang: ${language}`);
 
     // 2. CREATE E2B SANDBOX FOR STATISTICAL PRE-AGGREGATION
     console.log("🚀 Stage 1/3: Initializing Python Sandbox...");
