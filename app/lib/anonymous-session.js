@@ -81,12 +81,19 @@ export function clearAnonymousSession() {
 }
 
 /**
- * Check if user should see signup wall
- * Logic: Show signup wall after FIRST successful analysis
+ * How many free analyses an anonymous visitor gets before the signup wall blocks.
+ * They see the full results each time — the wall only appears AFTER the Nth analysis.
+ */
+export const ANONYMOUS_FREE_LIMIT = 2;
+
+/**
+ * Check if user should see signup wall (blocks further analysis)
+ * Logic: Allow ANONYMOUS_FREE_LIMIT analyses with full results,
+ *        then block on the next attempt until they sign up.
  * @param {boolean} isAuthenticated - Is user logged in?
  * @returns {boolean}
  */
 export function shouldShowSignupWall(isAuthenticated) {
-  if (isAuthenticated) return false; // Already signed in
-  return hasAnonymousUpload(); // Has completed at least one analysis
+  if (isAuthenticated) return false;
+  return getAnonymousUploadCount() >= ANONYMOUS_FREE_LIMIT;
 }
