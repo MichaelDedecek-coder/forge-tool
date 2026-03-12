@@ -343,13 +343,55 @@ export default function DataPaloLanding() {
         }
 
         @media (max-width: 768px) {
-          .hero-h1 { font-size: 2.6rem !important; }
-          .hero-h1-accent { font-size: 2.6rem !important; }
-          .hero-sub { font-size: 1.05rem !important; }
-          .cta-btn { width: 100% !important; justify-content: center !important; }
+          /* ── NAV ── */
+          nav { padding: 16px 16px !important; }
+          nav > div:last-child { gap: 10px !important; }
+          nav > div:last-child button,
+          nav > div:last-child a {
+            padding: 6px 12px !important;
+            font-size: 0.78rem !important;
+          }
+          nav > div:first-child { font-size: 1.2rem !important; }
+
+          /* ── HERO ── */
+          .hero-section {
+            min-height: auto !important;
+            padding: 24px 24px 32px !important;
+          }
+          .hero-h1 { font-size: 2.2rem !important; margin-bottom: 0 !important; }
+          .hero-h1-accent { font-size: 2.2rem !important; margin-bottom: 16px !important; }
+          .hero-sub { font-size: 1rem !important; margin-bottom: 0 !important; max-width: 100% !important; }
+
+          /* ── ALL SECTIONS — tighten the 120px desktop padding ── */
+          #problem, #solution, #features, #raa,
+          #usecases, #trust, #final-cta {
+            padding-top: 56px !important;
+            padding-bottom: 56px !important;
+            padding-left: 24px !important;
+            padding-right: 24px !important;
+          }
+
+          /* ── CARDS ── */
           .cards-row { flex-direction: column !important; }
-          .section-inner { padding: 0 24px !important; }
-          .raa-card { padding: 40px 28px !important; }
+          .step-card { padding: 24px 20px !important; min-width: 0 !important; }
+          .feature-card { padding: 28px 24px !important; min-width: 0 !important; }
+          .usecase-card { padding: 32px 24px !important; min-width: 0 !important; }
+          .raa-card { padding: 32px 24px !important; }
+
+          /* ── FINAL CTA button ── */
+          #final-cta button {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 18px 32px !important;
+            font-size: 1rem !important;
+          }
+
+          /* ── TYPOGRAPHY tightening ── */
+          #problem h2, #solution h2, #features h2,
+          #trust h2, #final-cta h2 {
+            font-size: clamp(1.5rem, 7vw, 2rem) !important;
+          }
+          #raa h2 { font-size: clamp(1.4rem, 6vw, 1.8rem) !important; }
         }
       `}</style>
 
@@ -511,7 +553,7 @@ export default function DataPaloLanding() {
         {/* ============================================ */}
         {/* HERO */}
         {/* ============================================ */}
-        <section style={{
+        <section className="hero-section" style={{
           minHeight: "60vh",
           display: "flex",
           flexDirection: "column",

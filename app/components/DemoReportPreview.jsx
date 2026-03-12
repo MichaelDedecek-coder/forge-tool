@@ -186,8 +186,9 @@ export default function DemoReportPreview({ language = 'en' }) {
         }
 
         @media (max-width: 768px) {
-          #demo { padding-left: 16px !important; padding-right: 16px !important; padding-bottom: 60px !important; }
+          #demo { padding: 24px 16px 48px !important; }
           .demo-section-inner { padding: 0 !important; }
+          .demo-section-inner > div:first-child { margin-bottom: 28px !important; }
           .demo-metrics-row {
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
