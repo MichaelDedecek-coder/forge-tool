@@ -55,6 +55,8 @@ export default function DataPaloLanding() {
       trust1: "GDPR",
       trust2: "No data stored",
       trust3: "Made in EU",
+      howItWorks: "HOW IT WORKS",
+      miniCta: "Try It Free →",
       powered: "Powered by EXA Research AI",
       // Problem
       problemLabel: "THE PROBLEM",
@@ -116,6 +118,8 @@ export default function DataPaloLanding() {
       trust1: "GDPR",
       trust2: "Žádná data neuložena",
       trust3: "Vyrobeno v EU",
+      howItWorks: "JAK TO FUNGUJE",
+      miniCta: "Vyzkoušet zdarma →",
       powered: "Poháněno EXA Research AI",
       problemLabel: "PROBLÉM",
       problemH: "Máte data. Jen na ně nemáte čas.",
@@ -294,6 +298,27 @@ export default function DataPaloLanding() {
           transform: translateY(-3px) scale(1.02);
           box-shadow: 0 24px 64px rgba(224, 103, 146, 0.35), 0 8px 24px rgba(63, 81, 181, 0.2);
         }
+        .mini-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 48px;
+          padding: 14px 36px;
+          font-size: 0.88rem;
+          font-weight: 700;
+          font-family: 'Satoshi', sans-serif;
+          color: white;
+          background: linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%);
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 8px 28px rgba(224, 103, 146, 0.18), 0 2px 8px rgba(63, 81, 181, 0.08);
+        }
+        .mini-cta:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 14px 40px rgba(224, 103, 146, 0.28), 0 4px 14px rgba(63, 81, 181, 0.14);
+        }
 
         .step-card {
           background: rgba(255,255,255,0.03);
@@ -406,6 +431,7 @@ export default function DataPaloLanding() {
           .sticky-nav { padding: 10px 16px !important; }
           .sticky-nav button { padding: 8px 18px !important; font-size: 0.82rem !important; }
           .hero-cta-btn { width: 100% !important; justify-content: center !important; padding: 18px 32px !important; }
+          .mini-cta { padding: 12px 28px !important; font-size: 0.82rem !important; }
           .lang-switcher {
             position: absolute !important;
             left: 50% !important;
@@ -787,6 +813,16 @@ export default function DataPaloLanding() {
             zIndex: 5,
           }}
         >
+          <span style={{
+            fontSize: "0.7rem",
+            fontFamily: "'JetBrains Mono', monospace",
+            fontWeight: "500",
+            color: "rgba(63, 81, 181, 0.55)",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            marginBottom: "40px",
+            display: "block",
+          }}>{t.howItWorks}</span>
           <img
             src="/datapalo-infographic.jpg"
             alt="DataPalo — Upload. Analyze. Done. AI-Powered Data Analysis in Seconds"
@@ -942,6 +978,11 @@ export default function DataPaloLanding() {
               </div>
             ))}
           </div>
+          <div style={{ textAlign: "center" }}>
+            <button className="mini-cta" onClick={() => window.location.href = '/datapalo'}>
+              {t.miniCta}
+            </button>
+          </div>
         </section>
 
         {/* ============================================ */}
@@ -1009,6 +1050,11 @@ export default function DataPaloLanding() {
                 }}>{feat.d}</div>
               </div>
             ))}
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <button className="mini-cta" onClick={() => window.location.href = '/datapalo'}>
+              {t.miniCta}
+            </button>
           </div>
         </section>
 
