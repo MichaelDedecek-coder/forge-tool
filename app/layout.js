@@ -7,8 +7,44 @@ import { Providers } from "./providers";
 // const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "DataPalo - AI Data Analyst",
-  description: "The friend who understands your numbers. Instant insights from any spreadsheet.",
+  metadataBase: new URL('https://www.datapalo.app'),
+  title: {
+    template: '%s | DataPalo',
+    default: 'DataPalo — Upload a File, Get Answers in Seconds',
+  },
+  description:
+    'Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.',
+  openGraph: {
+    title: 'DataPalo — Upload a File, Get Answers in Seconds',
+    description:
+      'Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.',
+    url: 'https://www.datapalo.app',
+    siteName: 'DataPalo',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'DataPalo — AI-powered data analysis for everyone',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DataPalo — Upload a File, Get Answers in Seconds',
+    description:
+      'Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.',
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {

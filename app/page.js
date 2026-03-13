@@ -12,6 +12,7 @@ export default function DataPaloLanding() {
   const [visibleSections, setVisibleSections] = useState({});
   const [showAuth, setShowAuth] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [scrollDepth, setScrollDepth] = useState(0);
   const { user, signOut } = useAuth();
   const sectionRefs = useRef({});
 
@@ -39,7 +40,12 @@ export default function DataPaloLanding() {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 500);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 500);
+      // Track scroll depth as percentage
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight > 0) setScrollDepth((window.scrollY / docHeight) * 100);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -47,16 +53,19 @@ export default function DataPaloLanding() {
   const content = {
     en: {
       // Hero
-      headline1: "Your numbers,",
-      headline2: "finally explained.",
-      sub: "Drop any spreadsheet. Get clarity in seconds — not hours.",
-      cta: "Try DataPalo Free",
+      heroHeadline: "Upload a File. Get Answers in Seconds.",
+      heroSub: "Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.",
+      heroCta: "Try It Free",
+      heroMicro: "No credit card. No setup. Just upload.",
       // Trust bar
       trust1: "GDPR",
       trust2: "No data stored",
       trust3: "Made in EU",
       howItWorks: "HOW IT WORKS",
       miniCta: "Try It Free →",
+      stickyBar: "Start Free",
+      scrollCta: "Ready to try? Upload your first file.",
+      scrollCtaBtn: "Upload Your First File →",
       powered: "Powered by EXA Research AI",
       // Problem
       problemLabel: "THE PROBLEM",
@@ -106,20 +115,23 @@ export default function DataPaloLanding() {
       // Final CTA
       finalH: "Stop guessing. Start knowing.",
       finalSub: "Your spreadsheet already has the answers. DataPalo just reads them for you.",
-      finalCta: "Try DataPalo Free",
+      finalCta: "Try It Free",
       // Footer
       tagline: "The friend who understands your numbers.",
     },
     cz: {
-      headline1: "Vaše čísla,",
-      headline2: "konečně vysvětlena.",
-      sub: "Nahrajte jakoukoli tabulku. Získejte jasno za vteřiny — ne hodiny.",
-      cta: "Vyzkoušet DataPalo zdarma",
+      heroHeadline: "Nahrajte soubor. Odpovědi za vteřiny.",
+      heroSub: "Nahrajte jakýkoli CSV nebo Excel — grafy, poznatky a reporty okamžitě. Zdarma, bez odborných znalostí.",
+      heroCta: "Vyzkoušet zdarma",
+      heroMicro: "Bez kreditky. Bez nastavení. Prostě nahrajte.",
       trust1: "GDPR",
       trust2: "Žádná data neuložena",
       trust3: "Vyrobeno v EU",
       howItWorks: "JAK TO FUNGUJE",
       miniCta: "Vyzkoušet zdarma →",
+      stickyBar: "Vyzkoušet zdarma",
+      scrollCta: "Připraveni? Nahrajte svůj první soubor.",
+      scrollCtaBtn: "Nahrát první soubor →",
       powered: "Poháněno EXA Research AI",
       problemLabel: "PROBLÉM",
       problemH: "Máte data. Jen na ně nemáte čas.",
@@ -162,7 +174,7 @@ export default function DataPaloLanding() {
       trustP: "Vaše tabulka je analyzována v paměti a smazána. Žádné databáze. Žádné kopie. Žádné stopy. GDPR od návrhu, postaveno a hostováno v EU.",
       finalH: "Přestaňte hádat. Začněte vědět.",
       finalSub: "Vaše tabulka už obsahuje odpovědi. DataPalo je jen přečte za vás.",
-      finalCta: "Vyzkoušet DataPalo zdarma",
+      finalCta: "Vyzkoušet zdarma",
       tagline: "Přítel, který rozumí vašim číslům.",
     },
   };
@@ -173,6 +185,27 @@ export default function DataPaloLanding() {
 
   return (
     <>
+      {/* JSON-LD Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'DataPalo',
+            applicationCategory: 'BusinessApplication',
+            operatingSystem: 'Web',
+            url: 'https://www.datapalo.app',
+            description: 'AI-powered data analysis tool. Upload any CSV or Excel file and get instant charts, insights, and reports. No technical skills needed.',
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
+              description: 'Free tier — 2 analyses included',
+            },
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Satoshi:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -320,6 +353,47 @@ export default function DataPaloLanding() {
           box-shadow: 0 14px 40px rgba(224, 103, 146, 0.28), 0 4px 14px rgba(63, 81, 181, 0.14);
         }
 
+        /* Sticky bottom CTA bar — mobile only */
+        .sticky-bottom-bar {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .sticky-bottom-bar {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            padding: 12px 20px;
+            background: rgba(8, 8, 24, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            justify-content: center;
+            align-items: center;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+          }
+          .sticky-bottom-bar.bar-visible {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        /* Scroll-triggered inline CTA */
+        .scroll-cta-block {
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+          transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+        }
+        .scroll-cta-block.scroll-visible {
+          max-height: 200px;
+          opacity: 1;
+        }
+
         .step-card {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.06);
@@ -440,15 +514,20 @@ export default function DataPaloLanding() {
           .nav-pricing {
             display: none !important;
           }
+          .landing-root { padding-bottom: 64px !important; }
 
-          /* ── HERO ── */
+          /* ── HERO — stack on mobile ── */
           .hero-section {
             min-height: auto !important;
+            flex-direction: column !important;
             padding: 24px 24px 32px !important;
+            gap: 32px !important;
+            text-align: center !important;
           }
-          .hero-h1 { font-size: 2.2rem !important; margin-bottom: 0 !important; }
-          .hero-h1-accent { font-size: 2.2rem !important; margin-bottom: 16px !important; }
-          .hero-sub { font-size: 1rem !important; margin-bottom: 0 !important; max-width: 100% !important; }
+          .hero-left { max-width: 100% !important; align-items: center !important; display: flex !important; flex-direction: column !important; }
+          .hero-right { max-width: 100% !important; }
+          .hero-h1 { font-size: 2.2rem !important; text-align: center !important; }
+          .hero-sub { font-size: 1rem !important; max-width: 100% !important; text-align: center !important; }
 
           /* ── ALL SECTIONS — tighten the 120px desktop padding ── */
           #problem, #solution, #features, #raa,
@@ -528,7 +607,7 @@ export default function DataPaloLanding() {
               boxShadow: "0 4px 16px rgba(224, 103, 146, 0.2)",
             }}
           >
-            {t.cta} →
+            {t.heroCta} →
           </button>
         </div>
 
@@ -679,116 +758,160 @@ export default function DataPaloLanding() {
         </nav>
 
         {/* ============================================ */}
-        {/* HERO */}
+        {/* HERO — Split-screen: text left, product right */}
         {/* ============================================ */}
         <section className="hero-section" style={{
-          minHeight: "60vh",
+          minHeight: "70vh",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "0 40px 20px",
-          maxWidth: "900px",
+          padding: "0 40px 40px",
+          maxWidth: "1140px",
           margin: "0 auto",
-          textAlign: "center",
           position: "relative",
           zIndex: 5,
+          gap: "60px",
         }}>
-          {/* Logo */}
-          <img
-            src="/datapalo-logo.svg"
-            alt="DataPalo"
-            className={mounted ? 'anim-1' : ''}
-            style={{
-              width: "80px",
-              height: "80px",
-              marginBottom: "32px",
-              filter: "drop-shadow(0 0 30px rgba(16, 185, 129, 0.3))",
-            }}
-          />
-          <h1 className={`hero-h1 ${mounted ? 'anim-2' : ''}`} style={{
-            fontSize: "clamp(2.8rem, 6.5vw, 4.8rem)",
-            fontFamily: "'Instrument Serif', Georgia, serif",
-            fontWeight: "400",
-            lineHeight: "1.05",
-            letterSpacing: "-0.02em",
-            marginBottom: "4px",
-            color: "rgba(255,255,255,0.88)",
+          {/* LEFT — Copy */}
+          <div className="hero-left" style={{
+            flex: "1 1 50%",
+            maxWidth: "520px",
           }}>
-            {t.headline1}
-          </h1>
+            <h1 className={`hero-h1 ${mounted ? 'anim-2' : ''}`} style={{
+              fontSize: "clamp(2.2rem, 5vw, 3.6rem)",
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontWeight: "400",
+              lineHeight: "1.1",
+              letterSpacing: "-0.02em",
+              marginBottom: "24px",
+              color: "rgba(255,255,255,0.92)",
+            }}>
+              {t.heroHeadline}
+            </h1>
 
-          <h1 className={`hero-h1-accent ${mounted ? 'anim-2' : ''}`} style={{
-            fontSize: "clamp(2.8rem, 6.5vw, 4.8rem)",
-            fontFamily: "'Instrument Serif', Georgia, serif",
-            fontWeight: "400",
-            lineHeight: "1.05",
-            letterSpacing: "-0.02em",
-            marginBottom: "36px",
-            background: "linear-gradient(135deg, #E06792 0%, #3F51B5 55%, #A1C50A 100%)",
-            backgroundSize: "200% auto",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            animation: "shimmer 8s linear infinite",
-          }}>
-            {t.headline2}
-          </h1>
+            <p className={`hero-sub ${mounted ? 'anim-3' : ''}`} style={{
+              fontSize: "1.1rem",
+              fontWeight: "400",
+              color: "rgba(255,255,255,0.42)",
+              marginBottom: "36px",
+              lineHeight: "1.7",
+              maxWidth: "440px",
+              letterSpacing: "0.01em",
+            }}>
+              {t.heroSub}
+            </p>
 
-          <p className={`hero-sub ${mounted ? 'anim-3' : ''}`} style={{
-            fontSize: "1.2rem",
-            fontWeight: "400",
-            color: "rgba(255,255,255,0.4)",
-            marginBottom: "40px",
-            lineHeight: "1.7",
+            {/* Single Hero CTA */}
+            <button
+              className={`hero-cta-btn ${mounted ? 'anim-4' : ''}`}
+              onClick={() => window.location.href = '/datapalo'}
+            >
+              {t.heroCta}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+
+            {/* Micro-copy */}
+            <p className={mounted ? 'anim-5' : ''} style={{
+              fontSize: "0.78rem",
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: "500",
+              color: "rgba(255,255,255,0.22)",
+              marginTop: "16px",
+              letterSpacing: "0.04em",
+            }}>
+              {t.heroMicro}
+            </p>
+
+            {/* Trust bar */}
+            <div className={mounted ? 'anim-5' : ''} style={{
+              display: "flex",
+              gap: "20px",
+              marginTop: "28px",
+              flexWrap: "wrap",
+            }}>
+              {[t.trust1, t.trust2, t.trust3].map((item, i) => (
+                <span key={i} style={{
+                  fontSize: "0.68rem",
+                  fontWeight: "500",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  color: "rgba(255,255,255,0.18)",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}>
+                  <span style={{
+                    width: "5px",
+                    height: "5px",
+                    borderRadius: "50%",
+                    background: i === 0 ? "#A1C50A" : i === 1 ? "#3F51B5" : "#E06792",
+                    display: "inline-block",
+                    opacity: 0.5,
+                  }} />
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT — Product visual */}
+          <div className={`hero-right ${mounted ? 'anim-4' : ''}`} style={{
+            flex: "1 1 45%",
             maxWidth: "480px",
-            letterSpacing: "0.01em",
+            position: "relative",
           }}>
-            {t.sub}
-          </p>
-
-          {/* Hero CTA */}
-          <button
-            className={`hero-cta-btn ${mounted ? 'anim-4' : ''}`}
-            onClick={() => window.location.href = '/datapalo'}
-          >
-            {t.cta}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </button>
-
-          {/* Trust bar */}
-          <div className={mounted ? 'anim-5' : ''} style={{
-            display: "flex",
-            gap: "24px",
-            marginTop: "32px",
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}>
-            {[t.trust1, t.trust2, t.trust3].map((item, i) => (
-              <span key={i} style={{
-                fontSize: "0.7rem",
-                fontWeight: "500",
-                fontFamily: "'JetBrains Mono', monospace",
-                color: "rgba(255,255,255,0.2)",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
+            <div style={{
+              borderRadius: "16px",
+              border: "1px solid rgba(255,255,255,0.08)",
+              overflow: "hidden",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(63, 81, 181, 0.08)",
+              position: "relative",
+            }}>
+              {/* Browser chrome bar */}
+              <div style={{
+                background: "rgba(255,255,255,0.04)",
+                padding: "10px 16px",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                gap: "8px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
               }}>
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
                 <span style={{
-                  width: "5px",
-                  height: "5px",
-                  borderRadius: "50%",
-                  background: i === 0 ? "#A1C50A" : i === 1 ? "#3F51B5" : "#E06792",
-                  display: "inline-block",
-                  opacity: 0.5,
-                }} />
-                {item}
-              </span>
-            ))}
+                  marginLeft: "12px",
+                  fontSize: "0.6rem",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  color: "rgba(255,255,255,0.15)",
+                  letterSpacing: "0.05em",
+                }}>datapalo.app</span>
+              </div>
+              <img
+                src="/datapalo-infographic.jpg"
+                alt="DataPalo — Upload, Analyze, Get Answers"
+                style={{
+                  width: "100%",
+                  display: "block",
+                }}
+              />
+            </div>
+            {/* Subtle glow behind product image */}
+            <div style={{
+              position: "absolute",
+              width: "120%",
+              height: "120%",
+              top: "-10%",
+              left: "-10%",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(63, 81, 181, 0.08) 0%, transparent 60%)",
+              filter: "blur(40px)",
+              pointerEvents: "none",
+              zIndex: -1,
+            }} />
           </div>
 
         </section>
@@ -1226,6 +1349,42 @@ export default function DataPaloLanding() {
         </section>
 
         {/* ============================================ */}
+        {/* SCROLL-TRIGGERED CTA — appears at ~60% depth */}
+        {/* ============================================ */}
+        <div className={`scroll-cta-block ${scrollDepth > 55 ? 'scroll-visible' : ''}`}
+          style={{
+            padding: "0 40px",
+            maxWidth: "700px",
+            margin: "0 auto",
+          }}
+        >
+          <div style={{
+            textAlign: "center",
+            padding: "48px 36px",
+            background: "linear-gradient(135deg, rgba(224, 103, 146, 0.06) 0%, rgba(63, 81, 181, 0.06) 100%)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: "20px",
+            position: "relative",
+            zIndex: 5,
+          }}>
+            <p style={{
+              fontSize: "1.05rem",
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              color: "rgba(255,255,255,0.55)",
+              marginBottom: "24px",
+              fontStyle: "italic",
+            }}>{t.scrollCta}</p>
+            <button
+              className="hero-cta-btn"
+              onClick={() => window.location.href = '/datapalo'}
+              style={{ padding: "16px 40px", fontSize: "0.95rem" }}
+            >
+              {t.scrollCtaBtn}
+            </button>
+          </div>
+        </div>
+
+        {/* ============================================ */}
         {/* TRUST */}
         {/* ============================================ */}
         <section
@@ -1359,7 +1518,7 @@ export default function DataPaloLanding() {
               position: "relative",
             }}
           >
-            {t.finalCta}
+            {t.heroCta}
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
@@ -1413,6 +1572,37 @@ export default function DataPaloLanding() {
             michael@forgecreative.cz
           </a>
         </footer>
+
+        {/* ============================================ */}
+        {/* MOBILE STICKY BOTTOM CTA BAR */}
+        {/* ============================================ */}
+        <div className={`sticky-bottom-bar ${scrollDepth > 10 ? 'bar-visible' : ''}`}>
+          <button
+            onClick={() => window.location.href = '/datapalo'}
+            style={{
+              width: "100%",
+              padding: "14px 32px",
+              fontSize: "0.9rem",
+              fontWeight: "700",
+              fontFamily: "'Satoshi', sans-serif",
+              background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+              color: "white",
+              border: "none",
+              borderRadius: "12px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              boxShadow: "0 8px 24px rgba(224, 103, 146, 0.25)",
+            }}
+          >
+            {t.stickyBar}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Auth Modal */}
