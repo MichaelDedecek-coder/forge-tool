@@ -28,7 +28,7 @@ export default function DataPaloLanding() {
       { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
     );
 
-    const ids = ['demo', 'problem', 'solution', 'features', 'raa', 'usecases', 'trust', 'final-cta'];
+    const ids = ['demo', 'infographic', 'problem', 'solution', 'features', 'raa', 'usecases', 'trust', 'final-cta'];
     ids.forEach((id) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
@@ -637,6 +637,43 @@ export default function DataPaloLanding() {
         {/* DEMO REPORT PREVIEW */}
         {/* ============================================ */}
         <DemoReportPreview language={language} />
+
+        {/* ============================================ */}
+        {/* INFOGRAPHIC — How It Works */}
+        {/* ============================================ */}
+        <section
+          id="infographic"
+          className={`section-reveal ${vis('infographic') ? 'visible' : ''}`}
+          style={{
+            padding: "80px 40px",
+            maxWidth: "960px",
+            margin: "0 auto",
+            textAlign: "center",
+            position: "relative",
+            zIndex: 5,
+          }}
+        >
+          <img
+            src="/datapalo-infographic.jpg"
+            alt="DataPalo — Upload. Analyze. Done. AI-Powered Data Analysis in Seconds"
+            style={{
+              width: "100%",
+              maxWidth: "900px",
+              borderRadius: "20px",
+              border: "1px solid rgba(255,255,255,0.08)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(14, 165, 233, 0.06)",
+              transition: "transform 0.4s ease, box-shadow 0.4s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "scale(1.01)";
+              e.target.style.boxShadow = "0 24px 70px rgba(0,0,0,0.5), 0 0 50px rgba(14, 165, 233, 0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "scale(1)";
+              e.target.style.boxShadow = "0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(14, 165, 233, 0.06)";
+            }}
+          />
+        </section>
 
         {/* ============================================ */}
         {/* PROBLEM */}
