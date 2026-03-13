@@ -487,13 +487,15 @@ export default function AuthModal({ isOpen, onClose, language = 'en', defaultMod
             style={{
               background: 'none',
               border: 'none',
-              color: '#64748b',
-              fontSize: '0.8rem',
+              color: '#e2e8f0',
+              fontSize: '0.95rem',
+              fontWeight: '600',
               cursor: 'pointer',
               transition: 'color 0.2s',
+              letterSpacing: '-0.01em',
             }}
             onMouseEnter={(e) => e.target.style.color = '#10b981'}
-            onMouseLeave={(e) => e.target.style.color = '#64748b'}
+            onMouseLeave={(e) => e.target.style.color = '#e2e8f0'}
           >
             {isSignup ? t.switchToSignin : t.switchToSignup}
           </button>
