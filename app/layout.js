@@ -10,12 +10,12 @@ export const metadata = {
   metadataBase: new URL('https://www.datapalo.app'),
   title: {
     template: '%s | DataPalo',
-    default: 'DataPalo — Upload a File, Get Answers in Seconds',
+    default: 'DataPalo — Upload a File. Get Answers in Seconds.',
   },
   description:
     'Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.',
   openGraph: {
-    title: 'DataPalo — Upload a File, Get Answers in Seconds',
+    title: 'DataPalo — Upload a File. Get Answers in Seconds.',
     description:
       'Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.',
     url: 'https://www.datapalo.app',
@@ -33,13 +33,17 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DataPalo — Upload a File, Get Answers in Seconds',
+    title: 'DataPalo — Upload a File. Get Answers in Seconds.',
     description:
       'Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.',
     images: ['/og-image.png'],
   },
   alternates: {
     canonical: '/',
+    languages: {
+      'en-US': '/',
+      'cs-CZ': '/',
+    },
   },
   robots: {
     index: true,
