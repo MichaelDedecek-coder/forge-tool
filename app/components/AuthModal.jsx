@@ -75,10 +75,16 @@ export default function AuthModal({ isOpen, onClose, language = 'en', defaultMod
       if (mode === 'signup') {
         await signUp(email, password);
         // Success - profile will be auto-created by trigger
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'sign_up', { method: 'email' });
+        }
         onClose();
       } else {
         await signIn(email, password);
         // Success
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'login', { method: 'email' });
+        }
         onClose();
       }
     } catch (err) {
@@ -106,6 +112,9 @@ export default function AuthModal({ isOpen, onClose, language = 'en', defaultMod
     setLoading(true);
 
     try {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', mode === 'signup' ? 'sign_up' : 'login', { method: 'google' });
+      }
       await signInWithGoogle(googleRedirectTo);
       // Redirect will happen automatically
     } catch (err) {

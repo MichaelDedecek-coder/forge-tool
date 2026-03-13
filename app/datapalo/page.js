@@ -232,6 +232,9 @@ export default function Home() {
         setUpgradeReason(limits.reason);
         setUpgradeMessage(limits.message);
         setShowUpgradeModal(true);
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'upgrade_wall_shown', { reason: limits.reason });
+        }
         return;
       }
     } else {
@@ -254,6 +257,16 @@ export default function Home() {
       ? `Načítám ${rowCount.toLocaleString()} řádků...`
       : `Reading ${rowCount.toLocaleString()} rows...`);
     addLog("Starting analysis...");
+
+    // Track analysis event in GA4
+    if (typeof window !== 'undefined' && window.gtag) {
+      const currentTierForGA = syncedTier || profile?.tier || (user ? 'free' : 'anonymous');
+      window.gtag('event', 'analyze_data', {
+        tier: currentTierForGA,
+        row_count: rowCount,
+        language: language,
+      });
+    }
 
     const question = language === "cs"
       ? "Analyzuj tato data. Řekni mi nejdůležitější trendy, součty a odlehlé hodnoty."
@@ -521,6 +534,9 @@ export default function Home() {
       URL.revokeObjectURL(url);
 
       addLog("PDF downloaded successfully");
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'export_pdf', { tier: syncedTier || profile?.tier || 'free' });
+        }
     } catch (error) {
       addLog(`PDF error: ${error.message}`);
       alert(language === "cs"
