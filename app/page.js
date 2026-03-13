@@ -814,11 +814,11 @@ export default function DataPaloLanding() {
           }}
         >
           <span style={{
-            fontSize: "0.7rem",
+            fontSize: "0.85rem",
             fontFamily: "'JetBrains Mono', monospace",
-            fontWeight: "500",
-            color: "rgba(63, 81, 181, 0.55)",
-            letterSpacing: "0.18em",
+            fontWeight: "700",
+            color: "#3F51B5",
+            letterSpacing: "0.22em",
             textTransform: "uppercase",
             marginBottom: "40px",
             display: "block",
