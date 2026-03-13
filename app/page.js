@@ -11,6 +11,7 @@ export default function DataPaloLanding() {
   const [hovered, setHovered] = useState(false);
   const [visibleSections, setVisibleSections] = useState({});
   const [showAuth, setShowAuth] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, signOut } = useAuth();
   const sectionRefs = useRef({});
 
@@ -35,6 +36,12 @@ export default function DataPaloLanding() {
     });
 
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 500);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const content = {
@@ -244,6 +251,50 @@ export default function DataPaloLanding() {
           transform: translateY(0);
         }
 
+        .sticky-nav {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 100;
+          padding: 14px 40px;
+          background: rgba(8, 8, 24, 0.82);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          transform: translateY(-100%);
+          opacity: 0;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .sticky-nav.sticky-visible {
+          transform: translateY(0);
+          opacity: 1;
+        }
+
+        .hero-cta-btn {
+          padding: 20px 52px;
+          font-size: 1.1rem;
+          font-weight: 700;
+          font-family: 'Satoshi', sans-serif;
+          background: linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%);
+          color: white;
+          border: none;
+          border-radius: 16px;
+          cursor: pointer;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 16px 48px rgba(224, 103, 146, 0.22), 0 4px 16px rgba(63, 81, 181, 0.1);
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .hero-cta-btn:hover {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 24px 64px rgba(224, 103, 146, 0.35), 0 8px 24px rgba(63, 81, 181, 0.2);
+        }
+
         .step-card {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.06);
@@ -352,6 +403,9 @@ export default function DataPaloLanding() {
             font-size: 0.78rem !important;
           }
           nav > div:first-child { font-size: 1.2rem !important; }
+          .sticky-nav { padding: 10px 16px !important; }
+          .sticky-nav button { padding: 8px 18px !important; font-size: 0.82rem !important; }
+          .hero-cta-btn { width: 100% !important; justify-content: center !important; padding: 18px 32px !important; }
           .lang-switcher {
             position: absolute !important;
             left: 50% !important;
@@ -415,6 +469,42 @@ export default function DataPaloLanding() {
         <div className="orb orb-1" />
         <div className="orb orb-2" />
         <div className="orb orb-3" />
+
+        {/* ============================================ */}
+        {/* STICKY NAV — appears on scroll */}
+        {/* ============================================ */}
+        <div className={`sticky-nav ${scrolled ? 'sticky-visible' : ''}`}>
+          <div style={{
+            fontSize: "1.2rem",
+            fontWeight: "900",
+            letterSpacing: "-0.03em",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}>
+            <img src="/datapalo-logo.svg" alt="" style={{ width: "22px", height: "22px" }} />
+            <span style={{ color: "#E06792" }}>Data</span>
+            <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
+          </div>
+          <button
+            onClick={() => window.location.href = '/datapalo'}
+            style={{
+              padding: "10px 24px",
+              fontSize: "0.85rem",
+              fontWeight: "700",
+              fontFamily: "'Satoshi', sans-serif",
+              background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              boxShadow: "0 4px 16px rgba(224, 103, 146, 0.2)",
+            }}
+          >
+            {t.cta} →
+          </button>
+        </div>
 
         {/* ============================================ */}
         {/* NAV */}
@@ -623,13 +713,57 @@ export default function DataPaloLanding() {
             fontSize: "1.2rem",
             fontWeight: "400",
             color: "rgba(255,255,255,0.4)",
-            marginBottom: "0",
+            marginBottom: "40px",
             lineHeight: "1.7",
             maxWidth: "480px",
             letterSpacing: "0.01em",
           }}>
             {t.sub}
           </p>
+
+          {/* Hero CTA */}
+          <button
+            className={`hero-cta-btn ${mounted ? 'anim-4' : ''}`}
+            onClick={() => window.location.href = '/datapalo'}
+          >
+            {t.cta}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+
+          {/* Trust bar */}
+          <div className={mounted ? 'anim-5' : ''} style={{
+            display: "flex",
+            gap: "24px",
+            marginTop: "32px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}>
+            {[t.trust1, t.trust2, t.trust3].map((item, i) => (
+              <span key={i} style={{
+                fontSize: "0.7rem",
+                fontWeight: "500",
+                fontFamily: "'JetBrains Mono', monospace",
+                color: "rgba(255,255,255,0.2)",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}>
+                <span style={{
+                  width: "5px",
+                  height: "5px",
+                  borderRadius: "50%",
+                  background: i === 0 ? "#A1C50A" : i === 1 ? "#3F51B5" : "#E06792",
+                  display: "inline-block",
+                  opacity: 0.5,
+                }} />
+                {item}
+              </span>
+            ))}
+          </div>
 
         </section>
 
