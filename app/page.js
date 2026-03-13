@@ -382,6 +382,19 @@ export default function DataPaloLanding() {
           }
         }
 
+        /* Scroll progress indicator */
+        .scroll-progress {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #E06792, #3F51B5, #A1C50A);
+          z-index: 101;
+          transition: width 0.15s linear;
+          pointer-events: none;
+          border-radius: 0 2px 2px 0;
+        }
+
         /* Scroll-triggered inline CTA */
         .scroll-cta-block {
           max-height: 0;
@@ -503,7 +516,7 @@ export default function DataPaloLanding() {
           }
           nav > div:first-child { font-size: 1.2rem !important; }
           .sticky-nav { padding: 10px 16px !important; }
-          .sticky-nav button { padding: 8px 18px !important; font-size: 0.82rem !important; }
+          .sticky-nav button { display: none !important; }
           .hero-cta-btn { width: 100% !important; justify-content: center !important; padding: 18px 32px !important; }
           .mini-cta { padding: 12px 28px !important; font-size: 0.82rem !important; }
           .lang-switcher {
@@ -574,6 +587,9 @@ export default function DataPaloLanding() {
         <div className="orb orb-1" />
         <div className="orb orb-2" />
         <div className="orb orb-3" />
+
+        {/* === SCROLL PROGRESS BAR === */}
+        <div className="scroll-progress" style={{ width: `${scrollDepth}%` }} />
 
         {/* ============================================ */}
         {/* STICKY NAV — appears on scroll */}
