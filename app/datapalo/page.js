@@ -90,6 +90,16 @@ export default function Home() {
 
   // UI state
   const [language, setLanguage] = useState("cs");
+  const [showSample, setShowSample] = useState(false);
+  const [processingStep, setProcessingStep] = useState(0);
+
+  // Error card state
+  const [errorState, setErrorState] = useState(null);
+
+  const showError = (type, title, message, actions = []) => {
+    setErrorState({ type, title, message, actions });
+  };
+  const clearError = () => setErrorState(null);
 
   const addLog = (msg) => console.log(`[DataPalo] ${msg}`);
 
@@ -161,6 +171,7 @@ export default function Home() {
 
   // Handle File Drop
   const onDrop = useCallback((acceptedFiles) => {
+    clearError();
     const file = acceptedFiles[0];
     setFileName(file.name);
     addLog(`File selected: ${file.name}`);
@@ -193,7 +204,12 @@ export default function Home() {
 
   async function runAnalysis() {
     if (!csvData) {
-      return alert(language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!");
+      showError('red',
+        language === "cs" ? "Žádný soubor" : "No file selected",
+        language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!",
+        [{ label: language === "cs" ? "Vybrat soubor" : "Choose a file", onClick: () => { clearError(); document.querySelector('[data-dropzone]')?.click(); } }]
+      );
+      return;
     }
 
     // Wait for auth to finish loading before deciding user vs anonymous
@@ -213,13 +229,20 @@ export default function Home() {
       : 3.5 * 1024 * 1024;   // FREE / anonymous: 3.5 MB
     if (csvBytes > MAX_CSV_BYTES) {
       const sizeMB = (csvBytes / 1024 / 1024).toFixed(1);
-      alert(isPro
-        ? (language === "cs"
-            ? `Soubor přesahuje PRO limit 10 MB (${sizeMB} MB). Zkuste prosím zmenšit soubor.`
-            : `File exceeds the PRO limit of 10 MB (${sizeMB} MB). Please reduce the file size.`)
-        : (language === "cs"
-            ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zmenšete pod 10 000 řádků / 3.5 MB, nebo přejděte na PRO.`
-            : `File too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Reduce to under 10,000 rows / 3.5 MB or upgrade to PRO.`));
+      showError('yellow',
+        language === "cs" ? "Soubor je příliš velký" : "File too large",
+        isPro
+          ? (language === "cs"
+              ? `Soubor přesahuje PRO limit 10 MB (${sizeMB} MB). Zkuste prosím zmenšit soubor.`
+              : `File exceeds the PRO limit of 10 MB (${sizeMB} MB). Please reduce the file size.`)
+          : (language === "cs"
+              ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zmenšete pod 10 000 řádků / 3.5 MB, nebo přejděte na PRO.`
+              : `File too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Reduce to under 10,000 rows / 3.5 MB or upgrade to PRO.`),
+        [
+          { label: language === "cs" ? "Zkusit menší soubor" : "Try a smaller file", onClick: () => { clearError(); document.querySelector('[data-dropzone]')?.click(); } },
+          ...(!isPro ? [{ label: language === "cs" ? "Zobrazit PRO plány" : "See PRO plans", onClick: () => { clearError(); setShowUpgradeModal(true); } }] : []),
+        ]
+      );
       return;
     }
 
@@ -247,11 +270,16 @@ export default function Home() {
 
     // Proceed with analysis
     setLoading(true);
+    setProcessingStep(1);
     setResult(null);
     setParsedReport(null);
     setResearchAugmented(false);
     setExaInsightsCount(0);
     setExaDiagnostics(null);
+
+    // Processing step transitions
+    setTimeout(() => setProcessingStep(2), 1500);
+    setTimeout(() => setProcessingStep(3), 3000);
 
     setLoadingStage(language === "cs"
       ? `Načítám ${rowCount.toLocaleString()} řádků...`
@@ -373,8 +401,14 @@ export default function Home() {
             : (language === "cs"
                 ? `Chyba serveru (${res.status}). Zkuste to prosím znovu.`
                 : `Server error (${res.status}). Please try again.`);
-        alert(friendlyMsg);
+        showError(
+          res.status === 413 || res.status === 504 || res.status === 524 ? 'yellow' : 'blue',
+          language === "cs" ? "Chyba serveru" : "Server error",
+          friendlyMsg,
+          [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+        );
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -386,8 +420,13 @@ export default function Home() {
         const fallbackMsg = language === "cs"
           ? "Server vrátil neočekávanou odpověď. Zkuste to prosím znovu."
           : "Server returned an unexpected response. Please try again.";
-        alert(fallbackMsg);
+        showError('blue',
+          language === "cs" ? "Neočekávaná odpověď" : "Unexpected response",
+          fallbackMsg,
+          [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+        );
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -398,6 +437,7 @@ export default function Home() {
         setUpgradeMessage(data.error);
         setShowUpgradeModal(true);
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -406,13 +446,19 @@ export default function Home() {
       if (res.status === 401 && data.requiresAuth) {
         setShowAuthModal(true);
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
 
       if (data.error) {
-        alert(data.error);
+        showError('red',
+          language === "cs" ? "Chyba analýzy" : "Analysis error",
+          data.error,
+          [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+        );
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -439,6 +485,9 @@ export default function Home() {
       const reportData = markdownToReportJson(data.result);
       addLog(`Parse complete: Charts=${reportData?.charts?.length || 0}, Metrics=${reportData?.metrics?.length || 0}`);
 
+      setProcessingStep(4);
+      await new Promise(r => setTimeout(r, 800));
+
       setParsedReport(reportData);
 
       // USAGE TRACKING: Increment counters AFTER successful analysis
@@ -464,9 +513,14 @@ export default function Home() {
 
     } catch (e) {
       addLog(`ERROR: ${e.message}`);
-      alert("Error: " + e.message);
+      showError('red',
+        language === "cs" ? "Něco se pokazilo" : "Something went wrong",
+        e.message,
+        [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+      );
     }
     setLoading(false);
+    setProcessingStep(0);
     setLoadingStage("");
   }
 
@@ -539,9 +593,13 @@ export default function Home() {
         }
     } catch (error) {
       addLog(`PDF error: ${error.message}`);
-      alert(language === "cs"
-        ? `Chyba při generování PDF: ${error.message}`
-        : `Error generating PDF: ${error.message}`);
+      showError('red',
+        language === "cs" ? "Chyba PDF" : "PDF error",
+        language === "cs"
+          ? `Chyba při generování PDF: ${error.message}`
+          : `Error generating PDF: ${error.message}`,
+        [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); } }]
+      );
     } finally {
       setPdfGenerating(false);
     }
@@ -555,7 +613,40 @@ export default function Home() {
     : Math.max(0, tierLimits.analysesPerMonth - usage.analysis_count);
 
   return (
-    <div style={{ padding: "40px", fontFamily: "sans-serif", backgroundColor: "#0f172a", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+    <style jsx>{`
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Satoshi:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+      }
+      @keyframes scanLine {
+        0% { top: 10%; }
+        100% { top: 80%; }
+      }
+      @keyframes pulseSlow {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.05); }
+      }
+      @keyframes sparkle {
+        0%, 100% { opacity: 0.3; transform: rotate(0deg) scale(0.9); }
+        50% { opacity: 1; transform: rotate(15deg) scale(1.1); }
+      }
+      @keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `}</style>
+    <div style={{ padding: "40px", fontFamily: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif", background: "linear-gradient(168deg, #080818 0%, #0D0D2B 35%, #111133 65%, #0E0E28 100%)", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
 
       {/* Auth Modal */}
       <AuthModal
@@ -578,9 +669,11 @@ export default function Home() {
         onClick={() => window.location.href = '/'}
         style={{
           position: "absolute", top: "20px", left: "20px",
-          background: "none", border: "1px solid rgba(255,255,255,0.2)",
-          color: "rgba(255,255,255,0.7)", padding: "8px 16px",
-          borderRadius: "8px", cursor: "pointer", fontSize: "14px"
+          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+          color: "rgba(255,255,255,0.5)", backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)", padding: "8px 16px",
+          borderRadius: "10px", cursor: "pointer", fontSize: "14px",
+          fontFamily: "'Satoshi', sans-serif", transition: "all 0.25s ease"
         }}
       >
         ← {language === "cs" ? "Zpět" : "Back"}
@@ -589,27 +682,27 @@ export default function Home() {
       {/* TIER BADGE + USER INFO (top right) */}
       <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
         {/* Language Toggle */}
-        <div style={{ display: "flex", gap: "4px", background: "#1e293b", padding: "4px", borderRadius: "20px" }}>
+        <div style={{ display: "flex", gap: "4px", background: "rgba(255,255,255,0.04)", padding: "4px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.06)" }}>
           <button
             onClick={() => setLanguage("cs")}
             style={{
-              background: language === "cs" ? "#3b82f6" : "transparent",
-              color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
+              background: language === "cs" ? "rgba(224, 103, 146, 0.15)" : "transparent",
+              color: "white", border: language === "cs" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase"
             }}
-          >CZ 🇨🇿</button>
+          >CZ</button>
           <button
             onClick={() => setLanguage("en")}
             style={{
-              background: language === "en" ? "#3b82f6" : "transparent",
-              color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
+              background: language === "en" ? "rgba(224, 103, 146, 0.15)" : "transparent",
+              color: "white", border: language === "en" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase"
             }}
-          >EN 🇬🇧</button>
+          >EN</button>
         </div>
 
         {/* Tier Badge — show when user is signed in AND we have tier info from profile OR sync */}
         {user && (profile || syncedTier) && (
           <div style={{
-            background: tier === 'pro' ? 'linear-gradient(135deg, #0ea5e9 0%, #10b981 100%)' : '#64748b',
+            background: tier === 'pro' ? 'linear-gradient(135deg, #E06792 0%, #3F51B5 100%)' : 'rgba(255,255,255,0.08)',
             color: 'white',
             padding: '6px 14px',
             borderRadius: '20px',
@@ -630,9 +723,9 @@ export default function Home() {
           <button
             onClick={() => setShowAuthModal(true)}
             style={{
-              background: '#334155',
+              background: 'rgba(255,255,255,0.08)',
               color: 'white',
-              border: 'none',
+              border: '1px solid rgba(255,255,255,0.15)',
               padding: '8px 16px',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -655,8 +748,8 @@ export default function Home() {
             }}
             style={{
               background: 'none',
-              color: '#94a3b8',
-              border: '1px solid #334155',
+              color: 'rgba(255,255,255,0.5)',
+              border: '1px solid rgba(255,255,255,0.1)',
               padding: '8px 16px',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -670,58 +763,463 @@ export default function Home() {
 
       {/* HEADER */}
       <div style={{ marginTop: "40px", textAlign: "center" }}>
-        <h1 style={{ marginBottom: "10px", fontSize: "2.2rem" }}>
-          <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold", color: "white" }}>Palo</span>
-        </h1>
-        <p style={{ color: "#64748b", marginBottom: "30px" }}>
-          {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "10px" }}>
+          <img src="/datapalo-logo.svg" alt="" style={{ width: "36px", height: "36px" }} />
+          <h1 style={{
+            fontSize: "2.2rem",
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontWeight: "400",
+            letterSpacing: "-0.02em",
+            margin: 0,
+          }}>
+            <span style={{ color: "#E06792" }}>Data</span>
+            <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
+          </h1>
+        </div>
+        <p style={{
+          color: "rgba(255,255,255,0.42)",
+          marginBottom: "30px",
+          fontFamily: "'Satoshi', sans-serif",
+          fontSize: "1rem",
+        }}>
+          {language === "cs" ? "Nahrajte CSV nebo Excel. Získejte okamzite poznatky." : "Drop any CSV or Excel file. Get instant insights."}
         </p>
       </div>
 
+      {/* EMPTY STATE */}
+      {!fileName && !parsedReport && !loading && (
+        <div style={{
+          width: "100%",
+          maxWidth: "550px",
+          textAlign: "center",
+          padding: "40px 20px",
+          marginBottom: "20px",
+        }}>
+          {!showSample ? (
+            <>
+              {/* SVG illustration */}
+              <svg style={{ width: "120px", height: "120px", margin: "0 auto 28px", opacity: 0.6 }} viewBox="0 0 120 120" fill="none">
+                <rect x="20" y="50" width="14" height="50" rx="3" fill="url(#emptyGrad)" opacity="0.6"/>
+                <rect x="40" y="30" width="14" height="70" rx="3" fill="url(#emptyGrad)" opacity="0.7"/>
+                <rect x="60" y="45" width="14" height="55" rx="3" fill="url(#emptyGrad)" opacity="0.65"/>
+                <rect x="80" y="20" width="14" height="80" rx="3" fill="url(#emptyGrad)" opacity="0.8"/>
+                <circle cx="85" cy="35" r="22" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" fill="none"/>
+                <line x1="101" y1="51" x2="115" y2="65" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" strokeLinecap="round"/>
+                <defs>
+                  <linearGradient id="emptyGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#E06792"/>
+                    <stop offset="100%" stopColor="#3F51B5"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              <h3 style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: "1.6rem",
+                fontWeight: "400",
+                color: "rgba(255,255,255,0.92)",
+                marginBottom: "10px",
+              }}>
+                {language === "cs" ? "Vase poznatky cekaji" : "Your insights are waiting"}
+              </h3>
+
+              <p style={{
+                color: "rgba(255,255,255,0.42)",
+                fontSize: "0.9rem",
+                maxWidth: "400px",
+                margin: "0 auto 24px",
+              }}>
+                {language === "cs"
+                  ? "Nahrajte svuj prvni soubor, nebo prozkoumejte ukazkovou analyzu."
+                  : "Upload your first file, or explore a sample analysis to see what DataPalo can do."}
+              </p>
+
+              <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => document.querySelector('[data-dropzone]')?.click()}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+                    color: "white", border: "none", padding: "12px 24px", borderRadius: "10px",
+                    fontFamily: "'Satoshi', sans-serif", fontSize: "0.9rem", fontWeight: "600",
+                    cursor: "pointer", transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    boxShadow: "0 8px 30px rgba(224, 103, 146, 0.2)",
+                  }}
+                >
+                  {language === "cs" ? "Nahrat prvni soubor" : "Upload Your First File"}
+                </button>
+                <button
+                  onClick={() => setShowSample(true)}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    background: "transparent", color: "rgba(255,255,255,0.6)",
+                    border: "1px solid rgba(255,255,255,0.08)", padding: "12px 24px",
+                    borderRadius: "10px", fontFamily: "'Satoshi', sans-serif",
+                    fontSize: "0.9rem", fontWeight: "500", cursor: "pointer",
+                    transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                  }}
+                >
+                  {language === "cs" ? "Prozkoumat ukazku" : "Explore Sample"} →
+                </button>
+              </div>
+            </>
+          ) : (
+            /* Sample Dashboard */
+            <div style={{ padding: "20px 0" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
+                {[
+                  { label: language === "cs" ? "Trzby" : "Revenue", value: "\u20AC142,847", change: "+12.3%", positive: true },
+                  { label: language === "cs" ? "Rust" : "Growth", value: "+12.3%", change: language === "cs" ? "Rostouci trend" : "Trending upward", positive: true },
+                  { label: language === "cs" ? "Marze" : "Margin", value: "34.2%", change: language === "cs" ? "Nad cilem" : "Above target", positive: true },
+                ].map((m, i) => (
+                  <div key={i} style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "12px", padding: "20px",
+                    animation: `fadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) ${100 + i * 150}ms both`,
+                  }}>
+                    <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.42)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
+                    <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.8rem", color: "rgba(255,255,255,0.92)" }}>{m.value}</div>
+                    <div style={{ fontSize: "0.8rem", marginTop: "4px", color: "#A1C50A" }}>{m.change}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mini bar chart */}
+              <div style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: "12px", padding: "20px", height: "120px",
+                display: "flex", alignItems: "flex-end", gap: "8px",
+                animation: "fadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both",
+              }}>
+                {[45, 68, 52, 80, 92, 74, 55, 88].map((h, i) => (
+                  <div key={i} style={{
+                    flex: 1, borderRadius: "4px 4px 0 0", height: `${h}%`,
+                    background: "linear-gradient(135deg, #E06792, #3F51B5)",
+                    transition: "height 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+                  }} />
+                ))}
+              </div>
+
+              <button
+                onClick={() => setShowSample(false)}
+                style={{
+                  marginTop: "16px", background: "transparent",
+                  color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.08)",
+                  padding: "8px 16px", borderRadius: "8px", fontSize: "0.8rem",
+                  fontFamily: "'Satoshi', sans-serif", cursor: "pointer",
+                }}
+              >
+                {language === "cs" ? "Zpet" : "Reset demo"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ERROR CARD */}
+      {errorState && (
+        <div style={{
+          width: "100%", maxWidth: "550px",
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "12px", padding: "24px",
+          display: "flex", gap: "16px",
+          position: "relative", overflow: "hidden",
+          marginBottom: "20px",
+          animation: "fadeIn 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}>
+          {/* Left color bar */}
+          <div style={{
+            position: "absolute", left: 0, top: 0, bottom: 0, width: "3px",
+            background: errorState.type === 'red' ? '#E06792'
+              : errorState.type === 'yellow' ? '#F5A623' : '#5B9CF5',
+          }} />
+
+          {/* Icon */}
+          <div style={{
+            width: "40px", height: "40px", borderRadius: "10px",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, fontSize: "18px",
+            background: errorState.type === 'red' ? 'rgba(224,103,146,0.12)'
+              : errorState.type === 'yellow' ? 'rgba(245,166,35,0.12)' : 'rgba(91,156,245,0.12)',
+          }}>
+            {errorState.type === 'red' ? '\u26A0' : errorState.type === 'yellow' ? '\u26A1' : '\uD83D\uDD0C'}
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1 }}>
+            <h4 style={{
+              fontFamily: "'Satoshi', sans-serif", fontSize: "0.95rem",
+              fontWeight: "600", color: "rgba(255,255,255,0.92)",
+              margin: "0 0 6px 0",
+            }}>
+              {errorState.title}
+            </h4>
+            <p style={{
+              color: "rgba(255,255,255,0.42)", fontSize: "0.85rem",
+              lineHeight: "1.6", margin: 0,
+            }}>
+              {errorState.message}
+            </p>
+            {errorState.actions.length > 0 && (
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "12px" }}>
+                {errorState.actions.map((action, i) => (
+                  <button key={i} onClick={action.onClick} style={{
+                    padding: "8px 16px", fontSize: "0.8rem", borderRadius: "8px",
+                    fontFamily: "'Satoshi', sans-serif", fontWeight: "600",
+                    cursor: "pointer", transition: "all 0.25s ease",
+                    ...(i === 0 ? {
+                      background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+                      color: "white", border: "none",
+                      boxShadow: "0 4px 16px rgba(224, 103, 146, 0.2)",
+                    } : {
+                      background: "transparent", color: "rgba(255,255,255,0.5)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }),
+                  }}>
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Dismiss */}
+          <button onClick={clearError} style={{
+            position: "absolute", top: "12px", right: "12px",
+            background: "none", border: "none",
+            color: "rgba(255,255,255,0.22)", cursor: "pointer",
+            fontSize: "16px", padding: "4px",
+          }}>
+            {'\u2715'}
+          </button>
+        </div>
+      )}
+
       {/* DROP ZONE */}
-      <div {...getRootProps()} style={{
-        width: "100%", maxWidth: "550px", padding: "50px 40px",
-        border: "2px dashed #334155", borderRadius: "16px",
-        textAlign: "center", cursor: "pointer",
-        backgroundColor: isDragActive ? "#1e293b" : "transparent",
-        transition: "all 0.2s"
+      {!loading && (
+      <div {...getRootProps()} data-dropzone style={{
+        width: "100%", maxWidth: "550px",
+        border: isDragActive
+          ? "2px solid #E06792"
+          : fileName
+            ? "1px solid rgba(255,255,255,0.08)"
+            : "2px dashed rgba(255,255,255,0.15)",
+        borderRadius: "16px",
+        padding: fileName ? "32px" : "60px 40px",
+        textAlign: "center",
+        cursor: "pointer",
+        background: isDragActive
+          ? "rgba(224,103,146,0.04)"
+          : "rgba(255,255,255,0.02)",
+        transition: "all 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+        position: "relative",
+        overflow: "hidden",
       }}>
         <input {...getInputProps()} />
+
+        {/* Radial glow on drag */}
+        {isDragActive && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "radial-gradient(circle at center, rgba(224,103,146,0.08), transparent 70%)",
+            pointerEvents: "none",
+          }} />
+        )}
+
         {fileName ? (
-          <div>
-            <div style={{ fontSize: "48px", marginBottom: "15px" }}>📄</div>
-            <p style={{ fontSize: "18px", color: "#10b981", fontWeight: "600" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
-            <p style={{ fontSize: "15px", color: "#0ea5e9", marginTop: "8px", fontWeight: "600" }}>
-              {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"}
-            </p>
-            <p style={{ fontSize: "13px", color: "#475569", marginTop: "8px" }}>{language === "cs" ? "Klikněte na tlačítko níže pro analýzu" : "Click the button below to analyze"}</p>
+          /* State 3: File loaded */
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{
+              fontFamily: "'Satoshi', sans-serif",
+              fontSize: "1.1rem", fontWeight: "600",
+              color: "#A1C50A", marginBottom: "8px",
+            }}>
+              {fileName}
+            </div>
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "0.85rem",
+              color: "rgba(255,255,255,0.42)",
+              marginBottom: "24px",
+            }}>
+              {rowCount.toLocaleString()} {language === "cs" ? "radku" : "rows"} · {language === "cs" ? "Pripraveno k analyze" : "Ready to analyze"}
+            </div>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); runAnalysis(); }}
+                disabled={loading}
+                style={{
+                  padding: "14px 36px", fontSize: "0.95rem", fontWeight: "700",
+                  fontFamily: "'Satoshi', sans-serif",
+                  background: loading ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+                  color: "white", border: "none", borderRadius: "12px",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  transition: "all 0.3s ease",
+                  boxShadow: loading ? "none" : "0 8px 30px rgba(224, 103, 146, 0.22)",
+                  display: "inline-flex", alignItems: "center", gap: "8px",
+                }}
+              >
+                {language === "cs" ? "Analyzovat" : "Analyze"}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCsvData(null); setFileName(null); setRowCount(0);
+                }}
+                style={{
+                  padding: "14px 20px", fontSize: "0.85rem",
+                  fontFamily: "'Satoshi', sans-serif",
+                  background: "transparent",
+                  color: "rgba(255,255,255,0.42)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: "12px", cursor: "pointer",
+                  transition: "all 0.25s ease",
+                }}
+              >
+                {language === "cs" ? "Odstranit" : "Remove"}
+              </button>
+            </div>
           </div>
         ) : (
-          <div>
-            <div style={{ fontSize: "48px", marginBottom: "15px" }}>📥</div>
-            <p style={{ color: "#94a3b8", fontSize: "16px" }}>{language === "cs" ? "Přetáhněte soubor sem nebo klikněte" : "Drag & drop a file here, or click"}</p>
-            <p style={{ fontSize: "13px", color: "#475569", marginTop: "10px" }}>CSV, Excel (.xlsx)</p>
+          /* State 1: Idle / State 2: Drag over */
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <svg style={{
+              width: "56px", height: "56px", margin: "0 auto 20px",
+              opacity: isDragActive ? 1 : 0.5,
+              transition: "all 400ms ease",
+              animation: isDragActive ? "pulse 1s ease-in-out infinite" : "none",
+            }} viewBox="0 0 56 56" fill="none">
+              <rect x="12" y="6" width="32" height="40" rx="4" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+              <path d="M22 16h12M22 22h12M22 28h8" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M28 50V38M22 44l6-6 6 6" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <h3 style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: "1.3rem", fontWeight: "400",
+              color: "rgba(255,255,255,0.92)",
+              marginBottom: "8px",
+            }}>
+              {language === "cs" ? "Presunte CSV nebo Excel soubor sem" : "Drop your CSV or Excel file here"}
+            </h3>
+            <p style={{
+              color: "rgba(255,255,255,0.42)",
+              fontSize: "0.85rem", marginBottom: "16px",
+            }}>
+              {language === "cs" ? "Okamzite analyzujeme a pripravime poznatky" : "We'll analyze it instantly and build your insights"}
+            </p>
+            <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+              {["CSV", "XLSX", "XLS"].map(fmt => (
+                <span key={fmt} style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: "0.7rem", padding: "4px 10px", borderRadius: "6px",
+                  background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.42)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                }}>
+                  {fmt}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>
+      )}
 
-      {/* ANALYZE BUTTON */}
-      {fileName && (
-        <button
-          onClick={runAnalysis}
-          disabled={loading}
-          style={{
-            marginTop: "25px", padding: "16px 50px", fontSize: "17px",
-            background: loading ? "#475569" : "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)",
-            color: "white", border: "none", borderRadius: "30px", cursor: loading ? "not-allowed" : "pointer",
-            fontWeight: "bold", boxShadow: "0 4px 20px rgba(16, 185, 129, 0.3)",
-            transition: "all 0.2s"
-          }}
-        >
-          {loading
-            ? `✨ ${loadingStage}`
-            : (language === "cs" ? "✨ Analyzovat" : "✨ Analyze")}
-        </button>
+      {/* PROCESSING ANIMATION */}
+      {loading && (
+        <div style={{
+          width: "100%", maxWidth: "550px",
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "16px",
+          padding: "48px 32px",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+          marginTop: "20px",
+        }}>
+          {/* Progress bar */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: "3px",
+            background: "rgba(255,255,255,0.06)", borderRadius: "2px",
+          }}>
+            <div style={{
+              height: "100%", width: `${processingStep * 25}%`,
+              background: "#A1C50A", borderRadius: "2px",
+              transition: "width 1.4s linear",
+            }} />
+          </div>
+
+          {/* Step 1: Reading */}
+          {processingStep === 1 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px" }} viewBox="0 0 64 64" fill="none">
+                <rect x="14" y="8" width="36" height="48" rx="4" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+                <path d="M22 20h20M22 28h20M22 36h14" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="14" y1="20" x2="50" y2="20" stroke="#A1C50A" strokeWidth="2" opacity="0.8">
+                  <animate attributeName="y1" values="12;52;12" dur="1.5s" repeatCount="indefinite"/>
+                  <animate attributeName="y2" values="12;52;12" dur="1.5s" repeatCount="indefinite"/>
+                </line>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
+                {language === "cs" ? "Cteme vas soubor..." : "Reading your file..."}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Finding patterns */}
+          {processingStep === 2 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px", animation: "pulseSlow 1.5s ease-in-out infinite" }} viewBox="0 0 64 64" fill="none">
+                <rect x="10" y="34" width="10" height="22" rx="2" fill="url(#procGrad)" opacity="0.6"/>
+                <rect x="27" y="22" width="10" height="34" rx="2" fill="url(#procGrad)" opacity="0.7"/>
+                <rect x="44" y="14" width="10" height="42" rx="2" fill="url(#procGrad)" opacity="0.8"/>
+                <defs><linearGradient id="procGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#E06792"/><stop offset="100%" stopColor="#3F51B5"/></linearGradient></defs>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
+                {language === "cs" ? "Hledame vzory..." : "Finding patterns..."}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Building insights */}
+          {processingStep === 3 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px", animation: "sparkle 1.2s ease-in-out infinite" }} viewBox="0 0 64 64" fill="none">
+                <path d="M32 8L35 26L52 20L38 32L52 44L35 38L32 56L29 38L12 44L26 32L12 20L29 26Z" fill="url(#procGrad)" opacity="0.7"/>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
+                {language === "cs" ? "Pripravujeme poznatky..." : "Building your insights..."}
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Done */}
+          {processingStep === 4 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px" }} viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="24" fill="rgba(161, 197, 10, 0.15)"/>
+                <path d="M22 32l7 7 14-14" stroke="#A1C50A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "bounceIn 500ms cubic-bezier(0.16, 1, 0.3, 1)" }}/>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "#A1C50A" }}>
+                {language === "cs" ? "Hotovo!" : "Done!"}
+              </div>
+            </div>
+          )}
+
+          {/* File context */}
+          <div style={{
+            marginTop: "16px", fontFamily: "'JetBrains Mono', monospace",
+            fontSize: "0.8rem", color: "rgba(255,255,255,0.22)",
+          }}>
+            {fileName} · {rowCount.toLocaleString()} {language === "cs" ? "radku" : "rows"}
+          </div>
+        </div>
       )}
 
       {/* RESULTS */}
@@ -731,14 +1229,14 @@ export default function Home() {
           {/* Exa Diagnostic Banner (shows when Exa had issues or is PRO-only) */}
           {exaDiagnostics && exaDiagnostics.status !== "success" && (
             <div style={{
-              background: exaDiagnostics.status === "pro_only" ? "#1e1b4b" : exaDiagnostics.status === "not_configured" ? "#1e293b" : "#451a03",
+              background: exaDiagnostics.status === "pro_only" ? "#1e1b4b" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.03)" : "#451a03",
               padding: "12px 20px",
               borderRadius: "10px",
               marginBottom: "12px",
-              border: `1px solid ${exaDiagnostics.status === "pro_only" ? "#4338ca" : exaDiagnostics.status === "not_configured" ? "#334155" : "#92400e"}`,
+              border: `1px solid ${exaDiagnostics.status === "pro_only" ? "#4338ca" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.06)" : "#92400e"}`,
               fontSize: "13px"
             }}>
-              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "pro_only" ? "#a78bfa" : exaDiagnostics.status === "not_configured" ? "#94a3b8" : "#fbbf24" }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "pro_only" ? "#a78bfa" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.42)" : "#fbbf24" }}>
                 {exaDiagnostics.status === "pro_only" && (language === "cs"
                   ? "🔒 Research-Augmented Analysis je PRO funkce"
                   : "🔒 Research-Augmented Analysis is a PRO feature")}
@@ -747,7 +1245,7 @@ export default function Home() {
                 {exaDiagnostics.status === "empty" && "⚠️ EXA Research: No results found"}
                 {exaDiagnostics.status === "skipped" && "ℹ️ EXA Research: Skipped"}
               </div>
-              <div style={{ color: "#94a3b8", fontSize: "12px" }}>
+              <div style={{ color: "rgba(255,255,255,0.42)", fontSize: "12px" }}>
                 {exaDiagnostics.status === "pro_only"
                   ? (language === "cs"
                     ? "Přejděte na PRO pro průmyslové benchmarky, tržní trendy a citované zdroje."
@@ -816,19 +1314,19 @@ export default function Home() {
           )}
 
           {/* Report Card */}
-          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
-              <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
+              <h3 style={{ margin: 0, color: "#A1C50A", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   onClick={downloadPDF}
                   disabled={pdfGenerating}
                   style={{
                     background: pdfGenerating
-                      ? "#475569"
+                      ? "rgba(255,255,255,0.06)"
                       : canExport(tier, 'pdf')
-                        ? "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)"
-                        : "#334155",
+                        ? "linear-gradient(135deg, #E06792 0%, #3F51B5 100%)"
+                        : "rgba(255,255,255,0.06)",
                     color: "#fff",
                     border: "none",
                     padding: "10px 20px",
@@ -836,7 +1334,7 @@ export default function Home() {
                     cursor: pdfGenerating ? "wait" : "pointer",
                     fontSize: "14px",
                     fontWeight: "600",
-                    boxShadow: canExport(tier, 'pdf') && !pdfGenerating ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
+                    boxShadow: canExport(tier, 'pdf') && !pdfGenerating ? "0 4px 12px rgba(224, 103, 146, 0.2)" : "none",
                     display: "flex",
                     alignItems: "center",
                     gap: "6px",
@@ -850,7 +1348,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={downloadReport}
-                  style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
+                  style={{ background: "rgba(255,255,255,0.03)", color: "#fff", border: "1px solid rgba(255,255,255,0.06)", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
                 >
                   {language === "cs" ? "📝 Stáhnout TXT" : "📝 Download TXT"}
                 </button>
@@ -864,9 +1362,9 @@ export default function Home() {
       {/* FALLBACK: Raw output if parsing failed */}
       {result && !parsedReport && (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "900px" }}>
-          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
             <h3 style={{ marginTop: 0, color: "#f59e0b" }}>⚠️ {language === "cs" ? "Textový výstup" : "Text Output"}</h3>
-            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "#94a3b8" }}>
+            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "rgba(255,255,255,0.42)" }}>
               {result}
             </pre>
           </div>
@@ -874,17 +1372,17 @@ export default function Home() {
       )}
 
       {/* FOOTER */}
-      <div style={{ marginTop: "60px", textAlign: "center", color: "#475569", fontSize: "14px", paddingBottom: "20px" }}>
+      <div style={{ marginTop: "60px", textAlign: "center", color: "rgba(255,255,255,0.22)", fontSize: "14px", paddingBottom: "20px" }}>
         <p style={{ marginBottom: "8px" }}>
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
         <a
           href="mailto:michael@forgecreative.cz?subject=DataPalo%20Feedback"
-          style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: "600" }}
+          style={{ color: "#E06792", textDecoration: "none", fontWeight: "600" }}
         >
           michael@forgecreative.cz
         </a>
-        <p style={{ marginTop: "20px", fontSize: "12px", color: "#334155" }}>
+        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.12)" }}>
           FORGE CREATIVE | AI Job Agency
         </p>
       </div>
