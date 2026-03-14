@@ -555,7 +555,40 @@ export default function Home() {
     : Math.max(0, tierLimits.analysesPerMonth - usage.analysis_count);
 
   return (
-    <div style={{ padding: "40px", fontFamily: "sans-serif", backgroundColor: "#0f172a", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+    <style jsx>{`
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Satoshi:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+      }
+      @keyframes scanLine {
+        0% { top: 10%; }
+        100% { top: 80%; }
+      }
+      @keyframes pulseSlow {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.05); }
+      }
+      @keyframes sparkle {
+        0%, 100% { opacity: 0.3; transform: rotate(0deg) scale(0.9); }
+        50% { opacity: 1; transform: rotate(15deg) scale(1.1); }
+      }
+      @keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `}</style>
+    <div style={{ padding: "40px", fontFamily: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif", background: "linear-gradient(168deg, #080818 0%, #0D0D2B 35%, #111133 65%, #0E0E28 100%)", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
 
       {/* Auth Modal */}
       <AuthModal
@@ -578,9 +611,11 @@ export default function Home() {
         onClick={() => window.location.href = '/'}
         style={{
           position: "absolute", top: "20px", left: "20px",
-          background: "none", border: "1px solid rgba(255,255,255,0.2)",
-          color: "rgba(255,255,255,0.7)", padding: "8px 16px",
-          borderRadius: "8px", cursor: "pointer", fontSize: "14px"
+          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+          color: "rgba(255,255,255,0.5)", backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)", padding: "8px 16px",
+          borderRadius: "10px", cursor: "pointer", fontSize: "14px",
+          fontFamily: "'Satoshi', sans-serif", transition: "all 0.25s ease"
         }}
       >
         ← {language === "cs" ? "Zpět" : "Back"}
@@ -589,27 +624,27 @@ export default function Home() {
       {/* TIER BADGE + USER INFO (top right) */}
       <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
         {/* Language Toggle */}
-        <div style={{ display: "flex", gap: "4px", background: "#1e293b", padding: "4px", borderRadius: "20px" }}>
+        <div style={{ display: "flex", gap: "4px", background: "rgba(255,255,255,0.04)", padding: "4px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.06)" }}>
           <button
             onClick={() => setLanguage("cs")}
             style={{
-              background: language === "cs" ? "#3b82f6" : "transparent",
-              color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
+              background: language === "cs" ? "rgba(224, 103, 146, 0.15)" : "transparent",
+              color: "white", border: language === "cs" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase"
             }}
-          >CZ 🇨🇿</button>
+          >CZ</button>
           <button
             onClick={() => setLanguage("en")}
             style={{
-              background: language === "en" ? "#3b82f6" : "transparent",
-              color: "white", border: "none", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "13px"
+              background: language === "en" ? "rgba(224, 103, 146, 0.15)" : "transparent",
+              color: "white", border: language === "en" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase"
             }}
-          >EN 🇬🇧</button>
+          >EN</button>
         </div>
 
         {/* Tier Badge — show when user is signed in AND we have tier info from profile OR sync */}
         {user && (profile || syncedTier) && (
           <div style={{
-            background: tier === 'pro' ? 'linear-gradient(135deg, #0ea5e9 0%, #10b981 100%)' : '#64748b',
+            background: tier === 'pro' ? 'linear-gradient(135deg, #E06792 0%, #3F51B5 100%)' : 'rgba(255,255,255,0.08)',
             color: 'white',
             padding: '6px 14px',
             borderRadius: '20px',
@@ -630,9 +665,9 @@ export default function Home() {
           <button
             onClick={() => setShowAuthModal(true)}
             style={{
-              background: '#334155',
+              background: 'rgba(255,255,255,0.08)',
               color: 'white',
-              border: 'none',
+              border: '1px solid rgba(255,255,255,0.15)',
               padding: '8px 16px',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -655,8 +690,8 @@ export default function Home() {
             }}
             style={{
               background: 'none',
-              color: '#94a3b8',
-              border: '1px solid #334155',
+              color: 'rgba(255,255,255,0.5)',
+              border: '1px solid rgba(255,255,255,0.1)',
               padding: '8px 16px',
               borderRadius: '8px',
               cursor: 'pointer',
@@ -670,11 +705,26 @@ export default function Home() {
 
       {/* HEADER */}
       <div style={{ marginTop: "40px", textAlign: "center" }}>
-        <h1 style={{ marginBottom: "10px", fontSize: "2.2rem" }}>
-          <span style={{ color: "#0ea5e9" }}>Data</span><span style={{ fontWeight: "bold", color: "white" }}>Palo</span>
-        </h1>
-        <p style={{ color: "#64748b", marginBottom: "30px" }}>
-          {language === "cs" ? "Vložte CSV nebo Excel. Získejte okamžité výsledky." : "Drop any CSV or Excel file. Get instant insights."}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "10px" }}>
+          <img src="/datapalo-logo.svg" alt="" style={{ width: "36px", height: "36px" }} />
+          <h1 style={{
+            fontSize: "2.2rem",
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontWeight: "400",
+            letterSpacing: "-0.02em",
+            margin: 0,
+          }}>
+            <span style={{ color: "#E06792" }}>Data</span>
+            <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
+          </h1>
+        </div>
+        <p style={{
+          color: "rgba(255,255,255,0.42)",
+          marginBottom: "30px",
+          fontFamily: "'Satoshi', sans-serif",
+          fontSize: "1rem",
+        }}>
+          {language === "cs" ? "Nahrajte CSV nebo Excel. Získejte okamzite poznatky." : "Drop any CSV or Excel file. Get instant insights."}
         </p>
       </div>
 
@@ -874,17 +924,17 @@ export default function Home() {
       )}
 
       {/* FOOTER */}
-      <div style={{ marginTop: "60px", textAlign: "center", color: "#475569", fontSize: "14px", paddingBottom: "20px" }}>
+      <div style={{ marginTop: "60px", textAlign: "center", color: "rgba(255,255,255,0.22)", fontSize: "14px", paddingBottom: "20px" }}>
         <p style={{ marginBottom: "8px" }}>
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
         <a
           href="mailto:michael@forgecreative.cz?subject=DataPalo%20Feedback"
-          style={{ color: "#0ea5e9", textDecoration: "none", fontWeight: "600" }}
+          style={{ color: "#E06792", textDecoration: "none", fontWeight: "600" }}
         >
           michael@forgecreative.cz
         </a>
-        <p style={{ marginTop: "20px", fontSize: "12px", color: "#334155" }}>
+        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.12)" }}>
           FORGE CREATIVE | AI Job Agency
         </p>
       </div>
