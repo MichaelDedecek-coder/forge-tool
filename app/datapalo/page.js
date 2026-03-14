@@ -613,7 +613,7 @@ export default function Home() {
     : Math.max(0, tierLimits.analysesPerMonth - usage.analysis_count);
 
   return (
-    <div style={{ padding: "40px", fontFamily: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif", background: "linear-gradient(168deg, #080818 0%, #0D0D2B 35%, #111133 65%, #0E0E28 100%)", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+    <div style={{ padding: "40px 16px", fontFamily: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif", background: "linear-gradient(168deg, #080818 0%, #0D0D2B 35%, #111133 65%, #0E0E28 100%)", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Satoshi:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -664,23 +664,29 @@ export default function Home() {
         language={language}
       />
 
+      {/* TOP NAV BAR */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        width: "100%", maxWidth: "1200px", marginBottom: "0px",
+        flexWrap: "wrap", gap: "10px",
+      }}>
       {/* BACK TO HOME */}
       <button
         onClick={() => window.location.href = '/'}
         style={{
-          position: "absolute", top: "20px", left: "20px",
           background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
           color: "rgba(255,255,255,0.5)", backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)", padding: "8px 16px",
           borderRadius: "10px", cursor: "pointer", fontSize: "14px",
-          fontFamily: "'Satoshi', sans-serif", transition: "all 0.25s ease"
+          fontFamily: "'Satoshi', sans-serif", transition: "all 0.25s ease",
+          whiteSpace: "nowrap",
         }}
       >
         ← {language === "cs" ? "Zpět" : "Back"}
       </button>
 
-      {/* TIER BADGE + USER INFO (top right) */}
-      <div style={{ position: "absolute", top: "20px", right: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
+      {/* TIER BADGE + USER INFO */}
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
         {/* Language Toggle */}
         <div style={{ display: "flex", gap: "4px", background: "rgba(255,255,255,0.04)", padding: "4px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.06)" }}>
           <button
@@ -760,13 +766,14 @@ export default function Home() {
           </button>
         )}
       </div>
+      </div>
 
       {/* HEADER */}
-      <div style={{ marginTop: "40px", textAlign: "center" }}>
+      <div style={{ marginTop: "24px", textAlign: "center" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "10px" }}>
           <img src="/datapalo-logo.svg" alt="" style={{ width: "36px", height: "36px" }} />
           <h1 style={{
-            fontSize: "2.2rem",
+            fontSize: "clamp(1.8rem, 6vw, 2.2rem)",
             fontFamily: "'Instrument Serif', Georgia, serif",
             fontWeight: "400",
             letterSpacing: "-0.02em",
@@ -866,7 +873,7 @@ export default function Home() {
           ) : (
             /* Sample Dashboard */
             <div style={{ padding: "20px 0" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px", marginBottom: "24px" }}>
                 {[
                   { label: language === "cs" ? "Tržby" : "Revenue", value: "\u20AC142,847", change: "+12.3%", positive: true },
                   { label: language === "cs" ? "Růst" : "Growth", value: "+12.3%", change: language === "cs" ? "Rostoucí trend" : "Trending upward", positive: true },
@@ -875,12 +882,12 @@ export default function Home() {
                   <div key={i} style={{
                     background: "rgba(255,255,255,0.04)",
                     border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "12px", padding: "20px",
+                    borderRadius: "12px", padding: "16px",
                     animation: `fadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) ${100 + i * 150}ms both`,
                   }}>
-                    <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
-                    <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.8rem", color: "rgba(255,255,255,0.92)" }}>{m.value}</div>
-                    <div style={{ fontSize: "0.8rem", marginTop: "4px", color: "#A1C50A" }}>{m.change}</div>
+                    <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
+                    <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "clamp(1.3rem, 5vw, 1.8rem)", color: "rgba(255,255,255,0.92)" }}>{m.value}</div>
+                    <div style={{ fontSize: "0.75rem", marginTop: "4px", color: "#A1C50A" }}>{m.change}</div>
                   </div>
                 ))}
               </div>
@@ -1008,7 +1015,7 @@ export default function Home() {
             ? "1px solid rgba(255,255,255,0.08)"
             : "2px dashed rgba(255,255,255,0.25)",
         borderRadius: "16px",
-        padding: fileName ? "32px" : "60px 40px",
+        padding: fileName ? "24px 16px" : "40px 16px",
         textAlign: "center",
         cursor: "pointer",
         background: isDragActive
@@ -1137,7 +1144,7 @@ export default function Home() {
           background: "rgba(255,255,255,0.03)",
           border: "1px solid rgba(255,255,255,0.08)",
           borderRadius: "16px",
-          padding: "48px 32px",
+          padding: "40px 16px",
           textAlign: "center",
           position: "relative",
           overflow: "hidden",
@@ -1230,7 +1237,7 @@ export default function Home() {
           {exaDiagnostics && exaDiagnostics.status !== "success" && (
             <div style={{
               background: exaDiagnostics.status === "pro_only" ? "#1e1b4b" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.03)" : "#451a03",
-              padding: "12px 20px",
+              padding: "12px 16px",
               borderRadius: "10px",
               marginBottom: "12px",
               border: `1px solid ${exaDiagnostics.status === "pro_only" ? "#4338ca" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.06)" : "#92400e"}`,
@@ -1302,8 +1309,8 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div style={{ fontSize: "12px", opacity: 0.95, marginLeft: "36px", lineHeight: "1.8" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+              <div style={{ fontSize: "12px", opacity: 0.95, marginLeft: "0", lineHeight: "1.8" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "8px" }}>
                   <div>✅ {language === "cs" ? "Srovnání s průmyslem" : "Industry benchmarks"}</div>
                   <div>✅ {language === "cs" ? "Tržní trendy" : "Market trends"}</div>
                   <div>✅ {language === "cs" ? "Externí kontext" : "External research context"}</div>
@@ -1314,8 +1321,8 @@ export default function Home() {
           )}
 
           {/* Report Card */}
-          <div style={{ background: "rgba(255,255,255,0.03)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
               <h3 style={{ margin: 0, color: "#A1C50A", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
