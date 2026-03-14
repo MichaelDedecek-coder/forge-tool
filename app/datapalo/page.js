@@ -91,6 +91,7 @@ export default function Home() {
   // UI state
   const [language, setLanguage] = useState("cs");
   const [showSample, setShowSample] = useState(false);
+  const [processingStep, setProcessingStep] = useState(0);
 
   const addLog = (msg) => console.log(`[DataPalo] ${msg}`);
 
@@ -248,11 +249,16 @@ export default function Home() {
 
     // Proceed with analysis
     setLoading(true);
+    setProcessingStep(1);
     setResult(null);
     setParsedReport(null);
     setResearchAugmented(false);
     setExaInsightsCount(0);
     setExaDiagnostics(null);
+
+    // Processing step transitions
+    setTimeout(() => setProcessingStep(2), 1500);
+    setTimeout(() => setProcessingStep(3), 3000);
 
     setLoadingStage(language === "cs"
       ? `Načítám ${rowCount.toLocaleString()} řádků...`
@@ -376,6 +382,7 @@ export default function Home() {
                 : `Server error (${res.status}). Please try again.`);
         alert(friendlyMsg);
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -389,6 +396,7 @@ export default function Home() {
           : "Server returned an unexpected response. Please try again.";
         alert(fallbackMsg);
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -399,6 +407,7 @@ export default function Home() {
         setUpgradeMessage(data.error);
         setShowUpgradeModal(true);
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -407,6 +416,7 @@ export default function Home() {
       if (res.status === 401 && data.requiresAuth) {
         setShowAuthModal(true);
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -414,6 +424,7 @@ export default function Home() {
       if (data.error) {
         alert(data.error);
         setLoading(false);
+        setProcessingStep(0);
         setLoadingStage("");
         return;
       }
@@ -439,6 +450,9 @@ export default function Home() {
       addLog("Parsing markdown to report...");
       const reportData = markdownToReportJson(data.result);
       addLog(`Parse complete: Charts=${reportData?.charts?.length || 0}, Metrics=${reportData?.metrics?.length || 0}`);
+
+      setProcessingStep(4);
+      await new Promise(r => setTimeout(r, 800));
 
       setParsedReport(reportData);
 
@@ -468,6 +482,7 @@ export default function Home() {
       alert("Error: " + e.message);
     }
     setLoading(false);
+    setProcessingStep(0);
     setLoadingStage("");
   }
 
@@ -862,6 +877,7 @@ export default function Home() {
       )}
 
       {/* DROP ZONE */}
+      {!loading && (
       <div {...getRootProps()} data-dropzone style={{
         width: "100%", maxWidth: "550px",
         border: isDragActive
@@ -990,6 +1006,99 @@ export default function Home() {
           </div>
         )}
       </div>
+      )}
+
+      {/* PROCESSING ANIMATION */}
+      {loading && (
+        <div style={{
+          width: "100%", maxWidth: "550px",
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "16px",
+          padding: "48px 32px",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+          marginTop: "20px",
+        }}>
+          {/* Progress bar */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: "3px",
+            background: "rgba(255,255,255,0.06)", borderRadius: "2px",
+          }}>
+            <div style={{
+              height: "100%", width: `${processingStep * 25}%`,
+              background: "#A1C50A", borderRadius: "2px",
+              transition: "width 1.4s linear",
+            }} />
+          </div>
+
+          {/* Step 1: Reading */}
+          {processingStep === 1 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px" }} viewBox="0 0 64 64" fill="none">
+                <rect x="14" y="8" width="36" height="48" rx="4" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+                <path d="M22 20h20M22 28h20M22 36h14" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round"/>
+                <line x1="14" y1="20" x2="50" y2="20" stroke="#A1C50A" strokeWidth="2" opacity="0.8">
+                  <animate attributeName="y1" values="12;52;12" dur="1.5s" repeatCount="indefinite"/>
+                  <animate attributeName="y2" values="12;52;12" dur="1.5s" repeatCount="indefinite"/>
+                </line>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
+                {language === "cs" ? "Cteme vas soubor..." : "Reading your file..."}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Finding patterns */}
+          {processingStep === 2 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px", animation: "pulseSlow 1.5s ease-in-out infinite" }} viewBox="0 0 64 64" fill="none">
+                <rect x="10" y="34" width="10" height="22" rx="2" fill="url(#procGrad)" opacity="0.6"/>
+                <rect x="27" y="22" width="10" height="34" rx="2" fill="url(#procGrad)" opacity="0.7"/>
+                <rect x="44" y="14" width="10" height="42" rx="2" fill="url(#procGrad)" opacity="0.8"/>
+                <defs><linearGradient id="procGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#E06792"/><stop offset="100%" stopColor="#3F51B5"/></linearGradient></defs>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
+                {language === "cs" ? "Hledame vzory..." : "Finding patterns..."}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Building insights */}
+          {processingStep === 3 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px", animation: "sparkle 1.2s ease-in-out infinite" }} viewBox="0 0 64 64" fill="none">
+                <path d="M32 8L35 26L52 20L38 32L52 44L35 38L32 56L29 38L12 44L26 32L12 20L29 26Z" fill="url(#procGrad)" opacity="0.7"/>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
+                {language === "cs" ? "Pripravujeme poznatky..." : "Building your insights..."}
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Done */}
+          {processingStep === 4 && (
+            <div style={{ animation: "fadeIn 400ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
+              <svg style={{ width: "64px", height: "64px", margin: "0 auto 16px" }} viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="24" fill="rgba(161, 197, 10, 0.15)"/>
+                <path d="M22 32l7 7 14-14" stroke="#A1C50A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "bounceIn 500ms cubic-bezier(0.16, 1, 0.3, 1)" }}/>
+              </svg>
+              <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "#A1C50A" }}>
+                {language === "cs" ? "Hotovo!" : "Done!"}
+              </div>
+            </div>
+          )}
+
+          {/* File context */}
+          <div style={{
+            marginTop: "16px", fontFamily: "'JetBrains Mono', monospace",
+            fontSize: "0.8rem", color: "rgba(255,255,255,0.22)",
+          }}>
+            {fileName} · {rowCount.toLocaleString()} {language === "cs" ? "radku" : "rows"}
+          </div>
+        </div>
+      )}
 
       {/* RESULTS */}
       {parsedReport && (
