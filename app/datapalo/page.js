@@ -777,12 +777,12 @@ export default function Home() {
           </h1>
         </div>
         <p style={{
-          color: "rgba(255,255,255,0.42)",
+          color: "rgba(255,255,255,0.6)",
           marginBottom: "30px",
           fontFamily: "'Satoshi', sans-serif",
           fontSize: "1rem",
         }}>
-          {language === "cs" ? "Nahrajte CSV nebo Excel. Získejte okamzite poznatky." : "Drop any CSV or Excel file. Get instant insights."}
+          {language === "cs" ? "Nahrajte CSV nebo Excel. Získejte okamžité poznatky." : "Drop any CSV or Excel file. Get instant insights."}
         </p>
       </div>
 
@@ -820,17 +820,17 @@ export default function Home() {
                 color: "rgba(255,255,255,0.92)",
                 marginBottom: "10px",
               }}>
-                {language === "cs" ? "Vase poznatky cekaji" : "Your insights are waiting"}
+                {language === "cs" ? "Vaše poznatky čekají" : "Your insights are waiting"}
               </h3>
 
               <p style={{
-                color: "rgba(255,255,255,0.42)",
+                color: "rgba(255,255,255,0.6)",
                 fontSize: "0.9rem",
                 maxWidth: "400px",
                 margin: "0 auto 24px",
               }}>
                 {language === "cs"
-                  ? "Nahrajte svuj prvni soubor, nebo prozkoumejte ukazkovou analyzu."
+                  ? "Nahrajte svůj první soubor, nebo prozkoumejte ukázkovou analýzu."
                   : "Upload your first file, or explore a sample analysis to see what DataPalo can do."}
               </p>
 
@@ -846,20 +846,20 @@ export default function Home() {
                     boxShadow: "0 8px 30px rgba(224, 103, 146, 0.2)",
                   }}
                 >
-                  {language === "cs" ? "Nahrat prvni soubor" : "Upload Your First File"}
+                  {language === "cs" ? "Nahrát první soubor" : "Upload Your First File"}
                 </button>
                 <button
                   onClick={() => setShowSample(true)}
                   style={{
                     display: "inline-flex", alignItems: "center", gap: "8px",
-                    background: "transparent", color: "rgba(255,255,255,0.6)",
-                    border: "1px solid rgba(255,255,255,0.08)", padding: "12px 24px",
+                    background: "rgba(161, 197, 10, 0.06)", color: "rgba(255,255,255,0.8)",
+                    border: "1px solid rgba(161, 197, 10, 0.3)", padding: "12px 24px",
                     borderRadius: "10px", fontFamily: "'Satoshi', sans-serif",
                     fontSize: "0.9rem", fontWeight: "500", cursor: "pointer",
                     transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
-                  {language === "cs" ? "Prozkoumat ukazku" : "Explore Sample"} →
+                  {language === "cs" ? "Prozkoumat ukázku" : "Explore Sample"} →
                 </button>
               </div>
             </>
@@ -868,9 +868,9 @@ export default function Home() {
             <div style={{ padding: "20px 0" }}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
                 {[
-                  { label: language === "cs" ? "Trzby" : "Revenue", value: "\u20AC142,847", change: "+12.3%", positive: true },
-                  { label: language === "cs" ? "Rust" : "Growth", value: "+12.3%", change: language === "cs" ? "Rostouci trend" : "Trending upward", positive: true },
-                  { label: language === "cs" ? "Marze" : "Margin", value: "34.2%", change: language === "cs" ? "Nad cilem" : "Above target", positive: true },
+                  { label: language === "cs" ? "Tržby" : "Revenue", value: "\u20AC142,847", change: "+12.3%", positive: true },
+                  { label: language === "cs" ? "Růst" : "Growth", value: "+12.3%", change: language === "cs" ? "Rostoucí trend" : "Trending upward", positive: true },
+                  { label: language === "cs" ? "Marže" : "Margin", value: "34.2%", change: language === "cs" ? "Nad cílem" : "Above target", positive: true },
                 ].map((m, i) => (
                   <div key={i} style={{
                     background: "rgba(255,255,255,0.04)",
@@ -878,7 +878,7 @@ export default function Home() {
                     borderRadius: "12px", padding: "20px",
                     animation: `fadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) ${100 + i * 150}ms both`,
                   }}>
-                    <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.42)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
+                    <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
                     <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.8rem", color: "rgba(255,255,255,0.92)" }}>{m.value}</div>
                     <div style={{ fontSize: "0.8rem", marginTop: "4px", color: "#A1C50A" }}>{m.change}</div>
                   </div>
@@ -911,7 +911,7 @@ export default function Home() {
                   fontFamily: "'Satoshi', sans-serif", cursor: "pointer",
                 }}
               >
-                {language === "cs" ? "Zpet" : "Reset demo"}
+                {language === "cs" ? "Zpět" : "Reset demo"}
               </button>
             </div>
           )}
@@ -958,7 +958,7 @@ export default function Home() {
               {errorState.title}
             </h4>
             <p style={{
-              color: "rgba(255,255,255,0.42)", fontSize: "0.85rem",
+              color: "rgba(255,255,255,0.6)", fontSize: "0.85rem",
               lineHeight: "1.6", margin: 0,
             }}>
               {errorState.message}
@@ -1006,7 +1006,7 @@ export default function Home() {
           ? "2px solid #E06792"
           : fileName
             ? "1px solid rgba(255,255,255,0.08)"
-            : "2px dashed rgba(255,255,255,0.15)",
+            : "2px dashed rgba(255,255,255,0.25)",
         borderRadius: "16px",
         padding: fileName ? "32px" : "60px 40px",
         textAlign: "center",
@@ -1042,10 +1042,10 @@ export default function Home() {
             <div style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.85rem",
-              color: "rgba(255,255,255,0.42)",
+              color: "rgba(255,255,255,0.6)",
               marginBottom: "24px",
             }}>
-              {rowCount.toLocaleString()} {language === "cs" ? "radku" : "rows"} · {language === "cs" ? "Pripraveno k analyze" : "Ready to analyze"}
+              {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"} · {language === "cs" ? "Připraveno k analýze" : "Ready to analyze"}
             </div>
             <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
               <button
@@ -1076,13 +1076,13 @@ export default function Home() {
                   padding: "14px 20px", fontSize: "0.85rem",
                   fontFamily: "'Satoshi', sans-serif",
                   background: "transparent",
-                  color: "rgba(255,255,255,0.42)",
+                  color: "rgba(255,255,255,0.6)",
                   border: "1px solid rgba(255,255,255,0.08)",
                   borderRadius: "12px", cursor: "pointer",
                   transition: "all 0.25s ease",
                 }}
               >
-                {language === "cs" ? "Odstranit" : "Remove"}
+                {language === "cs" ? "Odebrat" : "Remove"}
               </button>
             </div>
           </div>
@@ -1095,9 +1095,9 @@ export default function Home() {
               transition: "all 400ms ease",
               animation: isDragActive ? "pulse 1s ease-in-out infinite" : "none",
             }} viewBox="0 0 56 56" fill="none">
-              <rect x="12" y="6" width="32" height="40" rx="4" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
-              <path d="M22 16h12M22 22h12M22 28h8" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round"/>
-              <path d="M28 50V38M22 44l6-6 6 6" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="12" y="6" width="32" height="40" rx="4" stroke="rgba(161,197,10,0.5)" strokeWidth="1.5"/>
+              <path d="M22 16h12M22 22h12M22 28h8" stroke="rgba(161,197,10,0.3)" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M28 50V38M22 44l6-6 6 6" stroke="#A1C50A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <h3 style={{
               fontFamily: "'Instrument Serif', Georgia, serif",
@@ -1105,21 +1105,21 @@ export default function Home() {
               color: "rgba(255,255,255,0.92)",
               marginBottom: "8px",
             }}>
-              {language === "cs" ? "Presunte CSV nebo Excel soubor sem" : "Drop your CSV or Excel file here"}
+              {language === "cs" ? "Přesuňte CSV nebo Excel soubor sem" : "Drop your CSV or Excel file here"}
             </h3>
             <p style={{
-              color: "rgba(255,255,255,0.42)",
+              color: "rgba(255,255,255,0.6)",
               fontSize: "0.85rem", marginBottom: "16px",
             }}>
-              {language === "cs" ? "Okamzite analyzujeme a pripravime poznatky" : "We'll analyze it instantly and build your insights"}
+              {language === "cs" ? "Okamžitě analyzujeme a připravíme poznatky" : "We'll analyze it instantly and build your insights"}
             </p>
             <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
               {["CSV", "XLSX", "XLS"].map(fmt => (
                 <span key={fmt} style={{
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: "0.7rem", padding: "4px 10px", borderRadius: "6px",
-                  background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.42)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "rgba(161, 197, 10, 0.08)", color: "#A1C50A",
+                  border: "1px solid rgba(161, 197, 10, 0.25)",
                 }}>
                   {fmt}
                 </span>
@@ -1167,7 +1167,7 @@ export default function Home() {
                 </line>
               </svg>
               <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
-                {language === "cs" ? "Cteme vas soubor..." : "Reading your file..."}
+                {language === "cs" ? "Čteme váš soubor..." : "Reading your file..."}
               </div>
             </div>
           )}
@@ -1182,7 +1182,7 @@ export default function Home() {
                 <defs><linearGradient id="procGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#E06792"/><stop offset="100%" stopColor="#3F51B5"/></linearGradient></defs>
               </svg>
               <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
-                {language === "cs" ? "Hledame vzory..." : "Finding patterns..."}
+                {language === "cs" ? "Hledáme vzory..." : "Finding patterns..."}
               </div>
             </div>
           )}
@@ -1194,7 +1194,7 @@ export default function Home() {
                 <path d="M32 8L35 26L52 20L38 32L52 44L35 38L32 56L29 38L12 44L26 32L12 20L29 26Z" fill="url(#procGrad)" opacity="0.7"/>
               </svg>
               <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.3rem", color: "rgba(255,255,255,0.92)" }}>
-                {language === "cs" ? "Pripravujeme poznatky..." : "Building your insights..."}
+                {language === "cs" ? "Připravujeme poznatky..." : "Building your insights..."}
               </div>
             </div>
           )}
@@ -1217,7 +1217,7 @@ export default function Home() {
             marginTop: "16px", fontFamily: "'JetBrains Mono', monospace",
             fontSize: "0.8rem", color: "rgba(255,255,255,0.22)",
           }}>
-            {fileName} · {rowCount.toLocaleString()} {language === "cs" ? "radku" : "rows"}
+            {fileName} · {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"}
           </div>
         </div>
       )}
@@ -1245,7 +1245,7 @@ export default function Home() {
                 {exaDiagnostics.status === "empty" && "⚠️ EXA Research: No results found"}
                 {exaDiagnostics.status === "skipped" && "ℹ️ EXA Research: Skipped"}
               </div>
-              <div style={{ color: "rgba(255,255,255,0.42)", fontSize: "12px" }}>
+              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>
                 {exaDiagnostics.status === "pro_only"
                   ? (language === "cs"
                     ? "Přejděte na PRO pro průmyslové benchmarky, tržní trendy a citované zdroje."
@@ -1364,7 +1364,7 @@ export default function Home() {
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "900px" }}>
           <div style={{ background: "rgba(255,255,255,0.03)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
             <h3 style={{ marginTop: 0, color: "#f59e0b" }}>⚠️ {language === "cs" ? "Textový výstup" : "Text Output"}</h3>
-            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "rgba(255,255,255,0.42)" }}>
+            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "rgba(255,255,255,0.6)" }}>
               {result}
             </pre>
           </div>
@@ -1372,7 +1372,7 @@ export default function Home() {
       )}
 
       {/* FOOTER */}
-      <div style={{ marginTop: "60px", textAlign: "center", color: "rgba(255,255,255,0.22)", fontSize: "14px", paddingBottom: "20px" }}>
+      <div style={{ marginTop: "60px", textAlign: "center", color: "rgba(255,255,255,0.45)", fontSize: "14px", paddingBottom: "20px" }}>
         <p style={{ marginBottom: "8px" }}>
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
@@ -1382,7 +1382,7 @@ export default function Home() {
         >
           michael@forgecreative.cz
         </a>
-        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.12)" }}>
+        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>
           FORGE CREATIVE | AI Job Agency
         </p>
       </div>
