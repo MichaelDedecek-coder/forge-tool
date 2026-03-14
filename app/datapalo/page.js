@@ -863,49 +863,133 @@ export default function Home() {
 
       {/* DROP ZONE */}
       <div {...getRootProps()} data-dropzone style={{
-        width: "100%", maxWidth: "550px", padding: "50px 40px",
-        border: "2px dashed #334155", borderRadius: "16px",
-        textAlign: "center", cursor: "pointer",
-        backgroundColor: isDragActive ? "#1e293b" : "transparent",
-        transition: "all 0.2s"
+        width: "100%", maxWidth: "550px",
+        border: isDragActive
+          ? "2px solid #E06792"
+          : fileName
+            ? "1px solid rgba(255,255,255,0.08)"
+            : "2px dashed rgba(255,255,255,0.15)",
+        borderRadius: "16px",
+        padding: fileName ? "32px" : "60px 40px",
+        textAlign: "center",
+        cursor: "pointer",
+        background: isDragActive
+          ? "rgba(224,103,146,0.04)"
+          : "rgba(255,255,255,0.02)",
+        transition: "all 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+        position: "relative",
+        overflow: "hidden",
       }}>
         <input {...getInputProps()} />
+
+        {/* Radial glow on drag */}
+        {isDragActive && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "radial-gradient(circle at center, rgba(224,103,146,0.08), transparent 70%)",
+            pointerEvents: "none",
+          }} />
+        )}
+
         {fileName ? (
-          <div>
-            <div style={{ fontSize: "48px", marginBottom: "15px" }}>📄</div>
-            <p style={{ fontSize: "18px", color: "#10b981", fontWeight: "600" }}>{language === "cs" ? "Připraveno:" : "Ready:"} {fileName}</p>
-            <p style={{ fontSize: "15px", color: "#0ea5e9", marginTop: "8px", fontWeight: "600" }}>
-              {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"}
-            </p>
-            <p style={{ fontSize: "13px", color: "#475569", marginTop: "8px" }}>{language === "cs" ? "Klikněte na tlačítko níže pro analýzu" : "Click the button below to analyze"}</p>
+          /* State 3: File loaded */
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{
+              fontFamily: "'Satoshi', sans-serif",
+              fontSize: "1.1rem", fontWeight: "600",
+              color: "#A1C50A", marginBottom: "8px",
+            }}>
+              {fileName}
+            </div>
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "0.85rem",
+              color: "rgba(255,255,255,0.42)",
+              marginBottom: "24px",
+            }}>
+              {rowCount.toLocaleString()} {language === "cs" ? "radku" : "rows"} · {language === "cs" ? "Pripraveno k analyze" : "Ready to analyze"}
+            </div>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); runAnalysis(); }}
+                disabled={loading}
+                style={{
+                  padding: "14px 36px", fontSize: "0.95rem", fontWeight: "700",
+                  fontFamily: "'Satoshi', sans-serif",
+                  background: loading ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+                  color: "white", border: "none", borderRadius: "12px",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  transition: "all 0.3s ease",
+                  boxShadow: loading ? "none" : "0 8px 30px rgba(224, 103, 146, 0.22)",
+                  display: "inline-flex", alignItems: "center", gap: "8px",
+                }}
+              >
+                {language === "cs" ? "Analyzovat" : "Analyze"}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCsvData(null); setFileName(null); setRowCount(0);
+                }}
+                style={{
+                  padding: "14px 20px", fontSize: "0.85rem",
+                  fontFamily: "'Satoshi', sans-serif",
+                  background: "transparent",
+                  color: "rgba(255,255,255,0.42)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: "12px", cursor: "pointer",
+                  transition: "all 0.25s ease",
+                }}
+              >
+                {language === "cs" ? "Odstranit" : "Remove"}
+              </button>
+            </div>
           </div>
         ) : (
-          <div>
-            <div style={{ fontSize: "48px", marginBottom: "15px" }}>📥</div>
-            <p style={{ color: "#94a3b8", fontSize: "16px" }}>{language === "cs" ? "Přetáhněte soubor sem nebo klikněte" : "Drag & drop a file here, or click"}</p>
-            <p style={{ fontSize: "13px", color: "#475569", marginTop: "10px" }}>CSV, Excel (.xlsx)</p>
+          /* State 1: Idle / State 2: Drag over */
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <svg style={{
+              width: "56px", height: "56px", margin: "0 auto 20px",
+              opacity: isDragActive ? 1 : 0.5,
+              transition: "all 400ms ease",
+              animation: isDragActive ? "pulse 1s ease-in-out infinite" : "none",
+            }} viewBox="0 0 56 56" fill="none">
+              <rect x="12" y="6" width="32" height="40" rx="4" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5"/>
+              <path d="M22 16h12M22 22h12M22 28h8" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M28 50V38M22 44l6-6 6 6" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <h3 style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontSize: "1.3rem", fontWeight: "400",
+              color: "rgba(255,255,255,0.92)",
+              marginBottom: "8px",
+            }}>
+              {language === "cs" ? "Presunte CSV nebo Excel soubor sem" : "Drop your CSV or Excel file here"}
+            </h3>
+            <p style={{
+              color: "rgba(255,255,255,0.42)",
+              fontSize: "0.85rem", marginBottom: "16px",
+            }}>
+              {language === "cs" ? "Okamzite analyzujeme a pripravime poznatky" : "We'll analyze it instantly and build your insights"}
+            </p>
+            <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+              {["CSV", "XLSX", "XLS"].map(fmt => (
+                <span key={fmt} style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: "0.7rem", padding: "4px 10px", borderRadius: "6px",
+                  background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.42)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                }}>
+                  {fmt}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>
-
-      {/* ANALYZE BUTTON */}
-      {fileName && (
-        <button
-          onClick={runAnalysis}
-          disabled={loading}
-          style={{
-            marginTop: "25px", padding: "16px 50px", fontSize: "17px",
-            background: loading ? "#475569" : "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)",
-            color: "white", border: "none", borderRadius: "30px", cursor: loading ? "not-allowed" : "pointer",
-            fontWeight: "bold", boxShadow: "0 4px 20px rgba(16, 185, 129, 0.3)",
-            transition: "all 0.2s"
-          }}
-        >
-          {loading
-            ? `✨ ${loadingStage}`
-            : (language === "cs" ? "✨ Analyzovat" : "✨ Analyze")}
-        </button>
-      )}
 
       {/* RESULTS */}
       {parsedReport && (
