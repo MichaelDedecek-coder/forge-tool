@@ -1229,14 +1229,14 @@ export default function Home() {
           {/* Exa Diagnostic Banner (shows when Exa had issues or is PRO-only) */}
           {exaDiagnostics && exaDiagnostics.status !== "success" && (
             <div style={{
-              background: exaDiagnostics.status === "pro_only" ? "#1e1b4b" : exaDiagnostics.status === "not_configured" ? "#1e293b" : "#451a03",
+              background: exaDiagnostics.status === "pro_only" ? "#1e1b4b" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.03)" : "#451a03",
               padding: "12px 20px",
               borderRadius: "10px",
               marginBottom: "12px",
-              border: `1px solid ${exaDiagnostics.status === "pro_only" ? "#4338ca" : exaDiagnostics.status === "not_configured" ? "#334155" : "#92400e"}`,
+              border: `1px solid ${exaDiagnostics.status === "pro_only" ? "#4338ca" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.06)" : "#92400e"}`,
               fontSize: "13px"
             }}>
-              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "pro_only" ? "#a78bfa" : exaDiagnostics.status === "not_configured" ? "#94a3b8" : "#fbbf24" }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px", color: exaDiagnostics.status === "pro_only" ? "#a78bfa" : exaDiagnostics.status === "not_configured" ? "rgba(255,255,255,0.42)" : "#fbbf24" }}>
                 {exaDiagnostics.status === "pro_only" && (language === "cs"
                   ? "🔒 Research-Augmented Analysis je PRO funkce"
                   : "🔒 Research-Augmented Analysis is a PRO feature")}
@@ -1245,7 +1245,7 @@ export default function Home() {
                 {exaDiagnostics.status === "empty" && "⚠️ EXA Research: No results found"}
                 {exaDiagnostics.status === "skipped" && "ℹ️ EXA Research: Skipped"}
               </div>
-              <div style={{ color: "#94a3b8", fontSize: "12px" }}>
+              <div style={{ color: "rgba(255,255,255,0.42)", fontSize: "12px" }}>
                 {exaDiagnostics.status === "pro_only"
                   ? (language === "cs"
                     ? "Přejděte na PRO pro průmyslové benchmarky, tržní trendy a citované zdroje."
@@ -1314,19 +1314,19 @@ export default function Home() {
           )}
 
           {/* Report Card */}
-          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "10px" }}>
-              <h3 style={{ margin: 0, color: "#10b981", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
+              <h3 style={{ margin: 0, color: "#A1C50A", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   onClick={downloadPDF}
                   disabled={pdfGenerating}
                   style={{
                     background: pdfGenerating
-                      ? "#475569"
+                      ? "rgba(255,255,255,0.06)"
                       : canExport(tier, 'pdf')
-                        ? "linear-gradient(135deg, #10b981 0%, #0ea5e9 100%)"
-                        : "#334155",
+                        ? "linear-gradient(135deg, #E06792 0%, #3F51B5 100%)"
+                        : "rgba(255,255,255,0.06)",
                     color: "#fff",
                     border: "none",
                     padding: "10px 20px",
@@ -1334,7 +1334,7 @@ export default function Home() {
                     cursor: pdfGenerating ? "wait" : "pointer",
                     fontSize: "14px",
                     fontWeight: "600",
-                    boxShadow: canExport(tier, 'pdf') && !pdfGenerating ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
+                    boxShadow: canExport(tier, 'pdf') && !pdfGenerating ? "0 4px 12px rgba(224, 103, 146, 0.2)" : "none",
                     display: "flex",
                     alignItems: "center",
                     gap: "6px",
@@ -1348,7 +1348,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={downloadReport}
-                  style={{ background: "#334155", color: "#fff", border: "1px solid #475569", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
+                  style={{ background: "rgba(255,255,255,0.03)", color: "#fff", border: "1px solid rgba(255,255,255,0.06)", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
                 >
                   {language === "cs" ? "📝 Stáhnout TXT" : "📝 Download TXT"}
                 </button>
@@ -1362,9 +1362,9 @@ export default function Home() {
       {/* FALLBACK: Raw output if parsing failed */}
       {result && !parsedReport && (
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "900px" }}>
-          <div style={{ background: "#1e293b", padding: "30px", borderRadius: "16px", border: "1px solid #334155" }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
             <h3 style={{ marginTop: 0, color: "#f59e0b" }}>⚠️ {language === "cs" ? "Textový výstup" : "Text Output"}</h3>
-            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "#94a3b8" }}>
+            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "rgba(255,255,255,0.42)" }}>
               {result}
             </pre>
           </div>
