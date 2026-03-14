@@ -613,40 +613,40 @@ export default function Home() {
     : Math.max(0, tierLimits.analysesPerMonth - usage.analysis_count);
 
   return (
-    <style jsx>{`
-      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Satoshi:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
-
-      @keyframes fadeSlideUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.08); }
-      }
-      @keyframes scanLine {
-        0% { top: 10%; }
-        100% { top: 80%; }
-      }
-      @keyframes pulseSlow {
-        0%, 100% { opacity: 0.5; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.05); }
-      }
-      @keyframes sparkle {
-        0%, 100% { opacity: 0.3; transform: rotate(0deg) scale(0.9); }
-        50% { opacity: 1; transform: rotate(15deg) scale(1.1); }
-      }
-      @keyframes bounceIn {
-        0% { transform: scale(0); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-    `}</style>
     <div style={{ padding: "40px", fontFamily: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif", background: "linear-gradient(168deg, #080818 0%, #0D0D2B 35%, #111133 65%, #0E0E28 100%)", minHeight: "100vh", color: "white", display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Satoshi:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.08); }
+        }
+        @keyframes scanLine {
+          0% { top: 10%; }
+          100% { top: 80%; }
+        }
+        @keyframes pulseSlow {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+        }
+        @keyframes sparkle {
+          0%, 100% { opacity: 0.3; transform: rotate(0deg) scale(0.9); }
+          50% { opacity: 1; transform: rotate(15deg) scale(1.1); }
+        }
+        @keyframes bounceIn {
+          0% { transform: scale(0); }
+          50% { transform: scale(1.2); }
+          100% { transform: scale(1); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      ` }} />
 
       {/* Auth Modal */}
       <AuthModal
