@@ -93,6 +93,14 @@ export default function Home() {
   const [showSample, setShowSample] = useState(false);
   const [processingStep, setProcessingStep] = useState(0);
 
+  // Error card state
+  const [errorState, setErrorState] = useState(null);
+
+  const showError = (type, title, message, actions = []) => {
+    setErrorState({ type, title, message, actions });
+  };
+  const clearError = () => setErrorState(null);
+
   const addLog = (msg) => console.log(`[DataPalo] ${msg}`);
 
   // Sync tier from Stripe — runs once per mount for signed-in users.
@@ -163,6 +171,7 @@ export default function Home() {
 
   // Handle File Drop
   const onDrop = useCallback((acceptedFiles) => {
+    clearError();
     const file = acceptedFiles[0];
     setFileName(file.name);
     addLog(`File selected: ${file.name}`);
@@ -195,7 +204,12 @@ export default function Home() {
 
   async function runAnalysis() {
     if (!csvData) {
-      return alert(language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!");
+      showError('red',
+        language === "cs" ? "Žádný soubor" : "No file selected",
+        language === "cs" ? "Nejprve nahrajte soubor!" : "Please upload a file first!",
+        [{ label: language === "cs" ? "Vybrat soubor" : "Choose a file", onClick: () => { clearError(); document.querySelector('[data-dropzone]')?.click(); } }]
+      );
+      return;
     }
 
     // Wait for auth to finish loading before deciding user vs anonymous
@@ -215,13 +229,20 @@ export default function Home() {
       : 3.5 * 1024 * 1024;   // FREE / anonymous: 3.5 MB
     if (csvBytes > MAX_CSV_BYTES) {
       const sizeMB = (csvBytes / 1024 / 1024).toFixed(1);
-      alert(isPro
-        ? (language === "cs"
-            ? `Soubor přesahuje PRO limit 10 MB (${sizeMB} MB). Zkuste prosím zmenšit soubor.`
-            : `File exceeds the PRO limit of 10 MB (${sizeMB} MB). Please reduce the file size.`)
-        : (language === "cs"
-            ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zmenšete pod 10 000 řádků / 3.5 MB, nebo přejděte na PRO.`
-            : `File too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Reduce to under 10,000 rows / 3.5 MB or upgrade to PRO.`));
+      showError('yellow',
+        language === "cs" ? "Soubor je příliš velký" : "File too large",
+        isPro
+          ? (language === "cs"
+              ? `Soubor přesahuje PRO limit 10 MB (${sizeMB} MB). Zkuste prosím zmenšit soubor.`
+              : `File exceeds the PRO limit of 10 MB (${sizeMB} MB). Please reduce the file size.`)
+          : (language === "cs"
+              ? `Soubor je příliš velký (${sizeMB} MB, ${rowCount.toLocaleString()} řádků). Zmenšete pod 10 000 řádků / 3.5 MB, nebo přejděte na PRO.`
+              : `File too large (${sizeMB} MB, ${rowCount.toLocaleString()} rows). Reduce to under 10,000 rows / 3.5 MB or upgrade to PRO.`),
+        [
+          { label: language === "cs" ? "Zkusit menší soubor" : "Try a smaller file", onClick: () => { clearError(); document.querySelector('[data-dropzone]')?.click(); } },
+          ...(!isPro ? [{ label: language === "cs" ? "Zobrazit PRO plány" : "See PRO plans", onClick: () => { clearError(); setShowUpgradeModal(true); } }] : []),
+        ]
+      );
       return;
     }
 
@@ -380,7 +401,12 @@ export default function Home() {
             : (language === "cs"
                 ? `Chyba serveru (${res.status}). Zkuste to prosím znovu.`
                 : `Server error (${res.status}). Please try again.`);
-        alert(friendlyMsg);
+        showError(
+          res.status === 413 || res.status === 504 || res.status === 524 ? 'yellow' : 'blue',
+          language === "cs" ? "Chyba serveru" : "Server error",
+          friendlyMsg,
+          [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+        );
         setLoading(false);
         setProcessingStep(0);
         setLoadingStage("");
@@ -394,7 +420,11 @@ export default function Home() {
         const fallbackMsg = language === "cs"
           ? "Server vrátil neočekávanou odpověď. Zkuste to prosím znovu."
           : "Server returned an unexpected response. Please try again.";
-        alert(fallbackMsg);
+        showError('blue',
+          language === "cs" ? "Neočekávaná odpověď" : "Unexpected response",
+          fallbackMsg,
+          [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+        );
         setLoading(false);
         setProcessingStep(0);
         setLoadingStage("");
@@ -422,7 +452,11 @@ export default function Home() {
       }
 
       if (data.error) {
-        alert(data.error);
+        showError('red',
+          language === "cs" ? "Chyba analýzy" : "Analysis error",
+          data.error,
+          [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+        );
         setLoading(false);
         setProcessingStep(0);
         setLoadingStage("");
@@ -479,7 +513,11 @@ export default function Home() {
 
     } catch (e) {
       addLog(`ERROR: ${e.message}`);
-      alert("Error: " + e.message);
+      showError('red',
+        language === "cs" ? "Něco se pokazilo" : "Something went wrong",
+        e.message,
+        [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); runAnalysis(); } }]
+      );
     }
     setLoading(false);
     setProcessingStep(0);
@@ -555,9 +593,13 @@ export default function Home() {
         }
     } catch (error) {
       addLog(`PDF error: ${error.message}`);
-      alert(language === "cs"
-        ? `Chyba při generování PDF: ${error.message}`
-        : `Error generating PDF: ${error.message}`);
+      showError('red',
+        language === "cs" ? "Chyba PDF" : "PDF error",
+        language === "cs"
+          ? `Chyba při generování PDF: ${error.message}`
+          : `Error generating PDF: ${error.message}`,
+        [{ label: language === "cs" ? "Zkusit znovu" : "Try again", onClick: () => { clearError(); } }]
+      );
     } finally {
       setPdfGenerating(false);
     }
@@ -873,6 +915,86 @@ export default function Home() {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ERROR CARD */}
+      {errorState && (
+        <div style={{
+          width: "100%", maxWidth: "550px",
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "12px", padding: "24px",
+          display: "flex", gap: "16px",
+          position: "relative", overflow: "hidden",
+          marginBottom: "20px",
+          animation: "fadeIn 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+        }}>
+          {/* Left color bar */}
+          <div style={{
+            position: "absolute", left: 0, top: 0, bottom: 0, width: "3px",
+            background: errorState.type === 'red' ? '#E06792'
+              : errorState.type === 'yellow' ? '#F5A623' : '#5B9CF5',
+          }} />
+
+          {/* Icon */}
+          <div style={{
+            width: "40px", height: "40px", borderRadius: "10px",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, fontSize: "18px",
+            background: errorState.type === 'red' ? 'rgba(224,103,146,0.12)'
+              : errorState.type === 'yellow' ? 'rgba(245,166,35,0.12)' : 'rgba(91,156,245,0.12)',
+          }}>
+            {errorState.type === 'red' ? '\u26A0' : errorState.type === 'yellow' ? '\u26A1' : '\uD83D\uDD0C'}
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1 }}>
+            <h4 style={{
+              fontFamily: "'Satoshi', sans-serif", fontSize: "0.95rem",
+              fontWeight: "600", color: "rgba(255,255,255,0.92)",
+              margin: "0 0 6px 0",
+            }}>
+              {errorState.title}
+            </h4>
+            <p style={{
+              color: "rgba(255,255,255,0.42)", fontSize: "0.85rem",
+              lineHeight: "1.6", margin: 0,
+            }}>
+              {errorState.message}
+            </p>
+            {errorState.actions.length > 0 && (
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "12px" }}>
+                {errorState.actions.map((action, i) => (
+                  <button key={i} onClick={action.onClick} style={{
+                    padding: "8px 16px", fontSize: "0.8rem", borderRadius: "8px",
+                    fontFamily: "'Satoshi', sans-serif", fontWeight: "600",
+                    cursor: "pointer", transition: "all 0.25s ease",
+                    ...(i === 0 ? {
+                      background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+                      color: "white", border: "none",
+                      boxShadow: "0 4px 16px rgba(224, 103, 146, 0.2)",
+                    } : {
+                      background: "transparent", color: "rgba(255,255,255,0.5)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }),
+                  }}>
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Dismiss */}
+          <button onClick={clearError} style={{
+            position: "absolute", top: "12px", right: "12px",
+            background: "none", border: "none",
+            color: "rgba(255,255,255,0.22)", cursor: "pointer",
+            fontSize: "16px", padding: "4px",
+          }}>
+            {'\u2715'}
+          </button>
         </div>
       )}
 
