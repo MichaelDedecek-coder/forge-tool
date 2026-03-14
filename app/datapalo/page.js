@@ -90,6 +90,7 @@ export default function Home() {
 
   // UI state
   const [language, setLanguage] = useState("cs");
+  const [showSample, setShowSample] = useState(false);
 
   const addLog = (msg) => console.log(`[DataPalo] ${msg}`);
 
@@ -728,8 +729,140 @@ export default function Home() {
         </p>
       </div>
 
+      {/* EMPTY STATE */}
+      {!fileName && !parsedReport && !loading && (
+        <div style={{
+          width: "100%",
+          maxWidth: "550px",
+          textAlign: "center",
+          padding: "40px 20px",
+          marginBottom: "20px",
+        }}>
+          {!showSample ? (
+            <>
+              {/* SVG illustration */}
+              <svg style={{ width: "120px", height: "120px", margin: "0 auto 28px", opacity: 0.6 }} viewBox="0 0 120 120" fill="none">
+                <rect x="20" y="50" width="14" height="50" rx="3" fill="url(#emptyGrad)" opacity="0.6"/>
+                <rect x="40" y="30" width="14" height="70" rx="3" fill="url(#emptyGrad)" opacity="0.7"/>
+                <rect x="60" y="45" width="14" height="55" rx="3" fill="url(#emptyGrad)" opacity="0.65"/>
+                <rect x="80" y="20" width="14" height="80" rx="3" fill="url(#emptyGrad)" opacity="0.8"/>
+                <circle cx="85" cy="35" r="22" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" fill="none"/>
+                <line x1="101" y1="51" x2="115" y2="65" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" strokeLinecap="round"/>
+                <defs>
+                  <linearGradient id="emptyGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#E06792"/>
+                    <stop offset="100%" stopColor="#3F51B5"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              <h3 style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontSize: "1.6rem",
+                fontWeight: "400",
+                color: "rgba(255,255,255,0.92)",
+                marginBottom: "10px",
+              }}>
+                {language === "cs" ? "Vase poznatky cekaji" : "Your insights are waiting"}
+              </h3>
+
+              <p style={{
+                color: "rgba(255,255,255,0.42)",
+                fontSize: "0.9rem",
+                maxWidth: "400px",
+                margin: "0 auto 24px",
+              }}>
+                {language === "cs"
+                  ? "Nahrajte svuj prvni soubor, nebo prozkoumejte ukazkovou analyzu."
+                  : "Upload your first file, or explore a sample analysis to see what DataPalo can do."}
+              </p>
+
+              <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => document.querySelector('[data-dropzone]')?.click()}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
+                    color: "white", border: "none", padding: "12px 24px", borderRadius: "10px",
+                    fontFamily: "'Satoshi', sans-serif", fontSize: "0.9rem", fontWeight: "600",
+                    cursor: "pointer", transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    boxShadow: "0 8px 30px rgba(224, 103, 146, 0.2)",
+                  }}
+                >
+                  {language === "cs" ? "Nahrat prvni soubor" : "Upload Your First File"}
+                </button>
+                <button
+                  onClick={() => setShowSample(true)}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: "8px",
+                    background: "transparent", color: "rgba(255,255,255,0.6)",
+                    border: "1px solid rgba(255,255,255,0.08)", padding: "12px 24px",
+                    borderRadius: "10px", fontFamily: "'Satoshi', sans-serif",
+                    fontSize: "0.9rem", fontWeight: "500", cursor: "pointer",
+                    transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                  }}
+                >
+                  {language === "cs" ? "Prozkoumat ukazku" : "Explore Sample"} →
+                </button>
+              </div>
+            </>
+          ) : (
+            /* Sample Dashboard */
+            <div style={{ padding: "20px 0" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
+                {[
+                  { label: language === "cs" ? "Trzby" : "Revenue", value: "\u20AC142,847", change: "+12.3%", positive: true },
+                  { label: language === "cs" ? "Rust" : "Growth", value: "+12.3%", change: language === "cs" ? "Rostouci trend" : "Trending upward", positive: true },
+                  { label: language === "cs" ? "Marze" : "Margin", value: "34.2%", change: language === "cs" ? "Nad cilem" : "Above target", positive: true },
+                ].map((m, i) => (
+                  <div key={i} style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "12px", padding: "20px",
+                    animation: `fadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) ${100 + i * 150}ms both`,
+                  }}>
+                    <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.42)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
+                    <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.8rem", color: "rgba(255,255,255,0.92)" }}>{m.value}</div>
+                    <div style={{ fontSize: "0.8rem", marginTop: "4px", color: "#A1C50A" }}>{m.change}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mini bar chart */}
+              <div style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: "12px", padding: "20px", height: "120px",
+                display: "flex", alignItems: "flex-end", gap: "8px",
+                animation: "fadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) 450ms both",
+              }}>
+                {[45, 68, 52, 80, 92, 74, 55, 88].map((h, i) => (
+                  <div key={i} style={{
+                    flex: 1, borderRadius: "4px 4px 0 0", height: `${h}%`,
+                    background: "linear-gradient(135deg, #E06792, #3F51B5)",
+                    transition: "height 800ms cubic-bezier(0.16, 1, 0.3, 1)",
+                  }} />
+                ))}
+              </div>
+
+              <button
+                onClick={() => setShowSample(false)}
+                style={{
+                  marginTop: "16px", background: "transparent",
+                  color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.08)",
+                  padding: "8px 16px", borderRadius: "8px", fontSize: "0.8rem",
+                  fontFamily: "'Satoshi', sans-serif", cursor: "pointer",
+                }}
+              >
+                {language === "cs" ? "Zpet" : "Reset demo"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* DROP ZONE */}
-      <div {...getRootProps()} style={{
+      <div {...getRootProps()} data-dropzone style={{
         width: "100%", maxWidth: "550px", padding: "50px 40px",
         border: "2px dashed #334155", borderRadius: "16px",
         textAlign: "center", cursor: "pointer",
