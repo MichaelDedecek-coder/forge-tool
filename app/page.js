@@ -100,16 +100,27 @@ export default function DataPaloLanding() {
     if (remember) setCookie('dp_popup_dismissed', '1', 14);
   };
 
-  const handlePopupSubmit = (e) => {
+  const handlePopupSubmit = async (e) => {
     e.preventDefault();
     if (!popupEmail.trim() || popupLoading) return;
     setPopupLoading(true);
-    // TODO: Replace with actual email API (Mailchimp, ConvertKit, Resend)
-    setTimeout(() => {
-      setPopupSubmitted(true);
-      setPopupLoading(false);
-      setCookie('dp_popup_dismissed', 'subscribed', 140);
-    }, 800);
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: popupEmail.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        console.error('[Popup] Subscribe error:', data.error);
+      }
+    } catch (err) {
+      console.error('[Popup] Network error:', err);
+    }
+    // Show success regardless — don't let API errors block the UX
+    setPopupSubmitted(true);
+    setPopupLoading(false);
+    setCookie('dp_popup_dismissed', 'subscribed', 140);
   };
 
   const content = {
