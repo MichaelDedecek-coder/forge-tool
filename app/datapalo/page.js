@@ -1382,7 +1382,7 @@ export default function Home() {
         >
           michael@forgecreative.cz
         </a>
-        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>
+        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.55)" }}>
           FORGE CREATIVE | AI Job Agency
         </p>
       </div>
