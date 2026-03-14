@@ -777,7 +777,7 @@ export default function Home() {
           </h1>
         </div>
         <p style={{
-          color: "rgba(255,255,255,0.6)",
+          color: "rgba(255,255,255,0.7)",
           marginBottom: "30px",
           fontFamily: "'Satoshi', sans-serif",
           fontSize: "1rem",
@@ -824,7 +824,7 @@ export default function Home() {
               </h3>
 
               <p style={{
-                color: "rgba(255,255,255,0.6)",
+                color: "rgba(255,255,255,0.7)",
                 fontSize: "0.9rem",
                 maxWidth: "400px",
                 margin: "0 auto 24px",
@@ -878,7 +878,7 @@ export default function Home() {
                     borderRadius: "12px", padding: "20px",
                     animation: `fadeSlideUp 600ms cubic-bezier(0.16, 1, 0.3, 1) ${100 + i * 150}ms both`,
                   }}>
-                    <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
+                    <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
                     <div style={{ fontFamily: "'Instrument Serif', serif", fontSize: "1.8rem", color: "rgba(255,255,255,0.92)" }}>{m.value}</div>
                     <div style={{ fontSize: "0.8rem", marginTop: "4px", color: "#A1C50A" }}>{m.change}</div>
                   </div>
@@ -958,7 +958,7 @@ export default function Home() {
               {errorState.title}
             </h4>
             <p style={{
-              color: "rgba(255,255,255,0.6)", fontSize: "0.85rem",
+              color: "rgba(255,255,255,0.7)", fontSize: "0.85rem",
               lineHeight: "1.6", margin: 0,
             }}>
               {errorState.message}
@@ -1042,7 +1042,7 @@ export default function Home() {
             <div style={{
               fontFamily: "'JetBrains Mono', monospace",
               fontSize: "0.85rem",
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(255,255,255,0.7)",
               marginBottom: "24px",
             }}>
               {rowCount.toLocaleString()} {language === "cs" ? "řádků" : "rows"} · {language === "cs" ? "Připraveno k analýze" : "Ready to analyze"}
@@ -1076,7 +1076,7 @@ export default function Home() {
                   padding: "14px 20px", fontSize: "0.85rem",
                   fontFamily: "'Satoshi', sans-serif",
                   background: "transparent",
-                  color: "rgba(255,255,255,0.6)",
+                  color: "rgba(255,255,255,0.7)",
                   border: "1px solid rgba(255,255,255,0.08)",
                   borderRadius: "12px", cursor: "pointer",
                   transition: "all 0.25s ease",
@@ -1108,7 +1108,7 @@ export default function Home() {
               {language === "cs" ? "Přesuňte CSV nebo Excel soubor sem" : "Drop your CSV or Excel file here"}
             </h3>
             <p style={{
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(255,255,255,0.7)",
               fontSize: "0.85rem", marginBottom: "16px",
             }}>
               {language === "cs" ? "Okamžitě analyzujeme a připravíme poznatky" : "We'll analyze it instantly and build your insights"}
@@ -1245,7 +1245,7 @@ export default function Home() {
                 {exaDiagnostics.status === "empty" && "⚠️ EXA Research: No results found"}
                 {exaDiagnostics.status === "skipped" && "ℹ️ EXA Research: Skipped"}
               </div>
-              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}>
                 {exaDiagnostics.status === "pro_only"
                   ? (language === "cs"
                     ? "Přejděte na PRO pro průmyslové benchmarky, tržní trendy a citované zdroje."
@@ -1364,7 +1364,7 @@ export default function Home() {
         <div style={{ marginTop: "40px", width: "100%", maxWidth: "900px" }}>
           <div style={{ background: "rgba(255,255,255,0.03)", padding: "30px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)" }}>
             <h3 style={{ marginTop: 0, color: "#f59e0b" }}>⚠️ {language === "cs" ? "Textový výstup" : "Text Output"}</h3>
-            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "rgba(255,255,255,0.6)" }}>
+            <pre style={{ fontSize: "14px", whiteSpace: "pre-wrap", fontFamily: "monospace", lineHeight: "1.6", color: "rgba(255,255,255,0.7)" }}>
               {result}
             </pre>
           </div>
@@ -1372,7 +1372,7 @@ export default function Home() {
       )}
 
       {/* FOOTER */}
-      <div style={{ marginTop: "60px", textAlign: "center", color: "rgba(255,255,255,0.45)", fontSize: "14px", paddingBottom: "20px" }}>
+      <div style={{ marginTop: "60px", textAlign: "center", color: "rgba(255,255,255,0.55)", fontSize: "14px", paddingBottom: "20px" }}>
         <p style={{ marginBottom: "8px" }}>
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
@@ -1382,7 +1382,7 @@ export default function Home() {
         >
           michael@forgecreative.cz
         </a>
-        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>
+        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>
           FORGE CREATIVE | AI Job Agency
         </p>
       </div>
