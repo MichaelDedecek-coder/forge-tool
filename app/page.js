@@ -13,6 +13,12 @@ export default function DataPaloLanding() {
   const [showAuth, setShowAuth] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [scrollDepth, setScrollDepth] = useState(0);
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupSubmitted, setPopupSubmitted] = useState(false);
+  const [popupEmail, setPopupEmail] = useState('');
+  const [popupLoading, setPopupLoading] = useState(false);
+  const popupShownRef = useRef(false);
+  const ctaClickedRef = useRef(false);
   const { user, signOut } = useAuth();
   const sectionRefs = useRef({});
 
@@ -50,6 +56,62 @@ export default function DataPaloLanding() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // ── Exit-intent popup logic ──
+  const getCookie = (name) => {
+    try {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? match[2] : null;
+    } catch { return null; }
+  };
+  const setCookie = (name, value, days) => {
+    try {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = name + '=' + value + '; expires=' + expires + '; path=/; SameSite=Lax';
+    } catch {}
+  };
+
+  const tryShowPopup = () => {
+    if (popupShownRef.current || ctaClickedRef.current) return;
+    if (getCookie('dp_popup_dismissed')) return;
+    popupShownRef.current = true;
+    setPopupVisible(true);
+  };
+
+  useEffect(() => {
+    // Desktop: exit-intent (cursor leaves top edge)
+    const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+    let mobileTimer;
+
+    if (isFinePointer) {
+      const handleMouseLeave = (e) => {
+        if (e.clientY <= 0) tryShowPopup();
+      };
+      document.addEventListener('mouseleave', handleMouseLeave);
+      return () => document.removeEventListener('mouseleave', handleMouseLeave);
+    } else {
+      // Mobile: time-based trigger (45s)
+      mobileTimer = setTimeout(() => tryShowPopup(), 45000);
+      return () => clearTimeout(mobileTimer);
+    }
+  }, []);
+
+  const hidePopup = (remember) => {
+    setPopupVisible(false);
+    if (remember) setCookie('dp_popup_dismissed', '1', 14);
+  };
+
+  const handlePopupSubmit = (e) => {
+    e.preventDefault();
+    if (!popupEmail.trim() || popupLoading) return;
+    setPopupLoading(true);
+    // TODO: Replace with actual email API (Mailchimp, ConvertKit, Resend)
+    setTimeout(() => {
+      setPopupSubmitted(true);
+      setPopupLoading(false);
+      setCookie('dp_popup_dismissed', 'subscribed', 140);
+    }, 800);
+  };
+
   const content = {
     en: {
       // Hero
@@ -67,6 +129,14 @@ export default function DataPaloLanding() {
       scrollCta: "Ready to try? Upload your first file.",
       scrollCtaBtn: "Upload Your First File →",
       powered: "Powered by EXA Research AI",
+      // Exit-intent popup
+      popupBadge: "Free Weekly Newsletter",
+      popupHeading: "Learn to Build & Monetize AI Agents",
+      popupSub: "Real techniques. Real revenue strategies. From the team behind DataPalo \u2014 no fluff, delivered every week.",
+      popupPlaceholder: "your@email.com",
+      popupSubmit: "Subscribe",
+      popupPrivacy: "No spam. Unsubscribe anytime. We respect your privacy.",
+      popupSuccess: "You\u2019re in! Check your inbox for a welcome email.",
       // Problem
       problemLabel: "THE PROBLEM",
       problemH: "You have the data. You just don't have time.",
@@ -133,6 +203,13 @@ export default function DataPaloLanding() {
       scrollCta: "Připraveni? Nahrajte svůj první soubor.",
       scrollCtaBtn: "Nahrát první soubor →",
       powered: "Poháněno EXA Research AI",
+      popupBadge: "Bezplatn\u00FD t\u00FDdenn\u00ED newsletter",
+      popupHeading: "Nau\u010Dte se vytv\u00E1\u0159et a monetizovat AI agenty",
+      popupSub: "Re\u00E1ln\u00E9 techniky. Re\u00E1ln\u00E9 strategie p\u0159\u00EDjm\u016F. Od t\u00FDmu DataPalo \u2014 \u017E\u00E1dn\u00E9 kecy, ka\u017Ed\u00FD t\u00FDden.",
+      popupPlaceholder: "vas@email.cz",
+      popupSubmit: "Odeb\u00EDrat",
+      popupPrivacy: "\u017D\u00E1dn\u00FD spam. Odhl\u00E1\u0161en\u00ED kdykoli. Respektujeme va\u0161e soukrom\u00ED.",
+      popupSuccess: "Jste p\u0159ihl\u00E1\u0161eni! Zkontrolujte si doru\u010Denou po\u0161tu.",
       problemLabel: "PROBLÉM",
       problemH: "Máte data. Jen na ně nemáte čas.",
       problemP: "Každý majitel firmy má tu jednu tabulku, kterou se bojí otevřít. Čísla, která by měla vyprávět příběh — ale nevypráví. Hodiny ztracené formátováním a zíráním na řádky, které se slévají dohromady.",
@@ -573,6 +650,197 @@ export default function DataPaloLanding() {
           }
           #raa h2 { font-size: clamp(1.4rem, 6vw, 1.8rem) !important; }
         }
+
+        /* ═══ EXIT-INTENT POPUP ═══ */
+        .dp-popup-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(6, 6, 20, 0.75);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1),
+                      visibility 350ms cubic-bezier(0.16, 1, 0.3, 1);
+          padding: 1rem;
+        }
+        .dp-popup-overlay.dp-active {
+          opacity: 1;
+          visibility: visible;
+        }
+        .dp-popup {
+          position: relative;
+          width: 100%;
+          max-width: 440px;
+          background: linear-gradient(165deg, rgba(18, 18, 46, 0.97) 0%, rgba(13, 13, 38, 0.98) 100%);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 16px;
+          padding: 2.5rem 2rem 2rem;
+          overflow: hidden;
+          transform: translateY(20px) scale(0.97);
+          transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 60px rgba(224, 103, 146, 0.06), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        .dp-popup-overlay.dp-active .dp-popup {
+          transform: translateY(0) scale(1);
+        }
+        .dp-popup-glow {
+          position: absolute;
+          top: -60px;
+          right: -40px;
+          width: 200px;
+          height: 200px;
+          background: radial-gradient(circle, rgba(224, 103, 146, 0.12) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        .dp-popup-close {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          color: rgba(255,255,255,0.35);
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.06);
+          cursor: pointer;
+          transition: all 200ms ease;
+          z-index: 2;
+        }
+        .dp-popup-close:hover {
+          color: rgba(255,255,255,0.7);
+          background: rgba(255,255,255,0.08);
+          border-color: rgba(255,255,255,0.12);
+        }
+        .dp-popup-content { position: relative; z-index: 1; }
+        .dp-popup-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          border-radius: 50px;
+          background: linear-gradient(135deg, rgba(161, 197, 10, 0.12), rgba(161, 197, 10, 0.06));
+          border: 1px solid rgba(161, 197, 10, 0.2);
+          margin-bottom: 1.25rem;
+        }
+        .dp-popup-badge-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #A1C50A;
+          box-shadow: 0 0 8px rgba(161, 197, 10, 0.5);
+          animation: dp-pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes dp-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(0.85); }
+        }
+        .dp-popup-badge-text {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.7rem;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #A1C50A;
+        }
+        .dp-popup-heading {
+          font-family: 'Instrument Serif', Georgia, serif;
+          font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+          font-weight: 400;
+          line-height: 1.2;
+          color: rgba(255,255,255,0.94);
+          margin-bottom: 0.75rem;
+        }
+        .dp-popup-subtext {
+          font-size: 0.9rem;
+          color: rgba(255,255,255,0.48);
+          line-height: 1.65;
+          margin-bottom: 1.5rem;
+          max-width: 380px;
+        }
+        .dp-popup-input-wrap {
+          display: flex;
+          gap: 0;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.04);
+          transition: border-color 250ms ease;
+        }
+        .dp-popup-input-wrap:focus-within {
+          border-color: rgba(224, 103, 146, 0.4);
+          box-shadow: 0 0 0 3px rgba(224, 103, 146, 0.08);
+        }
+        .dp-popup-input {
+          flex: 1;
+          min-width: 0;
+          padding: 14px 16px;
+          font-family: 'Satoshi', sans-serif;
+          font-size: 0.9rem;
+          color: rgba(255,255,255,0.9);
+          background: transparent;
+          border: none;
+          outline: none;
+        }
+        .dp-popup-input::placeholder { color: rgba(255,255,255,0.22); }
+        .dp-popup-submit {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 14px 20px;
+          font-family: 'Satoshi', sans-serif;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: white;
+          background: linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%);
+          border: none;
+          cursor: pointer;
+          white-space: nowrap;
+          flex-shrink: 0;
+          transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dp-popup-submit:hover { filter: brightness(1.1); }
+        .dp-popup-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .dp-popup-privacy {
+          font-size: 0.72rem;
+          color: rgba(255,255,255,0.25);
+          margin-top: 0.75rem;
+          text-align: center;
+        }
+        .dp-popup-success { text-align: center; padding: 1rem 0; }
+        .dp-popup-success-icon {
+          width: 48px;
+          height: 48px;
+          margin: 0 auto 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: linear-gradient(135deg, rgba(161, 197, 10, 0.15), rgba(161, 197, 10, 0.08));
+          border: 1px solid rgba(161, 197, 10, 0.3);
+          color: #A1C50A;
+          font-size: 1.25rem;
+          font-weight: 700;
+        }
+        .dp-popup-success-text {
+          font-size: 0.95rem;
+          color: rgba(255,255,255,0.7);
+          line-height: 1.6;
+        }
+        @media (max-width: 480px) {
+          .dp-popup { padding: 2rem 1.25rem 1.5rem; border-radius: 14px; }
+          .dp-popup-heading { font-size: 1.4rem; }
+          .dp-popup-input-wrap { flex-direction: column; border-radius: 10px; }
+          .dp-popup-input { border-bottom: 1px solid rgba(255,255,255,0.06); }
+          .dp-popup-submit { justify-content: center; padding: 14px 20px; }
+        }
       `}</style>
 
       <div className="landing-root" style={{
@@ -608,7 +876,7 @@ export default function DataPaloLanding() {
             <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
           </div>
           <button
-            onClick={() => window.location.href = '/datapalo'}
+            onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}
             style={{
               padding: "10px 24px",
               fontSize: "0.85rem",
@@ -820,7 +1088,7 @@ export default function DataPaloLanding() {
             {/* Single Hero CTA */}
             <button
               className={`hero-cta-btn ${mounted ? 'anim-4' : ''}`}
-              onClick={() => window.location.href = '/datapalo'}
+              onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}
             >
               {t.heroCta}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1118,7 +1386,7 @@ export default function DataPaloLanding() {
             ))}
           </div>
           <div style={{ textAlign: "center" }}>
-            <button className="mini-cta" onClick={() => window.location.href = '/datapalo'}>
+            <button className="mini-cta" onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}>
               {t.miniCta}
             </button>
           </div>
@@ -1191,7 +1459,7 @@ export default function DataPaloLanding() {
             ))}
           </div>
           <div style={{ textAlign: "center" }}>
-            <button className="mini-cta" onClick={() => window.location.href = '/datapalo'}>
+            <button className="mini-cta" onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}>
               {t.miniCta}
             </button>
           </div>
@@ -1392,7 +1660,7 @@ export default function DataPaloLanding() {
             }}>{t.scrollCta}</p>
             <button
               className="hero-cta-btn"
-              onClick={() => window.location.href = '/datapalo'}
+              onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}
               style={{ padding: "16px 40px", fontSize: "0.95rem" }}
             >
               {t.scrollCtaBtn}
@@ -1515,7 +1783,7 @@ export default function DataPaloLanding() {
           }}>{t.finalSub}</p>
 
           <button
-            onClick={() => window.location.href = '/datapalo'}
+            onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}
             style={{
               padding: "22px 64px",
               fontSize: "1.1rem",
@@ -1594,7 +1862,7 @@ export default function DataPaloLanding() {
         {/* ============================================ */}
         <div className={`sticky-bottom-bar ${scrollDepth > 10 ? 'bar-visible' : ''}`}>
           <button
-            onClick={() => window.location.href = '/datapalo'}
+            onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}
             style={{
               width: "100%",
               padding: "14px 32px",
@@ -1618,6 +1886,65 @@ export default function DataPaloLanding() {
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </button>
+        </div>
+      </div>
+
+      {/* ============================================ */}
+      {/* EXIT-INTENT NEWSLETTER POPUP */}
+      {/* ============================================ */}
+      <div
+        className={`dp-popup-overlay ${popupVisible ? 'dp-active' : ''}`}
+        aria-hidden={!popupVisible}
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => { if (e.target === e.currentTarget) hidePopup(true); }}
+        onKeyDown={(e) => { if (e.key === 'Escape') hidePopup(true); }}
+      >
+        <div className="dp-popup">
+          <button className="dp-popup-close" aria-label="Close popup" onClick={() => hidePopup(true)}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/>
+            </svg>
+          </button>
+          <div className="dp-popup-glow" />
+          <div className="dp-popup-content">
+            <div className="dp-popup-badge">
+              <span className="dp-popup-badge-dot" />
+              <span className="dp-popup-badge-text">{t.popupBadge}</span>
+            </div>
+            <h2 className="dp-popup-heading">{t.popupHeading}</h2>
+            {!popupSubmitted && (
+              <>
+                <p className="dp-popup-subtext">{t.popupSub}</p>
+                <form className="dp-popup-form" onSubmit={handlePopupSubmit}>
+                  <div className="dp-popup-input-wrap">
+                    <input
+                      type="email"
+                      className="dp-popup-input"
+                      placeholder={t.popupPlaceholder}
+                      value={popupEmail}
+                      onChange={(e) => setPopupEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                    />
+                    <button type="submit" className="dp-popup-submit" disabled={popupLoading}>
+                      <span>{t.popupSubmit}</span>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="dp-popup-privacy">{t.popupPrivacy}</p>
+                </form>
+              </>
+            )}
+            {popupSubmitted && (
+              <div className="dp-popup-success">
+                <div className="dp-popup-success-icon">{'\u2713'}</div>
+                <p className="dp-popup-success-text">{t.popupSuccess}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
