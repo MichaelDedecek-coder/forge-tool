@@ -89,7 +89,7 @@ export default function Home() {
   const syncInProgressRef = useRef(false);
 
   // UI state
-  const [language, setLanguage] = useState("cs");
+  const [language, setLanguage] = useState("en");
   const [demoPhase, setDemoPhase] = useState(0); // 0=idle, 1=reading, 2=patterns, 3=insights, 4=reveal
   const [demoMetrics, setDemoMetrics] = useState({ revenue: 0, growth: 0, margin: 0 });
   const demoTimersRef = useRef([]);
