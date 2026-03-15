@@ -33,6 +33,25 @@ export function AuthProvider({ children }) {
         if (session?.user) {
           setUser(session.user);
           await fetchProfile(session.user.id);
+
+          // Add new signups to Mailchimp for welcome email automation
+          if (event === 'SIGNED_IN') {
+            // Check if this is a brand-new user (created within last 30 seconds)
+            const createdAt = new Date(session.user.created_at);
+            const now = new Date();
+            const isNewUser = (now - createdAt) < 30000;
+
+            if (isNewUser) {
+              fetch('/api/auth/welcome', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: session.user.email,
+                  name: session.user.user_metadata?.full_name || '',
+                }),
+              }).catch(err => console.error('[Auth] Welcome email error:', err));
+            }
+          }
         } else {
           setUser(null);
           setProfile(null);
