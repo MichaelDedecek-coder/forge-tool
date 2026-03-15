@@ -95,6 +95,7 @@ export default function Home() {
   const demoTimersRef = useRef([]);
   const countingRef = useRef(null);
   const [processingStep, setProcessingStep] = useState(0);
+  const demoRunCountRef = useRef(0);
 
   // ── DEMO: Staged Reveal Logic ──
   const startDemo = useCallback(() => {
@@ -102,6 +103,7 @@ export default function Home() {
     demoTimersRef.current = [];
     if (countingRef.current) cancelAnimationFrame(countingRef.current);
 
+    demoRunCountRef.current += 1;
     setDemoMetrics({ revenue: 0, growth: 0, margin: 0 });
     setDemoPhase(1);
 
@@ -715,6 +717,14 @@ export default function Home() {
           from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes cardSlideIn {
+          from { opacity: 0; transform: translateY(16px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes cardBlur {
+          from { filter: blur(0px); }
+          to { filter: blur(6px); }
+        }
       ` }} />
 
       {/* Auth Modal */}
@@ -980,10 +990,16 @@ export default function Home() {
                     fontWeight: "600", color: "rgba(255,255,255,0.9)", marginBottom: "12px",
                   }}>
                     {demoPhase === 1
-                      ? (language === "cs" ? "Čtení souboru..." : "Reading file...")
+                      ? (language === "cs"
+                        ? (demoRunCountRef.current > 1 ? "Načítání dat..." : "Čtení souboru...")
+                        : (demoRunCountRef.current > 1 ? "Loading data..." : "Reading file..."))
                       : demoPhase === 2
-                      ? (language === "cs" ? "Hledání vzorců..." : "Finding patterns...")
-                      : (language === "cs" ? "Budování insightů..." : "Building insights...")}
+                      ? (language === "cs"
+                        ? (demoRunCountRef.current > 1 ? "Analyzuji trendy..." : "Hledání vzorců...")
+                        : (demoRunCountRef.current > 1 ? "Analyzing trends..." : "Finding patterns..."))
+                      : (language === "cs"
+                        ? (demoRunCountRef.current > 1 ? "Generuji doporučení..." : "Budování insightů...")
+                        : (demoRunCountRef.current > 1 ? "Generating recommendations..." : "Building insights..."))}
                   </div>
 
                   {/* Progress bar */}
@@ -1055,15 +1071,14 @@ export default function Home() {
                     ))}
                   </div>
 
-                  {/* AI Insight — typewriter then blur */}
+                  {/* AI Insights — all 3 cards revealed sequentially, then blur + CTA */}
                   <div style={{ marginTop: "20px", position: "relative" }}>
-                    {/* First insight — partially visible */}
+                    {/* Insight 1: AI Insight — fully visible */}
                     <div style={{
                       background: "rgba(255,255,255,0.04)",
                       border: "1px solid rgba(255,255,255,0.08)",
                       borderRadius: "12px", padding: "16px", marginBottom: "8px",
-                      animation: "blurReveal 500ms cubic-bezier(0.16, 1, 0.3, 1) 1500ms both",
-                      overflow: "hidden",
+                      animation: "cardSlideIn 500ms cubic-bezier(0.16, 1, 0.3, 1) 1500ms both",
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
                         <span style={{ fontSize: "14px" }}>🤖</span>
@@ -1074,8 +1089,8 @@ export default function Home() {
                       <div style={{
                         fontFamily: "'Satoshi', sans-serif", fontSize: "0.85rem",
                         color: "rgba(255,255,255,0.8)", lineHeight: "1.6",
-                        maskImage: "linear-gradient(to right, black 60%, transparent 100%)",
-                        WebkitMaskImage: "linear-gradient(to right, black 60%, transparent 100%)",
+                        maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
+                        WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
                       }}>
                         {language === "cs"
                           ? "Páteční tržby jsou o 23% vyšší než průměr. Zvažte rozšíření personálu v pátek a nabídku speciálního menu..."
@@ -1083,55 +1098,53 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Blurred insight cards */}
+                    {/* Insight 2: Trend — visible then blurs */}
                     <div style={{
-                      filter: "blur(6px)", userSelect: "none", pointerEvents: "none",
-                      animation: "blurReveal 500ms cubic-bezier(0.16, 1, 0.3, 1) 1800ms both",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "12px", padding: "16px", marginBottom: "8px",
+                      animation: "cardSlideIn 500ms cubic-bezier(0.16, 1, 0.3, 1) 2100ms both, cardBlur 600ms cubic-bezier(0.4, 0, 1, 1) 3800ms both",
                     }}>
-                      <div style={{
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: "12px", padding: "16px", marginBottom: "8px",
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "14px" }}>📈</span>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.7rem", color: "#3F51B5", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                            {language === "cs" ? "Trend" : "Trend"}
-                          </span>
-                        </div>
-                        <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: "0.85rem", color: "rgba(255,255,255,0.8)", lineHeight: "1.6" }}>
-                          {language === "cs"
-                            ? "Sezónní analýza ukazuje rostoucí poptávku po teplých nápojích v období říjen–únor s průměrným nárůstem 18%..."
-                            : "Seasonal analysis shows growing demand for warm beverages in October–February with an average increase of 18%..."}
-                        </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                        <span style={{ fontSize: "14px" }}>📈</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.7rem", color: "#3F51B5", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                          {language === "cs" ? "Trend" : "Trend"}
+                        </span>
                       </div>
-
-                      <div style={{
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: "12px", padding: "16px",
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "14px" }}>⚠️</span>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.7rem", color: "#A1C50A", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                            {language === "cs" ? "Doporučení" : "Recommendation"}
-                          </span>
-                        </div>
-                        <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: "0.85rem", color: "rgba(255,255,255,0.8)", lineHeight: "1.6" }}>
-                          {language === "cs"
-                            ? "Optimalizujte zásobování pondělí–středa, kdy je prodej o 31% nižší. Snížení zásob o 20% ušetří přibližně €2,400 měsíčně..."
-                            : "Optimize inventory for Monday–Wednesday when sales are 31% lower. Reducing stock by 20% could save approximately €2,400/month..."}
-                        </div>
+                      <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: "0.85rem", color: "rgba(255,255,255,0.8)", lineHeight: "1.6" }}>
+                        {language === "cs"
+                          ? "Sezónní analýza ukazuje rostoucí poptávku po teplých nápojích v období říjen–únor s průměrným nárůstem 18%..."
+                          : "Seasonal analysis shows growing demand for warm beverages in October–February with an average increase of 18%..."}
                       </div>
                     </div>
 
-                    {/* FOMO CTA overlay */}
+                    {/* Insight 3: Recommendation — visible then blurs */}
+                    <div style={{
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "12px", padding: "16px",
+                      animation: "cardSlideIn 500ms cubic-bezier(0.16, 1, 0.3, 1) 2700ms both, cardBlur 600ms cubic-bezier(0.4, 0, 1, 1) 3800ms both",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                        <span style={{ fontSize: "14px" }}>💡</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.7rem", color: "#A1C50A", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                          {language === "cs" ? "Doporučení" : "Recommendation"}
+                        </span>
+                      </div>
+                      <div style={{ fontFamily: "'Satoshi', sans-serif", fontSize: "0.85rem", color: "rgba(255,255,255,0.8)", lineHeight: "1.6" }}>
+                        {language === "cs"
+                          ? "Optimalizujte zásobování pondělí–středa, kdy je prodej o 31% nižší. Snížení zásob o 20% ušetří přibližně €2,400 měsíčně..."
+                          : "Optimize inventory for Monday–Wednesday when sales are 31% lower. Reducing stock by 20% could save approximately €2,400/month..."}
+                      </div>
+                    </div>
+
+                    {/* FOMO CTA overlay — appears after all cards shown */}
                     <div style={{
                       position: "absolute", bottom: 0, left: 0, right: 0,
                       background: "linear-gradient(to top, rgba(8,8,24,0.95) 40%, rgba(8,8,24,0.8) 70%, transparent 100%)",
                       padding: "60px 20px 24px",
                       display: "flex", flexDirection: "column", alignItems: "center",
-                      animation: "blurReveal 600ms cubic-bezier(0.16, 1, 0.3, 1) 2200ms both",
+                      animation: "blurReveal 600ms cubic-bezier(0.16, 1, 0.3, 1) 4000ms both",
                     }}>
                       <div style={{
                         background: "rgba(255,255,255,0.04)",
