@@ -1165,7 +1165,7 @@ export default function Home() {
                             {language === "cs" ? "Nahrát svůj soubor" : "Upload Your File"}
                           </button>
                           <button
-                            onClick={resetDemo}
+                            onClick={startDemo}
                             style={{
                               background: "transparent", color: "rgba(255,255,255,0.5)",
                               border: "1px solid rgba(255,255,255,0.1)", padding: "10px 16px",
