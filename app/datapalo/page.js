@@ -236,8 +236,26 @@ export default function Home() {
     reader.onload = (e) => {
       const binaryStr = e.target.result;
       const workbook = XLSX.read(binaryStr, { type: "binary" });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
+
+      // Smart sheet selection: pick the sheet with the most data
+      let bestSheet = workbook.SheetNames[0];
+      if (workbook.SheetNames.length > 1) {
+        let maxRows = 0;
+        for (const name of workbook.SheetNames) {
+          const ws = workbook.Sheets[name];
+          const ref = ws['!ref'];
+          if (!ref) continue;
+          const range = XLSX.utils.decode_range(ref);
+          const sheetRows = range.e.r - range.s.r + 1;
+          if (sheetRows > maxRows) {
+            maxRows = sheetRows;
+            bestSheet = name;
+          }
+        }
+        console.log(`📊 Multi-sheet file: ${workbook.SheetNames.length} sheets. Using "${bestSheet}" (${maxRows} rows)`);
+      }
+
+      const worksheet = workbook.Sheets[bestSheet];
       const csvText = XLSX.utils.sheet_to_csv(worksheet);
 
       const rows = csvText.split('\n').filter(row => row.trim());
