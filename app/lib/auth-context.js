@@ -168,6 +168,20 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /**
+   * Get the current session's access token for authenticated API calls.
+   * Returns null if not authenticated.
+   */
+  const getAccessToken = async () => {
+    if (!supabase) return null;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.access_token || null;
+    } catch {
+      return null;
+    }
+  };
+
   const value = {
     user,
     profile,
@@ -177,6 +191,7 @@ export function AuthProvider({ children }) {
     signInWithGoogle,
     signOut,
     refreshProfile,
+    getAccessToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

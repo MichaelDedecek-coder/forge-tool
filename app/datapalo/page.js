@@ -57,7 +57,7 @@ async function compressCSV(csvText) {
 
 export default function Home() {
   // Auth state
-  const { user, profile, loading: authLoading, signOut, refreshProfile } = useAuth();
+  const { user, profile, loading: authLoading, signOut, refreshProfile, getAccessToken } = useAuth();
 
   // File state
   const [csvData, setCsvData] = useState(null);
@@ -431,9 +431,15 @@ export default function Home() {
       }
 
       addLog("Calling /api/datapalo...");
+      // Get auth token for server-side identity verification
+      const accessToken = await getAccessToken();
+      const headers = { "Content-Type": "application/json" };
+      if (accessToken) {
+        headers["Authorization"] = `Bearer ${accessToken}`;
+      }
       const res = await fetch("/api/datapalo", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: requestBody,
       });
 
