@@ -99,6 +99,16 @@ try:
     total_rows = len(df)
     print(f"✅ Loaded {total_rows} rows, {len(df.columns)} columns")
 
+    # Helper: convert value to JSON-safe float (NaN/Inf → None)
+    import math
+    def safe_float(val):
+        if val is None:
+            return None
+        f = float(val)
+        if math.isnan(f) or math.isinf(f):
+            return None
+        return f
+
     # Initialize statistical summary
     summary = {
         "total_rows": total_rows,
@@ -120,13 +130,13 @@ try:
             # Numerical column statistics
             col_info["type"] = "numerical"
             col_info["stats"] = {
-                "mean": float(df[col].mean()) if not df[col].isnull().all() else None,
-                "median": float(df[col].median()) if not df[col].isnull().all() else None,
-                "std": float(df[col].std()) if not df[col].isnull().all() else None,
-                "min": float(df[col].min()) if not df[col].isnull().all() else None,
-                "max": float(df[col].max()) if not df[col].isnull().all() else None,
-                "q25": float(df[col].quantile(0.25)) if not df[col].isnull().all() else None,
-                "q75": float(df[col].quantile(0.75)) if not df[col].isnull().all() else None
+                "mean": safe_float(df[col].mean()) if not df[col].isnull().all() else None,
+                "median": safe_float(df[col].median()) if not df[col].isnull().all() else None,
+                "std": safe_float(df[col].std()) if not df[col].isnull().all() else None,
+                "min": safe_float(df[col].min()) if not df[col].isnull().all() else None,
+                "max": safe_float(df[col].max()) if not df[col].isnull().all() else None,
+                "q25": safe_float(df[col].quantile(0.25)) if not df[col].isnull().all() else None,
+                "q75": safe_float(df[col].quantile(0.75)) if not df[col].isnull().all() else None
             }
             # Detect outliers using IQR method
             if col_info["stats"]["q25"] and col_info["stats"]["q75"]:
@@ -178,9 +188,20 @@ try:
             if idx not in sample_indices:
                 sample_indices.append(idx)
 
-    # Get sample rows
+    # Get sample rows (NaN-safe)
     sample_df = df.iloc[sample_indices].head(20)
-    summary["sample_rows"] = sample_df.to_dict('records')
+    records = sample_df.to_dict('records')
+    # Replace NaN/Inf in sample rows with None for valid JSON
+    clean_records = []
+    for row in records:
+        clean_row = {}
+        for k, v in row.items():
+            if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                clean_row[k] = None
+            else:
+                clean_row[k] = v
+        clean_records.append(clean_row)
+    summary["sample_rows"] = clean_records
 
     # Output as JSON
     print("\\n### STATISTICAL_SUMMARY ###")
