@@ -73,10 +73,31 @@ import sys
 from datetime import datetime
 
 try:
-    # Load dataset
-    df = pd.read_csv('dataset.csv')
+    # Auto-detect separator and decimal format (European CSV support)
+    import csv as csv_module
+    with open('dataset.csv', 'r') as f:
+        sample = f.read(8192)
+
+    # Detect delimiter
+    detected_sep = ','
+    try:
+        dialect = csv_module.Sniffer().sniff(sample, delimiters=';,\\t|')
+        detected_sep = dialect.delimiter
+    except csv_module.Error:
+        # Fallback: count occurrences in first line
+        first_line = sample.split('\\n')[0]
+        if first_line.count(';') > first_line.count(','):
+            detected_sep = ';'
+
+    # European convention: semicolon separator → comma decimal
+    detected_decimal = ',' if detected_sep == ';' else '.'
+
+    print(f"📋 Detected separator: '{detected_sep}', decimal: '{detected_decimal}'")
+
+    # Load dataset with detected format
+    df = pd.read_csv('dataset.csv', sep=detected_sep, decimal=detected_decimal)
     total_rows = len(df)
-    print(f"✅ Loaded {total_rows} rows")
+    print(f"✅ Loaded {total_rows} rows, {len(df.columns)} columns")
 
     # Initialize statistical summary
     summary = {
