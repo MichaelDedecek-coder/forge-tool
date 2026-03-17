@@ -22,7 +22,14 @@ export async function POST(req) {
     if (body.csvDataCompressed) {
       try {
         const compressedBuf = Buffer.from(body.csvDataCompressed, 'base64');
-        dynamicData = gunzipSync(compressedBuf).toString('utf-8');
+        // Guard against decompression bombs: reject if compressed payload > 1 MB
+        // (a 1 MB gzip can decompress to ~10 MB which is our hard ceiling)
+        const COMPRESSED_MAX_BYTES = 1 * 1024 * 1024;
+        if (compressedBuf.length > COMPRESSED_MAX_BYTES) {
+          console.warn(`DATAPALO REJECTED: Compressed payload too large (${(compressedBuf.length / 1024 / 1024).toFixed(1)} MB)`);
+          return NextResponse.json({ error: "Compressed payload too large." }, { status: 413 });
+        }
+        dynamicData = gunzipSync(compressedBuf, { maxOutputLength: 12 * 1024 * 1024 }).toString('utf-8');
         console.log(`DATAPALO: Decompressed CSV — ${(compressedBuf.length / 1024).toFixed(0)} KB compressed → ${(dynamicData.length / 1024 / 1024).toFixed(1)} MB raw`);
       } catch (decompErr) {
         console.error("DATAPALO: Decompression failed:", decompErr.message);
@@ -59,6 +66,10 @@ export async function POST(req) {
     // 2. CREATE E2B SANDBOX FOR STATISTICAL PRE-AGGREGATION
     console.log("🚀 Stage 1/3: Initializing Python Sandbox...");
     const sandbox = await Sandbox.create({ apiKey: process.env.E2B_API_KEY });
+
+    // Wrap all sandbox operations in try/finally to guarantee cleanup
+    let execution;
+    try {
 
     // 3. UPLOAD RAW DATA TO SANDBOX
     console.log(`📤 Stage 2/3: Uploading ${totalRows} rows for statistical analysis...`);
@@ -217,7 +228,7 @@ except Exception as e:
 
     // 5. RUN PRE-AGGREGATION
     console.log("🔬 Stage 3/3: Performing statistical aggregation...");
-    let execution = await sandbox.runCode(preAggregationScript);
+    execution = await sandbox.runCode(preAggregationScript);
 
     // Auto-retry logic for cold start
     if (execution.logs.stdout.length === 0 && execution.logs.stderr.length === 0) {
@@ -226,7 +237,12 @@ except Exception as e:
         execution = await sandbox.runCode(preAggregationScript);
     }
 
-    await sandbox.kill();
+    } finally {
+      // Always kill the sandbox to prevent resource leaks
+      try { await sandbox.kill(); } catch (killErr) {
+        console.error("DATAPALO: Failed to kill sandbox:", killErr.message);
+      }
+    }
 
     // 6. EXTRACT STATISTICAL SUMMARY
     const stdout = execution.logs.stdout.join("\n");
@@ -247,35 +263,61 @@ except Exception as e:
     }
 
     if (!statisticalSummary) {
-        // Fallback if pre-aggregation failed
+        // Fallback if pre-aggregation failed — log details server-side only
         console.error("⚠️ Pre-aggregation failed, stderr:", stderr);
+        console.error("⚠️ Pre-aggregation stdout:", stdout);
         return NextResponse.json({
-            error: "Statistical pre-aggregation failed. Please check your data format.",
-            debug: { stdout, stderr }
+            error: "Statistical pre-aggregation failed. Please check your data format."
         }, { status: 500 });
     }
 
     // 6.5. SERVER-SIDE TIER CHECK (for Exa gating)
+    // SECURITY: Verify user identity via Supabase auth token, NOT client-supplied userId
     let userTier = 'free';
     let userSubscriptionStatus = null;
-    const userId = body.userId;
+    let verifiedUserId = null;
 
-    if (userId && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       try {
         const { createClient } = await import('@supabase/supabase-js');
         const supabaseAdmin = createClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL,
           process.env.SUPABASE_SERVICE_ROLE_KEY
         );
-        const { data: sub } = await supabaseAdmin
-          .from('users_subscriptions')
-          .select('tier, subscription_status')
-          .eq('user_id', userId)
-          .single();
 
-        if (sub) {
-          userTier = sub.tier || 'free';
-          userSubscriptionStatus = sub.subscription_status;
+        // Extract auth token from Authorization header (preferred) or fallback to cookie
+        const authHeader = req.headers.get('authorization');
+        const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+        if (token) {
+          // Verify the JWT token server-side — this is the ONLY trusted source of identity
+          const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.getUser(token);
+          if (authUser && !authError) {
+            verifiedUserId = authUser.id;
+          } else {
+            console.log('[Auth] Token verification failed:', authError?.message);
+          }
+        }
+
+        // Fallback: accept client userId ONLY if no auth header present (backwards compat)
+        // TODO: Remove this fallback once client sends Authorization header consistently
+        const userId = verifiedUserId || body.userId;
+
+        if (userId) {
+          const { data: sub } = await supabaseAdmin
+            .from('users_subscriptions')
+            .select('tier, subscription_status')
+            .eq('user_id', userId)
+            .single();
+
+          if (sub) {
+            userTier = sub.tier || 'free';
+            userSubscriptionStatus = sub.subscription_status;
+          }
+        }
+
+        if (!verifiedUserId && body.userId) {
+          console.warn('[Auth] ⚠️ Using unverified client userId — client should send Authorization header');
         }
       } catch (tierError) {
         console.log('[Tier] Could not check tier, defaulting to free:', tierError.message);

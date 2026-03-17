@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { constructWebhookEvent } from '@/app/lib/stripe';
 import { sendProWelcomeEmail } from '@/app/lib/email';
+import { tagMailchimpContact } from '@/app/lib/mailchimp';
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to get Supabase admin client
@@ -121,6 +122,11 @@ async function handleCheckoutCompleted(session, supabaseAdmin) {
   if (customerEmail) {
     sendProWelcomeEmail(customerEmail, /* isTrial */ true).catch(err =>
       console.error('[Webhook] Welcome email error (non-blocking):', err)
+    );
+
+    // Tag contact in Mailchimp as "DataPalo PRO" to trigger PRO welcome automation
+    tagMailchimpContact(customerEmail, ['DataPalo PRO']).catch(err =>
+      console.error('[Webhook] Mailchimp PRO tag error (non-blocking):', err)
     );
   }
 }
