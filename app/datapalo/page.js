@@ -1688,6 +1688,11 @@ export default function Home() {
             {language === "cs" ? "Podmínky služby" : "Terms of Service"}
           </a>
         </div>
+        <div style={{ marginTop: "20px" }}>
+          <a href="https://www.producthunt.com/products/datawizard-app/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-datawizard-app" target="_blank" rel="noopener noreferrer">
+            <img src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1143772&theme=dark" alt="DataPalo App - AI Data Analyst for SMEs. Instant Insights from CSV & Excel. | Product Hunt" style={{ width: "250px", height: "54px" }} width="250" height="54" />
+          </a>
+        </div>
         <p style={{ marginTop: "16px", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>
           &copy; 2026 FORGE CREATIVE | AI Job Agency
         </p>
