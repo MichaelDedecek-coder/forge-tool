@@ -1687,8 +1687,27 @@ export default function Home() {
         >
           michael@forgecreative.cz
         </a>
-        <p style={{ marginTop: "20px", fontSize: "12px", color: "rgba(255,255,255,0.55)" }}>
-          FORGE CREATIVE | AI Job Agency
+        <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "6px", alignItems: "center", flexWrap: "wrap" }}>
+          <a
+            href="/datapalo/privacy"
+            style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: "12px", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.03em", transition: "color 0.2s ease" }}
+            onMouseEnter={e => e.target.style.color = "#E06792"}
+            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
+          >
+            {language === "cs" ? "Zásady ochrany osobních údajů" : "Privacy Policy"}
+          </a>
+          <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "12px" }}>|</span>
+          <a
+            href="/datapalo/privacy"
+            style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: "12px", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.03em", transition: "color 0.2s ease" }}
+            onMouseEnter={e => e.target.style.color = "#E06792"}
+            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
+          >
+            {language === "cs" ? "Podmínky služby" : "Terms of Service"}
+          </a>
+        </div>
+        <p style={{ marginTop: "16px", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>
+          &copy; 2026 FORGE CREATIVE | AI Job Agency
         </p>
       </div>
     </div>
