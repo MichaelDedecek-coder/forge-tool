@@ -731,6 +731,174 @@ export default function Home() {
           from { filter: blur(0px); }
           to { filter: blur(6px); }
         }
+
+        /* ── HOVER/FOCUS MICRO-INTERACTIONS ── */
+
+        /* Buttons: lift + glow on hover */
+        .dp-btn-primary:hover {
+          transform: translateY(-2px) scale(1.02) !important;
+          filter: brightness(1.12) !important;
+          box-shadow: 0 12px 40px rgba(224, 103, 146, 0.35), 0 0 0 1px rgba(224, 103, 146, 0.1) !important;
+        }
+        .dp-btn-primary:active {
+          transform: translateY(0px) scale(0.98) !important;
+          filter: brightness(0.95) !important;
+        }
+        .dp-btn-secondary:hover {
+          background: rgba(255,255,255,0.08) !important;
+          border-color: rgba(224, 103, 146, 0.4) !important;
+          color: rgba(255,255,255,0.95) !important;
+          transform: translateY(-1px) !important;
+        }
+        .dp-btn-secondary:active {
+          transform: translateY(0px) !important;
+          background: rgba(255,255,255,0.04) !important;
+        }
+        .dp-btn-ghost:hover {
+          background: rgba(255,255,255,0.08) !important;
+          color: rgba(255,255,255,0.9) !important;
+          border-color: rgba(255,255,255,0.2) !important;
+        }
+
+        /* Nav buttons (Back, CZ/EN, Sign In/Out) */
+        .dp-nav-btn:hover {
+          background: rgba(255,255,255,0.1) !important;
+          border-color: rgba(255,255,255,0.2) !important;
+          color: rgba(255,255,255,0.85) !important;
+          transform: translateY(-1px) !important;
+        }
+
+        /* Language toggle active state glow */
+        .dp-lang-btn:hover {
+          background: rgba(224, 103, 146, 0.2) !important;
+          border-color: rgba(224, 103, 146, 0.35) !important;
+        }
+
+        /* Focus rings — WCAG 2.1 compliant */
+        .dp-btn-primary:focus-visible,
+        .dp-btn-secondary:focus-visible,
+        .dp-btn-ghost:focus-visible,
+        .dp-nav-btn:focus-visible,
+        .dp-lang-btn:focus-visible {
+          outline: 2px solid #A1C50A !important;
+          outline-offset: 2px !important;
+        }
+
+        /* Dropzone hover */
+        .dp-dropzone:hover {
+          border-color: rgba(224, 103, 146, 0.5) !important;
+          background: rgba(224, 103, 146, 0.03) !important;
+        }
+        .dp-dropzone:hover .dp-dropzone-icon {
+          transform: scale(1.08) !important;
+          opacity: 0.8 !important;
+        }
+        .dp-dropzone:focus-visible {
+          outline: 2px solid #A1C50A !important;
+          outline-offset: 2px !important;
+        }
+
+        /* Demo metric cards */
+        .dp-metric-card {
+          transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .dp-metric-card:hover {
+          transform: translateY(-3px) !important;
+          border-color: rgba(224, 103, 146, 0.3) !important;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(224, 103, 146, 0.1) !important;
+          background: rgba(255,255,255,0.06) !important;
+        }
+
+        /* Demo bar chart individual bars */
+        .dp-chart-bar {
+          transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+          cursor: default;
+        }
+        .dp-chart-bar:hover {
+          filter: brightness(1.3) !important;
+          transform: scaleY(1.03) !important;
+          transform-origin: bottom !important;
+        }
+
+        /* AI Insight cards */
+        .dp-insight-card {
+          transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+          border-left: 3px solid transparent !important;
+        }
+        .dp-insight-card:hover {
+          border-left-color: #E06792 !important;
+          background: rgba(255,255,255,0.06) !important;
+          transform: translateX(2px) !important;
+        }
+
+        /* Footer link underline animation */
+        .dp-footer-link {
+          position: relative !important;
+          text-decoration: none !important;
+        }
+        .dp-footer-link::after {
+          content: '' !important;
+          position: absolute !important;
+          bottom: -2px !important;
+          left: 0 !important;
+          width: 0% !important;
+          height: 1px !important;
+          background: #E06792 !important;
+          transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .dp-footer-link:hover::after {
+          width: 100% !important;
+        }
+        .dp-footer-link:hover {
+          color: #E06792 !important;
+        }
+
+        /* Email link special glow */
+        .dp-email-link:hover {
+          text-shadow: 0 0 12px rgba(224, 103, 146, 0.4) !important;
+        }
+
+        /* Export buttons in results */
+        .dp-export-btn:hover {
+          transform: translateY(-1px) !important;
+          filter: brightness(1.1) !important;
+          box-shadow: 0 6px 20px rgba(224, 103, 146, 0.25) !important;
+        }
+        .dp-export-btn:focus-visible {
+          outline: 2px solid #A1C50A !important;
+          outline-offset: 2px !important;
+        }
+
+        /* Format badges in dropzone */
+        .dp-format-badge {
+          transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .dp-format-badge:hover {
+          background: rgba(161, 197, 10, 0.15) !important;
+          border-color: rgba(161, 197, 10, 0.5) !important;
+          transform: translateY(-1px) !important;
+        }
+
+        /* Product Hunt badge hover */
+        .dp-ph-badge {
+          transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+          display: inline-block !important;
+        }
+        .dp-ph-badge:hover {
+          transform: translateY(-2px) scale(1.03) !important;
+          filter: brightness(1.1) !important;
+        }
+
+        /* Upgrade PRO button */
+        .dp-upgrade-btn:hover {
+          transform: translateY(-1px) !important;
+          filter: brightness(1.15) !important;
+          box-shadow: 0 6px 24px rgba(139, 92, 246, 0.35) !important;
+        }
+        .dp-upgrade-btn:focus-visible {
+          outline: 2px solid #A1C50A !important;
+          outline-offset: 2px !important;
+        }
       ` }} />
 
       {/* Auth Modal */}
@@ -757,13 +925,14 @@ export default function Home() {
       }}>
       {/* BACK TO HOME */}
       <button
+        className="dp-nav-btn"
         onClick={() => window.location.href = '/'}
         style={{
           background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
           color: "rgba(255,255,255,0.5)", backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)", padding: "8px 16px",
           borderRadius: "10px", cursor: "pointer", fontSize: "14px",
-          fontFamily: "'Satoshi', sans-serif", transition: "all 0.25s ease",
+          fontFamily: "'Satoshi', sans-serif", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
           whiteSpace: "nowrap",
         }}
       >
@@ -775,17 +944,21 @@ export default function Home() {
         {/* Language Toggle */}
         <div style={{ display: "flex", gap: "4px", background: "rgba(255,255,255,0.04)", padding: "4px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.06)" }}>
           <button
+            className="dp-lang-btn"
             onClick={() => setLanguage("cs")}
             style={{
               background: language === "cs" ? "rgba(224, 103, 146, 0.15)" : "transparent",
-              color: "white", border: language === "cs" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase"
+              color: "white", border: language === "cs" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase",
+              transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           >CZ</button>
           <button
+            className="dp-lang-btn"
             onClick={() => setLanguage("en")}
             style={{
               background: language === "en" ? "rgba(224, 103, 146, 0.15)" : "transparent",
-              color: "white", border: language === "en" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase"
+              color: "white", border: language === "en" ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent", padding: "6px 14px", borderRadius: "16px", cursor: "pointer", fontWeight: "bold", fontSize: "0.75rem", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase",
+              transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           >EN</button>
         </div>
@@ -812,6 +985,7 @@ export default function Home() {
         {/* Sign In / Sign Out button */}
         {!user && !authLoading && (
           <button
+            className="dp-nav-btn"
             onClick={() => setShowAuthModal(true)}
             style={{
               background: 'rgba(255,255,255,0.08)',
@@ -821,7 +995,8 @@ export default function Home() {
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
-              fontWeight: '600'
+              fontWeight: '600',
+              transition: 'all 200ms cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
             {language === 'cs' ? 'Přihlásit se' : 'Sign In'}
@@ -829,6 +1004,7 @@ export default function Home() {
         )}
         {user && (
           <button
+            className="dp-nav-btn"
             onClick={async () => {
               try {
                 await signOut();
@@ -844,7 +1020,8 @@ export default function Home() {
               padding: '8px 16px',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontSize: '13px'
+              fontSize: '13px',
+              transition: 'all 200ms cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
             {language === 'cs' ? 'Odhlásit' : 'Sign Out'}
@@ -928,19 +1105,21 @@ export default function Home() {
 
               <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
                 <button
+                  className="dp-btn-primary"
                   onClick={() => document.querySelector('[data-dropzone]')?.click()}
                   style={{
                     display: "inline-flex", alignItems: "center", gap: "8px",
                     background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
                     color: "white", border: "none", padding: "12px 24px", borderRadius: "10px",
                     fontFamily: "'Satoshi', sans-serif", fontSize: "0.9rem", fontWeight: "600",
-                    cursor: "pointer", transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    cursor: "pointer", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                     boxShadow: "0 8px 30px rgba(224, 103, 146, 0.2)",
                   }}
                 >
                   {language === "cs" ? "Nahrát první soubor" : "Upload Your First File"}
                 </button>
                 <button
+                  className="dp-btn-secondary"
                   onClick={startDemo}
                   style={{
                     display: "inline-flex", alignItems: "center", gap: "8px",
@@ -948,7 +1127,7 @@ export default function Home() {
                     border: "1px solid rgba(161, 197, 10, 0.3)", padding: "12px 24px",
                     borderRadius: "10px", fontFamily: "'Satoshi', sans-serif",
                     fontSize: "0.9rem", fontWeight: "500", cursor: "pointer",
-                    transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
                   {language === "cs" ? "Spustit živou ukázku" : "Watch DataPalo Analyze"} →
@@ -1046,10 +1225,10 @@ export default function Home() {
                         change: language === "cs" ? "Nad cílem" : "Above target",
                       },
                     ].map((m, i) => (
-                      <div key={i} style={{
+                      <div key={i} className="dp-metric-card" style={{
                         background: "rgba(255,255,255,0.04)",
                         border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: "12px", padding: "16px",
+                        borderRadius: "12px", padding: "16px", cursor: "default",
                         animation: `countFadeIn 500ms cubic-bezier(0.16, 1, 0.3, 1) ${i * 200}ms both`,
                       }}>
                         <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px", fontFamily: "'JetBrains Mono', monospace" }}>{m.label}</div>
@@ -1068,7 +1247,7 @@ export default function Home() {
                     animation: "fadeSlideUp 500ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both",
                   }}>
                     {[45, 68, 52, 80, 92, 74, 55, 88].map((h, i) => (
-                      <div key={i} style={{
+                      <div key={i} className="dp-chart-bar" style={{
                         flex: 1, borderRadius: "4px 4px 0 0",
                         background: "linear-gradient(135deg, #E06792, #3F51B5)",
                         animation: `barGrow 800ms cubic-bezier(0.16, 1, 0.3, 1) ${700 + i * 100}ms both`,
@@ -1080,7 +1259,7 @@ export default function Home() {
                   {/* AI Insights — all 3 cards revealed sequentially, then blur + CTA */}
                   <div style={{ marginTop: "20px", position: "relative" }}>
                     {/* Insight 1: AI Insight — fully visible */}
-                    <div style={{
+                    <div className="dp-insight-card" style={{
                       background: "rgba(255,255,255,0.04)",
                       border: "1px solid rgba(255,255,255,0.08)",
                       borderRadius: "12px", padding: "16px", marginBottom: "8px",
@@ -1105,7 +1284,7 @@ export default function Home() {
                     </div>
 
                     {/* Insight 2: Trend — visible then blurs */}
-                    <div style={{
+                    <div className="dp-insight-card" style={{
                       background: "rgba(255,255,255,0.04)",
                       border: "1px solid rgba(255,255,255,0.08)",
                       borderRadius: "12px", padding: "16px", marginBottom: "8px",
@@ -1125,7 +1304,7 @@ export default function Home() {
                     </div>
 
                     {/* Insight 3: Recommendation — visible then blurs */}
-                    <div style={{
+                    <div className="dp-insight-card" style={{
                       background: "rgba(255,255,255,0.04)",
                       border: "1px solid rgba(255,255,255,0.08)",
                       borderRadius: "12px", padding: "16px",
@@ -1172,24 +1351,27 @@ export default function Home() {
                         </div>
                         <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
                           <button
+                            className="dp-btn-primary"
                             onClick={() => document.querySelector('[data-dropzone]')?.click()}
                             style={{
                               background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
                               color: "white", border: "none", padding: "10px 20px", borderRadius: "10px",
                               fontFamily: "'Satoshi', sans-serif", fontSize: "0.85rem", fontWeight: "600",
-                              cursor: "pointer", transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                              cursor: "pointer", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                               boxShadow: "0 8px 30px rgba(224, 103, 146, 0.3)",
                             }}
                           >
                             {language === "cs" ? "Nahrát svůj soubor" : "Upload Your File"}
                           </button>
                           <button
+                            className="dp-btn-ghost"
                             onClick={startDemo}
                             style={{
                               background: "transparent", color: "rgba(255,255,255,0.5)",
                               border: "1px solid rgba(255,255,255,0.1)", padding: "10px 16px",
                               borderRadius: "10px", fontSize: "0.8rem",
                               fontFamily: "'Satoshi', sans-serif", cursor: "pointer",
+                              transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                             }}
                           >
                             {language === "cs" ? "Přehrát znovu" : "Replay demo"}
@@ -1253,10 +1435,10 @@ export default function Home() {
             {errorState.actions.length > 0 && (
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "12px" }}>
                 {errorState.actions.map((action, i) => (
-                  <button key={i} onClick={action.onClick} style={{
+                  <button key={i} className={i === 0 ? "dp-btn-primary" : "dp-btn-ghost"} onClick={action.onClick} style={{
                     padding: "8px 16px", fontSize: "0.8rem", borderRadius: "8px",
                     fontFamily: "'Satoshi', sans-serif", fontWeight: "600",
-                    cursor: "pointer", transition: "all 0.25s ease",
+                    cursor: "pointer", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                     ...(i === 0 ? {
                       background: "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
                       color: "white", border: "none",
@@ -1287,7 +1469,7 @@ export default function Home() {
 
       {/* DROP ZONE */}
       {!loading && (
-      <div {...getRootProps()} data-dropzone style={{
+      <div {...getRootProps()} data-dropzone className="dp-dropzone" style={{
         width: "100%", maxWidth: "550px",
         border: isDragActive
           ? "2px solid #E06792"
@@ -1301,7 +1483,7 @@ export default function Home() {
         background: isDragActive
           ? "rgba(224,103,146,0.04)"
           : "rgba(255,255,255,0.02)",
-        transition: "all 400ms cubic-bezier(0.16, 1, 0.3, 1)",
+        transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
         position: "relative",
         overflow: "hidden",
       }}>
@@ -1336,6 +1518,7 @@ export default function Home() {
             </div>
             <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
               <button
+                className={loading ? "" : "dp-btn-primary"}
                 onClick={(e) => { e.stopPropagation(); runAnalysis(); }}
                 disabled={loading}
                 style={{
@@ -1344,7 +1527,7 @@ export default function Home() {
                   background: loading ? "rgba(255,255,255,0.08)" : "linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%)",
                   color: "white", border: "none", borderRadius: "12px",
                   cursor: loading ? "not-allowed" : "pointer",
-                  transition: "all 0.3s ease",
+                  transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                   boxShadow: loading ? "none" : "0 8px 30px rgba(224, 103, 146, 0.22)",
                   display: "inline-flex", alignItems: "center", gap: "8px",
                 }}
@@ -1355,6 +1538,7 @@ export default function Home() {
                 </svg>
               </button>
               <button
+                className="dp-btn-ghost"
                 onClick={(e) => {
                   e.stopPropagation();
                   setCsvData(null); setFileName(null); setRowCount(0);
@@ -1366,7 +1550,7 @@ export default function Home() {
                   color: "rgba(255,255,255,0.7)",
                   border: "1px solid rgba(255,255,255,0.08)",
                   borderRadius: "12px", cursor: "pointer",
-                  transition: "all 0.25s ease",
+                  transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                 }}
               >
                 {language === "cs" ? "Odebrat" : "Remove"}
@@ -1376,10 +1560,10 @@ export default function Home() {
         ) : (
           /* State 1: Idle / State 2: Drag over */
           <div style={{ position: "relative", zIndex: 1 }}>
-            <svg style={{
+            <svg className="dp-dropzone-icon" style={{
               width: "56px", height: "56px", margin: "0 auto 20px",
               opacity: isDragActive ? 1 : 0.5,
-              transition: "all 400ms ease",
+              transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
               animation: isDragActive ? "pulse 1s ease-in-out infinite" : "none",
             }} viewBox="0 0 56 56" fill="none">
               <rect x="12" y="6" width="32" height="40" rx="4" stroke="rgba(161,197,10,0.5)" strokeWidth="1.5"/>
@@ -1402,7 +1586,7 @@ export default function Home() {
             </p>
             <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
               {["CSV", "XLSX", "XLS"].map(fmt => (
-                <span key={fmt} style={{
+                <span key={fmt} className="dp-format-badge" style={{
                   fontFamily: "'JetBrains Mono', monospace",
                   fontSize: "0.7rem", padding: "4px 10px", borderRadius: "6px",
                   background: "rgba(161, 197, 10, 0.08)", color: "#A1C50A",
@@ -1548,6 +1732,7 @@ export default function Home() {
                       : "Unlock Research-Augmented Analysis with DataPalo PRO. Your analyses will be enriched with industry benchmarks, market trends, and cited sources from Exa.ai.");
                     setShowUpgradeModal(true);
                   }}
+                  className="dp-upgrade-btn"
                   style={{
                     marginTop: "8px",
                     background: "linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)",
@@ -1557,7 +1742,8 @@ export default function Home() {
                     borderRadius: "6px",
                     fontSize: "12px",
                     fontWeight: "600",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
                   {language === "cs" ? "🚀 Upgradovat na PRO" : "🚀 Upgrade to PRO"}
@@ -1606,6 +1792,7 @@ export default function Home() {
               <h3 style={{ margin: 0, color: "#A1C50A", fontSize: "1.3rem" }}>📊 {language === "cs" ? "Výsledky Analýzy" : "Analysis Results"}</h3>
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
+                  className={pdfGenerating ? "" : "dp-export-btn"}
                   onClick={downloadPDF}
                   disabled={pdfGenerating}
                   style={{
@@ -1626,6 +1813,7 @@ export default function Home() {
                     alignItems: "center",
                     gap: "6px",
                     opacity: pdfGenerating ? 0.7 : 1,
+                    transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
                   {pdfGenerating
@@ -1634,8 +1822,9 @@ export default function Home() {
                   {!canExport(tier, 'pdf') && !pdfGenerating && <span style={{ fontSize: '12px', opacity: 0.7 }}>🔒 PRO</span>}
                 </button>
                 <button
+                  className="dp-btn-ghost"
                   onClick={downloadReport}
-                  style={{ background: "rgba(255,255,255,0.03)", color: "#fff", border: "1px solid rgba(255,255,255,0.06)", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
+                  style={{ background: "rgba(255,255,255,0.03)", color: "#fff", border: "1px solid rgba(255,255,255,0.06)", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "14px", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)" }}
                 >
                   {language === "cs" ? "📝 Stáhnout TXT" : "📝 Download TXT"}
                 </button>
@@ -1664,32 +1853,31 @@ export default function Home() {
           {language === "cs" ? "Zpětná vazba? Nápady? Chcete spolupracovat?" : "Feedback? Ideas? Want to collaborate?"}
         </p>
         <a
+          className="dp-footer-link dp-email-link"
           href="mailto:michael@forgecreative.cz?subject=DataPalo%20Feedback"
-          style={{ color: "#E06792", textDecoration: "none", fontWeight: "600" }}
+          style={{ color: "#E06792", textDecoration: "none", fontWeight: "600", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)" }}
         >
           michael@forgecreative.cz
         </a>
         <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "6px", alignItems: "center", flexWrap: "wrap" }}>
           <a
+            className="dp-footer-link"
             href="/datapalo/privacy"
-            style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: "12px", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.03em", transition: "color 0.2s ease" }}
-            onMouseEnter={e => e.target.style.color = "#E06792"}
-            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
+            style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: "12px", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.03em", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)" }}
           >
             {language === "cs" ? "Zásady ochrany osobních údajů" : "Privacy Policy"}
           </a>
           <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "12px" }}>|</span>
           <a
+            className="dp-footer-link"
             href="/datapalo/privacy"
-            style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: "12px", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.03em", transition: "color 0.2s ease" }}
-            onMouseEnter={e => e.target.style.color = "#E06792"}
-            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
+            style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none", fontSize: "12px", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.03em", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)" }}
           >
             {language === "cs" ? "Podmínky služby" : "Terms of Service"}
           </a>
         </div>
         <div style={{ marginTop: "20px" }}>
-          <a href="https://www.producthunt.com/products/datawizard-app/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-datawizard-app" target="_blank" rel="noopener noreferrer">
+          <a className="dp-ph-badge" href="https://www.producthunt.com/products/datawizard-app/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-datawizard-app" target="_blank" rel="noopener noreferrer">
             <img src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1143772&theme=dark" alt="DataPalo App - AI Data Analyst for SMEs. Instant Insights from CSV & Excel. | Product Hunt" style={{ width: "250px", height: "54px" }} width="250" height="54" />
           </a>
         </div>
