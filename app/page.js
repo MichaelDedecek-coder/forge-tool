@@ -1867,27 +1867,27 @@ export default function DataPaloLanding() {
             michael@forgecreative.cz
           </a>
 
-          <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "6px", alignItems: "center" }}>
+          <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "8px", alignItems: "center" }}>
             <a
               href="/datapalo/privacy"
-              style={{ color: "rgba(255,255,255,0.12)", textDecoration: "none", fontSize: "0.68rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "color 0.3s ease" }}
-              onMouseEnter={e => e.target.style.color = "rgba(224,103,146,0.45)"}
-              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.12)"}
+              style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: "0.72rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "color 0.3s ease" }}
+              onMouseEnter={e => e.target.style.color = "#E06792"}
+              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.4)"}
             >
               Privacy Policy
             </a>
-            <span style={{ color: "rgba(255,255,255,0.08)", fontSize: "0.68rem" }}>|</span>
+            <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.72rem" }}>|</span>
             <a
               href="/datapalo/privacy"
-              style={{ color: "rgba(255,255,255,0.12)", textDecoration: "none", fontSize: "0.68rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "color 0.3s ease" }}
-              onMouseEnter={e => e.target.style.color = "rgba(224,103,146,0.45)"}
-              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.12)"}
+              style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: "0.72rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "color 0.3s ease" }}
+              onMouseEnter={e => e.target.style.color = "#E06792"}
+              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.4)"}
             >
               Terms of Service
             </a>
           </div>
 
-          <p style={{ marginTop: "12px", fontSize: "0.65rem", color: "rgba(255,255,255,0.1)", fontFamily: "'JetBrains Mono', monospace" }}>
+          <p style={{ marginTop: "12px", fontSize: "0.68rem", color: "rgba(255,255,255,0.25)", fontFamily: "'JetBrains Mono', monospace" }}>
             &copy; 2026 FORGE CREATIVE | AI Job Agency
           </p>
         </footer>
