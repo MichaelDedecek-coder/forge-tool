@@ -688,6 +688,53 @@ export default function DataPaloLanding() {
           outline-offset: 2px;
         }
 
+        /* 1. Logo hover — subtle feedback that it's clickable */
+        .logo-link {
+          transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          cursor: pointer;
+        }
+        .logo-link:hover {
+          opacity: 0.82;
+          transform: scale(1.03);
+        }
+        .logo-link:focus-visible {
+          outline: 2px solid #A1C50A;
+          outline-offset: 4px;
+          border-radius: 4px;
+        }
+
+        /* 2. RAA card hover — matches use-case card pattern */
+        .raa-card {
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .raa-card:hover {
+          border-color: rgba(224, 103, 146, 0.2);
+          transform: translateY(-3px);
+          box-shadow: 0 16px 48px rgba(63, 81, 181, 0.12), 0 0 0 1px rgba(224, 103, 146, 0.08);
+        }
+
+        /* 3. Pricing link focus-visible */
+        .nav-pricing:focus-visible {
+          outline: 2px solid #A1C50A;
+          outline-offset: 3px;
+        }
+
+        /* 5. Newsletter popup close — more visible hover */
+        .dp-popup-close:hover {
+          color: white !important;
+          background: rgba(224, 103, 146, 0.2) !important;
+          border-color: rgba(224, 103, 146, 0.35) !important;
+          transform: scale(1.08);
+        }
+        .dp-popup-close:focus-visible {
+          outline: 2px solid #A1C50A;
+          outline-offset: 2px;
+        }
+
         @media (max-width: 768px) {
           /* ── NAV ── */
           nav { padding: 16px 16px !important; }
@@ -969,18 +1016,16 @@ export default function DataPaloLanding() {
         {/* STICKY NAV — appears on scroll */}
         {/* ============================================ */}
         <div className={`sticky-nav ${scrolled ? 'sticky-visible' : ''}`}>
-          <div style={{
+          <a href="/" className="logo-link" style={{
             fontSize: "1.2rem",
             fontWeight: "900",
             letterSpacing: "-0.03em",
-            display: "flex",
-            alignItems: "center",
             gap: "8px",
           }}>
             <img src="/datapalo-logo.svg" alt="" style={{ width: "22px", height: "22px" }} />
             <span style={{ color: "#E06792" }}>Data</span>
             <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
-          </div>
+          </a>
           <button
             className="sticky-cta"
             onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}
@@ -1016,20 +1061,17 @@ export default function DataPaloLanding() {
           position: "relative",
           zIndex: 10,
         }}>
-          <div style={{
+          <a href="/" className="logo-link" style={{
             fontSize: "1.4rem",
             fontWeight: "900",
             letterSpacing: "-0.03em",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
           }}>
             <img src="/datapalo-logo.svg" alt="" style={{ width: "28px", height: "28px" }} />
             <div style={{ display: "flex", alignItems: "center", gap: "0" }}>
               <span style={{ color: "#E06792" }}>Data</span>
               <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
             </div>
-          </div>
+          </a>
 
           <div style={{
             display: "flex",
