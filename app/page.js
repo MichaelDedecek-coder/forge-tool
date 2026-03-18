@@ -593,6 +593,101 @@ export default function DataPaloLanding() {
           margin-bottom: 16px;
         }
 
+        /* ── HOVER/FOCUS MICRO-INTERACTIONS ── */
+
+        /* Active/pressed state for primary CTAs */
+        .hero-cta-btn:active,
+        .mini-cta:active {
+          transform: translateY(0px) scale(0.98);
+          filter: brightness(0.95);
+        }
+
+        /* Focus rings — WCAG 2.1 compliant */
+        .hero-cta-btn:focus-visible,
+        .mini-cta:focus-visible {
+          outline: 2px solid #A1C50A;
+          outline-offset: 3px;
+        }
+
+        /* Nav buttons hover */
+        .nav-sign-in:hover {
+          background: rgba(255,255,255,0.12) !important;
+          border-color: rgba(224, 103, 146, 0.3) !important;
+          transform: translateY(-1px);
+        }
+        .nav-sign-in:focus-visible,
+        .nav-pricing:focus-visible,
+        .lang-btn:focus-visible {
+          outline: 2px solid #A1C50A;
+          outline-offset: 2px;
+        }
+
+        /* Language toggle hover */
+        .lang-btn:hover {
+          background: rgba(224, 103, 146, 0.2) !important;
+          border-color: rgba(224, 103, 146, 0.35) !important;
+        }
+
+        /* Cards: enhanced hover with glow */
+        .step-card:hover {
+          box-shadow: 0 12px 40px rgba(63, 81, 181, 0.15);
+        }
+        .feature-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 12px 40px rgba(224, 103, 146, 0.1);
+        }
+        .usecase-card:hover {
+          box-shadow: 0 12px 40px rgba(161, 197, 10, 0.1);
+        }
+
+        /* Footer link underline animation */
+        .lp-footer-link {
+          position: relative;
+          text-decoration: none;
+          transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .lp-footer-link::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0%;
+          height: 1px;
+          background: #E06792;
+          transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .lp-footer-link:hover::after {
+          width: 100%;
+        }
+        .lp-footer-link:hover {
+          color: #E06792 !important;
+        }
+
+        /* Email link glow */
+        .lp-email-link:hover {
+          text-shadow: 0 0 12px rgba(224, 103, 146, 0.4);
+        }
+
+        /* Product Hunt badge */
+        .lp-ph-badge {
+          display: inline-block;
+          transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .lp-ph-badge:hover {
+          transform: translateY(-2px) scale(1.03);
+          filter: brightness(1.1);
+        }
+
+        /* Sticky nav button */
+        .sticky-cta:hover {
+          filter: brightness(1.12);
+          transform: translateY(-1px);
+        }
+        .sticky-cta:focus-visible {
+          outline: 2px solid #A1C50A;
+          outline-offset: 2px;
+        }
+
         @media (max-width: 768px) {
           /* ── NAV ── */
           nav { padding: 16px 16px !important; }
@@ -887,6 +982,7 @@ export default function DataPaloLanding() {
             <span style={{ color: "rgba(255,255,255,0.92)" }}>Palo</span>
           </div>
           <button
+            className="sticky-cta"
             onClick={() => { ctaClickedRef.current = true; window.location.href = '/datapalo'; }}
             style={{
               padding: "10px 24px",
@@ -898,7 +994,7 @@ export default function DataPaloLanding() {
               border: "none",
               borderRadius: "10px",
               cursor: "pointer",
-              transition: "all 0.3s ease",
+              transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
               boxShadow: "0 4px 16px rgba(224, 103, 146, 0.2)",
             }}
           >
@@ -952,7 +1048,11 @@ export default function DataPaloLanding() {
               {['en', 'cz'].map((lang) => (
                 <span
                   key={lang}
+                  className="lang-btn"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setLanguage(lang)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setLanguage(lang); }}
                   style={{
                     cursor: "pointer",
                     padding: "6px 12px",
@@ -960,7 +1060,7 @@ export default function DataPaloLanding() {
                     color: language === lang ? "white" : "rgba(255,255,255,0.3)",
                     background: language === lang ? "rgba(224, 103, 146, 0.15)" : "transparent",
                     border: language === lang ? "1px solid rgba(224, 103, 146, 0.25)" : "1px solid transparent",
-                    transition: "all 0.3s ease",
+                    transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                     textTransform: "uppercase",
                   }}
                 >{lang}</span>
@@ -969,17 +1069,15 @@ export default function DataPaloLanding() {
 
             {/* Pricing link */}
             <a
-              className="nav-pricing"
+              className="nav-pricing lp-footer-link"
               href="/pricing"
               style={{
                 color: "rgba(255,255,255,0.7)",
                 fontSize: "0.875rem",
                 fontWeight: "500",
                 textDecoration: "none",
-                transition: "color 0.2s ease",
+                transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
               }}
-              onMouseEnter={(e) => e.target.style.color = "white"}
-              onMouseLeave={(e) => e.target.style.color = "rgba(255,255,255,0.7)"}
             >
               {language === 'cz' ? 'Ceník' : 'Pricing'}
             </a>
@@ -989,22 +1087,23 @@ export default function DataPaloLanding() {
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <a
                   href="/datapalo"
+                  className="mini-cta"
                   style={{
                     padding: "8px 18px",
+                    marginTop: "0",
                     background: "linear-gradient(135deg, #E06792 0%, #A855F7 100%)",
                     color: "white",
                     borderRadius: "8px",
                     fontSize: "0.85rem",
                     fontWeight: "600",
                     textDecoration: "none",
-                    transition: "opacity 0.2s ease",
+                    transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
-                  onMouseEnter={(e) => e.target.style.opacity = "0.85"}
-                  onMouseLeave={(e) => e.target.style.opacity = "1"}
                 >
                   {language === 'cz' ? 'Analyzovat' : 'Analyze'}
                 </a>
                 <button
+                  className="nav-sign-in"
                   onClick={async () => {
                     try {
                       await signOut();
@@ -1021,16 +1120,15 @@ export default function DataPaloLanding() {
                     borderRadius: "8px",
                     fontSize: "0.8rem",
                     cursor: "pointer",
-                    transition: "all 0.2s ease",
+                    transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
-                  onMouseEnter={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.3)"; e.target.style.color = "white"; }}
-                  onMouseLeave={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.15)"; e.target.style.color = "rgba(255,255,255,0.6)"; }}
                 >
                   {language === 'cz' ? 'Odhlásit' : 'Sign Out'}
                 </button>
               </div>
             ) : (
               <button
+                className="nav-sign-in"
                 onClick={() => setShowAuth(true)}
                 style={{
                   padding: "8px 20px",
@@ -1041,10 +1139,8 @@ export default function DataPaloLanding() {
                   fontSize: "0.85rem",
                   fontWeight: "500",
                   cursor: "pointer",
-                  transition: "all 0.2s ease",
+                  transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
                 }}
-                onMouseEnter={(e) => { e.target.style.background = "rgba(255,255,255,0.12)"; e.target.style.borderColor = "rgba(255,255,255,0.25)"; }}
-                onMouseLeave={(e) => { e.target.style.background = "rgba(255,255,255,0.08)"; e.target.style.borderColor = "rgba(255,255,255,0.15)"; }}
               >
                 {language === 'cz' ? 'Přihlásit se' : 'Sign In'}
               </button>
@@ -1852,6 +1948,7 @@ export default function DataPaloLanding() {
           </div>
 
           <a
+            className="lp-footer-link lp-email-link"
             href="mailto:michael@forgecreative.cz"
             style={{
               color: "rgba(255,255,255,0.12)",
@@ -1859,29 +1956,25 @@ export default function DataPaloLanding() {
               fontSize: "0.72rem",
               fontFamily: "'JetBrains Mono', monospace",
               letterSpacing: "0.05em",
-              transition: "color 0.3s ease",
+              transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
             }}
-            onMouseEnter={(e) => e.target.style.color = "rgba(224, 103, 146, 0.45)"}
-            onMouseLeave={(e) => e.target.style.color = "rgba(255,255,255,0.12)"}
           >
             michael@forgecreative.cz
           </a>
 
           <div style={{ marginTop: "16px", display: "flex", justifyContent: "center", gap: "8px", alignItems: "center" }}>
             <a
+              className="lp-footer-link"
               href="/datapalo/privacy"
-              style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: "0.72rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "color 0.3s ease" }}
-              onMouseEnter={e => e.target.style.color = "#E06792"}
-              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.4)"}
+              style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: "0.72rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)" }}
             >
               Privacy Policy
             </a>
             <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "0.72rem" }}>|</span>
             <a
+              className="lp-footer-link"
               href="/datapalo/privacy"
-              style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: "0.72rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "color 0.3s ease" }}
-              onMouseEnter={e => e.target.style.color = "#E06792"}
-              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.4)"}
+              style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none", fontSize: "0.72rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em", transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)" }}
             >
               Terms of Service
             </a>
