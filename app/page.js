@@ -668,16 +668,6 @@ export default function DataPaloLanding() {
           text-shadow: 0 0 12px rgba(224, 103, 146, 0.4);
         }
 
-        /* Product Hunt badge */
-        .lp-ph-badge {
-          display: inline-block;
-          transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .lp-ph-badge:hover {
-          transform: translateY(-2px) scale(1.03);
-          filter: brightness(1.1);
-        }
-
         /* Sticky nav button */
         .sticky-cta:hover {
           filter: brightness(1.12);
@@ -1192,46 +1182,6 @@ export default function DataPaloLanding() {
 
         {/* ============================================ */}
         {/* PRODUCT HUNT FEATURED BANNER */}
-        {/* ============================================ */}
-        <div className={mounted ? 'anim-1' : ''} style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "14px",
-          padding: "10px 20px",
-          marginBottom: "-8px",
-          position: "relative",
-          zIndex: 6,
-        }}>
-          <div style={{
-            height: "1px",
-            flex: "1",
-            maxWidth: "120px",
-            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08))",
-          }} />
-          <a
-            className="lp-ph-badge"
-            href="https://www.producthunt.com/products/datawizard-app?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-datapalo-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ lineHeight: 0 }}
-          >
-            <img
-              alt="DataPalo App - Research-Augmented Analysis. Stop guessing. Start knowing. | Product Hunt"
-              width="250"
-              height="54"
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1101675&theme=dark&t=1773905220460"
-              style={{ width: "250px", height: "54px" }}
-            />
-          </a>
-          <div style={{
-            height: "1px",
-            flex: "1",
-            maxWidth: "120px",
-            background: "linear-gradient(90deg, rgba(255,255,255,0.08), transparent)",
-          }} />
-        </div>
-
         {/* ============================================ */}
         {/* HERO — Split-screen: text left, product right */}
         {/* ============================================ */}
