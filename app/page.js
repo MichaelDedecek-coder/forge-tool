@@ -1342,6 +1342,29 @@ export default function DataPaloLanding() {
         </section>
 
         {/* ============================================ */}
+        {/* SAASHUB APPROVED BADGE */}
+        {/* ============================================ */}
+        <div className={mounted ? 'anim-5' : ''} style={{
+          textAlign: "center",
+          padding: "0 40px 20px",
+          position: "relative",
+          zIndex: 5,
+        }}>
+          <a
+            className="lp-ph-badge"
+            href="https://www.saashub.com/datapalo?utm_source=badge&utm_campaign=badge&utm_content=datapalo&badge_variant=color&badge_kind=approved"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1"
+              alt="DataPalo — Approved on SaaSHub"
+              style={{ maxWidth: "150px", height: "auto" }}
+            />
+          </a>
+        </div>
+
+        {/* ============================================ */}
         {/* DEMO REPORT PREVIEW */}
         {/* ============================================ */}
         <DemoReportPreview language={language} />
