@@ -1355,6 +1355,12 @@ export default function DataPaloLanding() {
             href="https://www.saashub.com/datapalo?utm_source=badge&utm_campaign=badge&utm_content=datapalo&badge_variant=color&badge_kind=approved"
             target="_blank"
             rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px) scale(1.03)"; e.currentTarget.style.filter = "brightness(1.1)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0) scale(1)"; e.currentTarget.style.filter = "brightness(1)"; }}
           >
             <img
               src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1"
