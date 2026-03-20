@@ -400,25 +400,30 @@ export default function DataPaloLanding() {
         }
 
         .hero-cta-btn {
-          padding: 24px 64px;
-          font-size: 1.25rem;
+          padding: 28px 72px;
+          font-size: 1.35rem;
           font-weight: 700;
           font-family: 'Satoshi', sans-serif;
           background: linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%);
           color: white;
           border: none;
-          border-radius: 18px;
+          border-radius: 20px;
           cursor: pointer;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 16px 48px rgba(224, 103, 146, 0.28), 0 4px 16px rgba(63, 81, 181, 0.12);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 16px 48px rgba(224, 103, 146, 0.3), 0 4px 16px rgba(63, 81, 181, 0.15);
           display: inline-flex;
           align-items: center;
           gap: 12px;
           letter-spacing: 0.01em;
         }
         .hero-cta-btn:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 24px 64px rgba(224, 103, 146, 0.35), 0 8px 24px rgba(63, 81, 181, 0.2);
+          transform: translateY(-4px) scale(1.03);
+          filter: brightness(1.12);
+          box-shadow: 0 28px 72px rgba(224, 103, 146, 0.4), 0 12px 32px rgba(63, 81, 181, 0.25);
+        }
+        .hero-cta-btn:active {
+          transform: translateY(-1px) scale(0.98);
+          filter: brightness(0.95);
         }
         .mini-cta {
           display: inline-flex;
