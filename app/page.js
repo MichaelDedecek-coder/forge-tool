@@ -400,20 +400,21 @@ export default function DataPaloLanding() {
         }
 
         .hero-cta-btn {
-          padding: 20px 52px;
-          font-size: 1.1rem;
+          padding: 24px 64px;
+          font-size: 1.25rem;
           font-weight: 700;
           font-family: 'Satoshi', sans-serif;
           background: linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%);
           color: white;
           border: none;
-          border-radius: 16px;
+          border-radius: 18px;
           cursor: pointer;
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 16px 48px rgba(224, 103, 146, 0.22), 0 4px 16px rgba(63, 81, 181, 0.1);
+          box-shadow: 0 16px 48px rgba(224, 103, 146, 0.28), 0 4px 16px rgba(63, 81, 181, 0.12);
           display: inline-flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
+          letter-spacing: 0.01em;
         }
         .hero-cta-btn:hover {
           transform: translateY(-3px) scale(1.02);
