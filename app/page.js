@@ -400,30 +400,32 @@ export default function DataPaloLanding() {
         }
 
         .hero-cta-btn {
-          padding: 28px 72px;
-          font-size: 1.35rem;
-          font-weight: 700;
+          padding: 32px 80px;
+          font-size: 1.5rem;
+          font-weight: 800;
           font-family: 'Satoshi', sans-serif;
           background: linear-gradient(135deg, #E06792 0%, #CF5585 50%, #3F51B5 100%);
           color: white;
           border: none;
-          border-radius: 20px;
+          border-radius: 22px;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 16px 48px rgba(224, 103, 146, 0.3), 0 4px 16px rgba(63, 81, 181, 0.15);
+          box-shadow: 0 20px 60px rgba(224, 103, 146, 0.35), 0 6px 20px rgba(63, 81, 181, 0.15), inset 0 1px 0 rgba(255,255,255,0.15);
           display: inline-flex;
           align-items: center;
-          gap: 12px;
-          letter-spacing: 0.01em;
+          gap: 14px;
+          letter-spacing: 0.02em;
+          min-width: 340px;
+          justify-content: center;
         }
         .hero-cta-btn:hover {
-          transform: translateY(-4px) scale(1.03);
-          filter: brightness(1.12);
-          box-shadow: 0 28px 72px rgba(224, 103, 146, 0.4), 0 12px 32px rgba(63, 81, 181, 0.25);
+          transform: translateY(-5px) scale(1.04);
+          filter: brightness(1.15);
+          box-shadow: 0 32px 80px rgba(224, 103, 146, 0.45), 0 16px 40px rgba(63, 81, 181, 0.25), inset 0 1px 0 rgba(255,255,255,0.2);
         }
         .hero-cta-btn:active {
-          transform: translateY(-1px) scale(0.98);
-          filter: brightness(0.95);
+          transform: translateY(-1px) scale(0.97);
+          filter: brightness(0.92);
         }
         .mini-cta {
           display: inline-flex;
