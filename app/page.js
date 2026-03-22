@@ -126,8 +126,9 @@ export default function DataPaloLanding() {
   const content = {
     en: {
       // Hero
-      heroHeadline: "Upload a File. Get Answers in Seconds.",
-      heroSub: "Drop any CSV or Excel file — get charts, insights, and reports instantly. Free to start, no skills required.",
+      heroTag: "THE ONLY AI ANALYST WITH INTERNET ACCESS",
+      heroHeadline: "Your Data + Live Market Research.",
+      heroSub: "Upload a spreadsheet. Get instant insights enriched with real benchmarks, trends, and cited sources — not just charts.",
       heroCta: "Try It Free",
       heroMicro: "No credit card. No setup. Just upload.",
       // Trust bar
@@ -201,8 +202,9 @@ export default function DataPaloLanding() {
       tagline: "The friend who understands your numbers.",
     },
     cz: {
-      heroHeadline: "Nahrajte soubor. Odpovědi za vteřiny.",
-      heroSub: "Nahrajte jakýkoli CSV nebo Excel — grafy, poznatky a reporty okamžitě. Zdarma, bez odborných znalostí.",
+      heroTag: "JEDINÝ AI ANALYTIK S PŘÍSTUPEM K INTERNETU",
+      heroHeadline: "Vaše data + živý tržní výzkum.",
+      heroSub: "Nahrajte tabulku. Získejte okamžité poznatky obohacené o reálné benchmarky, trendy a citované zdroje — ne jen grafy.",
       heroCta: "Vyzkoušet zdarma",
       heroMicro: "Bez kreditky. Bez nastavení. Prostě nahrajte.",
       trust1: "GDPR",
@@ -397,6 +399,25 @@ export default function DataPaloLanding() {
         .sticky-nav.sticky-visible {
           transform: translateY(0);
           opacity: 1;
+        }
+
+        /* ── Hero tag pulse animation ── */
+        .hero-tag {
+          opacity: 0;
+          transform: translateY(12px);
+          transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hero-tag.anim-1 {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        @keyframes hero-pulse {
+          0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(161, 197, 10, 0.5); }
+          50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(161, 197, 10, 0); }
+        }
+        .hero-tag-pulse {
+          animation: hero-pulse 2s ease-in-out infinite;
         }
 
         .hero-cta-btn {
@@ -1203,13 +1224,45 @@ export default function DataPaloLanding() {
           margin: "0 auto",
           position: "relative",
           zIndex: 5,
-          gap: "60px",
         }}>
-          {/* LEFT — Copy */}
+          {/* Centered Copy — message-first, no distractions */}
           <div className="hero-left" style={{
-            flex: "1 1 50%",
-            maxWidth: "520px",
+            maxWidth: "640px",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}>
+            {/* Hero tag — the differentiator, hits first */}
+            <div className={`hero-tag ${mounted ? 'anim-1' : ''}`} style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              marginBottom: "20px",
+              padding: "6px 14px 6px 10px",
+              borderRadius: "100px",
+              background: "rgba(161, 197, 10, 0.08)",
+              border: "1px solid rgba(161, 197, 10, 0.2)",
+            }}>
+              <span className="hero-tag-pulse" style={{
+                width: "7px",
+                height: "7px",
+                borderRadius: "50%",
+                background: "#A1C50A",
+                flexShrink: 0,
+              }} />
+              <span style={{
+                fontSize: "0.68rem",
+                fontFamily: "'JetBrains Mono', monospace",
+                fontWeight: "600",
+                color: "#A1C50A",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}>
+                {t.heroTag}
+              </span>
+            </div>
+
             <h1 className={`hero-h1 ${mounted ? 'anim-2' : ''}`} style={{
               fontSize: "clamp(2.2rem, 5vw, 3.6rem)",
               fontFamily: "'Instrument Serif', Georgia, serif",
@@ -1288,63 +1341,6 @@ export default function DataPaloLanding() {
                 </span>
               ))}
             </div>
-          </div>
-
-          {/* RIGHT — Product visual */}
-          <div className={`hero-right ${mounted ? 'anim-4' : ''}`} style={{
-            flex: "1 1 45%",
-            maxWidth: "480px",
-            position: "relative",
-          }}>
-            <div style={{
-              borderRadius: "16px",
-              border: "1px solid rgba(255,255,255,0.08)",
-              overflow: "hidden",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(63, 81, 181, 0.08)",
-              position: "relative",
-            }}>
-              {/* Browser chrome bar */}
-              <div style={{
-                background: "rgba(255,255,255,0.04)",
-                padding: "10px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-              }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
-                <span style={{
-                  marginLeft: "12px",
-                  fontSize: "0.6rem",
-                  fontFamily: "'JetBrains Mono', monospace",
-                  color: "rgba(255,255,255,0.15)",
-                  letterSpacing: "0.05em",
-                }}>datapalo.app</span>
-              </div>
-              <img
-                src="/datapalo-infographic.jpg"
-                alt="DataPalo — Upload, Analyze, Get Answers"
-                style={{
-                  width: "100%",
-                  display: "block",
-                }}
-              />
-            </div>
-            {/* Subtle glow behind product image */}
-            <div style={{
-              position: "absolute",
-              width: "120%",
-              height: "120%",
-              top: "-10%",
-              left: "-10%",
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(63, 81, 181, 0.08) 0%, transparent 60%)",
-              filter: "blur(40px)",
-              pointerEvents: "none",
-              zIndex: -1,
-            }} />
           </div>
 
         </section>
