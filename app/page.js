@@ -1224,12 +1224,14 @@ export default function DataPaloLanding() {
           margin: "0 auto",
           position: "relative",
           zIndex: 5,
-          gap: "60px",
         }}>
-          {/* LEFT — Copy */}
+          {/* Centered Copy — message-first, no distractions */}
           <div className="hero-left" style={{
-            flex: "1 1 50%",
-            maxWidth: "520px",
+            maxWidth: "640px",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}>
             {/* Hero tag — the differentiator, hits first */}
             <div className={`hero-tag ${mounted ? 'anim-1' : ''}`} style={{
@@ -1339,63 +1341,6 @@ export default function DataPaloLanding() {
                 </span>
               ))}
             </div>
-          </div>
-
-          {/* RIGHT — Product visual */}
-          <div className={`hero-right ${mounted ? 'anim-4' : ''}`} style={{
-            flex: "1 1 45%",
-            maxWidth: "480px",
-            position: "relative",
-          }}>
-            <div style={{
-              borderRadius: "16px",
-              border: "1px solid rgba(255,255,255,0.08)",
-              overflow: "hidden",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(63, 81, 181, 0.08)",
-              position: "relative",
-            }}>
-              {/* Browser chrome bar */}
-              <div style={{
-                background: "rgba(255,255,255,0.04)",
-                padding: "10px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-              }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
-                <span style={{
-                  marginLeft: "12px",
-                  fontSize: "0.6rem",
-                  fontFamily: "'JetBrains Mono', monospace",
-                  color: "rgba(255,255,255,0.15)",
-                  letterSpacing: "0.05em",
-                }}>datapalo.app</span>
-              </div>
-              <img
-                src="/datapalo-infographic.jpg"
-                alt="DataPalo — Upload, Analyze, Get Answers"
-                style={{
-                  width: "100%",
-                  display: "block",
-                }}
-              />
-            </div>
-            {/* Subtle glow behind product image */}
-            <div style={{
-              position: "absolute",
-              width: "120%",
-              height: "120%",
-              top: "-10%",
-              left: "-10%",
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(63, 81, 181, 0.08) 0%, transparent 60%)",
-              filter: "blur(40px)",
-              pointerEvents: "none",
-              zIndex: -1,
-            }} />
           </div>
 
         </section>
