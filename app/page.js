@@ -127,6 +127,7 @@ export default function DataPaloLanding() {
     en: {
       // Hero
       heroTag: "THE ONLY AI ANALYST WITH INTERNET ACCESS",
+      heroTagExpand: "DataPalo connects your data to live market research, benchmarks, and cited sources — in real time.",
       heroHeadline: "Your Data + Live Market Research.",
       heroSub: "Upload a spreadsheet. Get instant insights enriched with real benchmarks, trends, and cited sources — not just charts.",
       heroCta: "Try It Free",
@@ -203,6 +204,7 @@ export default function DataPaloLanding() {
     },
     cz: {
       heroTag: "JEDINÝ AI ANALYTIK S PŘÍSTUPEM K INTERNETU",
+      heroTagExpand: "DataPalo propojuje vaše data s živým tržním výzkumem, benchmarky a citovanými zdroji — v reálném čase.",
       heroHeadline: "Vaše data + živý tržní výzkum.",
       heroSub: "Nahrajte tabulku. Získejte okamžité poznatky obohacené o reálné benchmarky, trendy a citované zdroje — ne jen grafy.",
       heroCta: "Vyzkoušet zdarma",
@@ -401,23 +403,46 @@ export default function DataPaloLanding() {
           opacity: 1;
         }
 
-        /* ── Hero tag pulse animation ── */
+        /* ── Hero tag — pulse + hover expand ── */
         .hero-tag {
           opacity: 0;
           transform: translateY(12px);
           transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
                       transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: pointer;
+          position: relative;
         }
         .hero-tag.anim-1 {
           opacity: 1;
           transform: translateY(0);
         }
-        @keyframes hero-pulse {
-          0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(161, 197, 10, 0.5); }
-          50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(161, 197, 10, 0); }
+
+        /* Pulsing green dot — scale 1→1.4→1 with glow ring */
+        @keyframes hero-dot-pulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(161, 197, 10, 0.45); }
+          50% { transform: scale(1.4); box-shadow: 0 0 0 6px rgba(161, 197, 10, 0); }
         }
         .hero-tag-pulse {
-          animation: hero-pulse 2s ease-in-out infinite;
+          animation: hero-dot-pulse 2s ease-in-out infinite;
+        }
+
+        /* Expand line — hidden by default */
+        .hero-tag-expand {
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+          transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                      opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                      margin-top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          margin-top: 0;
+        }
+
+        /* Hover expand (desktop) + focus-within expand (mobile tap) */
+        .hero-tag:hover .hero-tag-expand,
+        .hero-tag:focus-within .hero-tag-expand {
+          max-height: 60px;
+          opacity: 1;
+          margin-top: 8px;
         }
 
         .hero-cta-btn {
@@ -1234,33 +1259,55 @@ export default function DataPaloLanding() {
             alignItems: "center",
           }}>
             {/* Hero tag — the differentiator, hits first */}
-            <div className={`hero-tag ${mounted ? 'anim-1' : ''}`} style={{
+            <div className={`hero-tag ${mounted ? 'anim-1' : ''}`} tabIndex={0} role="button" aria-expanded="false" style={{
               display: "inline-flex",
+              flexDirection: "column",
               alignItems: "center",
-              gap: "8px",
               marginBottom: "20px",
-              padding: "6px 14px 6px 10px",
-              borderRadius: "100px",
+              padding: "8px 16px 8px 12px",
+              borderRadius: "20px",
               background: "rgba(161, 197, 10, 0.08)",
               border: "1px solid rgba(161, 197, 10, 0.2)",
+              outline: "none",
             }}>
-              <span className="hero-tag-pulse" style={{
-                width: "7px",
-                height: "7px",
-                borderRadius: "50%",
-                background: "#A1C50A",
-                flexShrink: 0,
-              }} />
-              <span style={{
-                fontSize: "0.68rem",
-                fontFamily: "'JetBrains Mono', monospace",
-                fontWeight: "600",
-                color: "#A1C50A",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
               }}>
-                {t.heroTag}
-              </span>
+                <span className="hero-tag-pulse" style={{
+                  width: "7px",
+                  height: "7px",
+                  borderRadius: "50%",
+                  background: "#A1C50A",
+                  flexShrink: 0,
+                }} />
+                <span style={{
+                  fontSize: "0.68rem",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontWeight: "600",
+                  color: "#A1C50A",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}>
+                  {t.heroTag}
+                </span>
+              </div>
+              {/* Expand line — revealed on hover/tap */}
+              <div className="hero-tag-expand">
+                <span style={{
+                  fontSize: "0.72rem",
+                  fontFamily: "'Satoshi', sans-serif",
+                  fontWeight: "400",
+                  color: "rgba(161, 197, 10, 0.7)",
+                  lineHeight: "1.5",
+                  display: "block",
+                  textAlign: "center",
+                  maxWidth: "380px",
+                }}>
+                  {t.heroTagExpand}
+                </span>
+              </div>
             </div>
 
             <h1 className={`hero-h1 ${mounted ? 'anim-2' : ''}`} style={{
