@@ -126,10 +126,10 @@ export default function DataPaloLanding() {
   const content = {
     en: {
       // Hero
-      heroTag: "THE ONLY AI ANALYST WITH INTERNET ACCESS",
-      heroTagExpand: "DataPalo connects your data to live market research, benchmarks, and cited sources — in real time.",
-      heroHeadline: "Your Data + Live Market Research.",
-      heroSub: "Upload a spreadsheet. Get instant insights enriched with real benchmarks, trends, and cited sources — not just charts.",
+      heroTag: "POWERED BY LIVE MARKET RESEARCH",
+      heroTagExpand: "DataPalo enriches your data with live benchmarks, market trends, and cited sources from across the web — in real time.",
+      heroHeadline: "Upload a Spreadsheet. Get Back Market Intelligence.",
+      heroSub: "Instant insights enriched with real benchmarks, industry trends, and cited sources — not just charts.",
       heroCta: "Try It Free",
       heroMicro: "No credit card. No setup. Just upload.",
       // Trust bar
@@ -203,10 +203,10 @@ export default function DataPaloLanding() {
       tagline: "The friend who understands your numbers.",
     },
     cz: {
-      heroTag: "JEDINÝ AI ANALYTIK S PŘÍSTUPEM K INTERNETU",
-      heroTagExpand: "DataPalo propojuje vaše data s živým tržním výzkumem, benchmarky a citovanými zdroji — v reálném čase.",
-      heroHeadline: "Vaše data + živý tržní výzkum.",
-      heroSub: "Nahrajte tabulku. Získejte okamžité poznatky obohacené o reálné benchmarky, trendy a citované zdroje — ne jen grafy.",
+      heroTag: "POHÁNĚNO ŽIVÝM TRŽNÍM VÝZKUMEM",
+      heroTagExpand: "DataPalo obohacuje vaše data o živé benchmarky, tržní trendy a citované zdroje z celého webu — v reálném čase.",
+      heroHeadline: "Nahrajte tabulku. Získejte zpět tržní inteligenci.",
+      heroSub: "Okamžité poznatky obohacené o reálné benchmarky, oborové trendy a citované zdroje — ne jen grafy.",
       heroCta: "Vyzkoušet zdarma",
       heroMicro: "Bez kreditky. Bez nastavení. Prostě nahrajte.",
       trust1: "GDPR",
