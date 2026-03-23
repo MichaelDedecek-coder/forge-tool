@@ -744,15 +744,36 @@ export default function Home() {
           transform: translateY(0px) scale(0.98) !important;
           filter: brightness(0.95) !important;
         }
+        @keyframes demo-shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        @keyframes demo-glow-pulse {
+          0%, 100% { box-shadow: 0 0 12px rgba(161, 197, 10, 0.15), 0 0 30px rgba(161, 197, 10, 0.05), inset 0 1px 0 rgba(255,255,255,0.08); }
+          50% { box-shadow: 0 0 20px rgba(161, 197, 10, 0.3), 0 0 50px rgba(161, 197, 10, 0.1), inset 0 1px 0 rgba(255,255,255,0.12); }
+        }
+        @keyframes demo-arrow-nudge {
+          0%, 70%, 100% { transform: translateX(0); }
+          80% { transform: translateX(4px); }
+          90% { transform: translateX(2px); }
+        }
+        .dp-btn-secondary {
+          animation: demo-glow-pulse 3s ease-in-out infinite !important;
+        }
         .dp-btn-secondary:hover {
-          background: rgba(255,255,255,0.08) !important;
-          border-color: rgba(224, 103, 146, 0.4) !important;
-          color: rgba(255,255,255,0.95) !important;
-          transform: translateY(-1px) !important;
+          background: linear-gradient(135deg, rgba(161, 197, 10, 0.18), rgba(161, 197, 10, 0.08)) !important;
+          border-color: rgba(161, 197, 10, 0.6) !important;
+          color: #fff !important;
+          transform: translateY(-3px) scale(1.03) !important;
+          box-shadow: 0 8px 30px rgba(161, 197, 10, 0.25), 0 0 60px rgba(161, 197, 10, 0.1), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+          animation: none !important;
+        }
+        .dp-btn-secondary:hover .demo-arrow {
+          animation: demo-arrow-nudge 1.2s ease-in-out infinite !important;
         }
         .dp-btn-secondary:active {
-          transform: translateY(0px) !important;
-          background: rgba(255,255,255,0.04) !important;
+          transform: translateY(0px) scale(0.98) !important;
+          background: rgba(161, 197, 10, 0.12) !important;
         }
         .dp-btn-ghost:hover {
           background: rgba(255,255,255,0.08) !important;
@@ -1122,15 +1143,23 @@ export default function Home() {
                   className="dp-btn-secondary"
                   onClick={startDemo}
                   style={{
-                    display: "inline-flex", alignItems: "center", gap: "8px",
-                    background: "rgba(161, 197, 10, 0.06)", color: "rgba(255,255,255,0.8)",
-                    border: "1px solid rgba(161, 197, 10, 0.3)", padding: "12px 24px",
-                    borderRadius: "10px", fontFamily: "'Satoshi', sans-serif",
-                    fontSize: "0.9rem", fontWeight: "500", cursor: "pointer",
-                    transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    display: "inline-flex", alignItems: "center", gap: "10px",
+                    background: "linear-gradient(135deg, rgba(161, 197, 10, 0.12), rgba(161, 197, 10, 0.04))",
+                    color: "#A1C50A",
+                    border: "1.5px solid rgba(161, 197, 10, 0.4)", padding: "14px 28px",
+                    borderRadius: "12px", fontFamily: "'Satoshi', sans-serif",
+                    fontSize: "0.95rem", fontWeight: "600", cursor: "pointer",
+                    letterSpacing: "0.02em",
+                    transition: "all 300ms cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
-                  {language === "cs" ? "Spustit živou ukázku" : "Watch DataPalo Analyze"} →
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px", borderRadius: "50%", background: "rgba(161, 197, 10, 0.2)", border: "1px solid rgba(161, 197, 10, 0.3)", flexShrink: 0 }}>
+                    <svg width="10" height="12" viewBox="0 0 10 12" fill="none" style={{ marginLeft: "1px" }}>
+                      <path d="M1 1L9 6L1 11V1Z" fill="#A1C50A" />
+                    </svg>
+                  </span>
+                  {language === "cs" ? "Spustit živou ukázku" : "Watch DataPalo Analyze"}
+                  <span className="demo-arrow" style={{ display: "inline-block", transition: "transform 200ms ease" }}>→</span>
                 </button>
               </div>
             </>
