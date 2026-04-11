@@ -134,11 +134,12 @@ Every arrow in the diagram emits an audit event. The audit logger is cross-cutti
 
 ### 4.1 In scope — 10-day tech spike (2026-04-11 → 2026-04-20)
 
+- **Code location: `forge-tool/notix-poc/` subdirectory.** Python + FastAPI + Next.js UI live here as a self-contained project, separate from the existing DataPalo Next.js app in the forge-tool root. Not extracted to its own repo during the spike.
 - End-to-end running implementation of **all 8 layers** against **synthetic data** (3 customer personas).
 - Synthetic ČS transaction generator (Python) producing realistic Czech banking transactions for 90 days per persona.
 - Claude Agent SDK for agent definitions.
 - Python + FastAPI backbone.
-- Simple Next.js UI showing the generated customer report + governance approval screen.
+- Simple Next.js UI showing the generated customer report + governance approval screen. **All customer-facing report output in Czech only.**
 - Metrics dashboard: latency, categorization accuracy, PII leakage count (must be 0), hallucination rate (target < 2%).
 - Screencast of full end-to-end flow as meeting backup (laptop failure insurance).
 - `docker-compose up` for local reproducibility.
@@ -223,6 +224,7 @@ Every layer has an explicit compliance justification. **This is the core differe
 - **No access to real ČS data or infra.** Everything synthetic during spike and POC.
 - **Claude Agent SDK + AWS Bedrock Frankfurt** as default stack for the POC. Claude Agent SDK local / direct API for spike (faster iteration). Subject to NOTIX input in meeting.
 - **Python + FastAPI + Next.js** for the spike (fastest solo build path).
+- **Report output language: Czech only.** No English fallback for customer-facing persona reports. Internal artifacts (compliance memos, AI Act classification, DORA schema, STRIDE threat model, lawyer-facing IP clause) remain bilingual per audience — Czech for client deliverables, English for internal/technical specs and third-party review.
 - **Steve solo + Claude as pair** for all 10 days. No external contractors, no NOTIX engineer involvement, no DataPalo/AI Code Support code reuse.
 - **Meeting framing:** the spike is shown in the meeting as *proof of capability and velocity*, **not** as "finished POC". Steve must explicitly frame it that way (verbatim: *"Tohle je spike, postavil jsem ho o víkendu jako proof-of-concept rychlosti a feasibility. Skutečný POC s production-ready compliance, metrikami a staging deploymentem je těch 4-6 týdnů, které vám navrhuju."*) to avoid the "you already delivered, we don't owe anything" trap.
 - **Fetch to origin is currently failing** with `LibreSSL SSL_connect: SSL_ERROR_SYSCALL` — may be VPN/network-local. Non-blocking for now but needs resolution before first push.
@@ -234,12 +236,10 @@ Every layer has an explicit compliance justification. **This is the core differe
 
 | # | Question | Owner | Decide by |
 |---|---|---|---|
-| 1 | Does the spike code live in `forge-tool/notix-poc/` subdirectory, or in a separate repo? | Steve | Before Day 2 (Sun 12.4.) bootstrap |
-| 2 | Does NOTIX want POC staging on their infra or Steve's? | Steve + NOTIX | In meeting 21.4. |
-| 3 | Exact Czech/English language split for the report output? Default: Czech for persona reports, English for internal/compliance artifacts | Steve | Day 4-5 when Insight Agent is built |
-| 4 | IP carve-out contract text — draft by Steve + Claude, then reviewed by Czech IP lawyer before meeting | Steve + external lawyer | Day 7-8 (Fri 17.4. – Sat 18.4.) |
-| 5 | Final brand decision AgentForgeOS / NotixOS / co-branded | Steve | Deferred — month 4-6 HPP |
-| 6 | Does `fix/datapalo-mobile-responsive` push target still make sense for this POC, or does it need its own remote branch (`feat/notix-poc-banking-agent`)? | Steve + Claude | Before Day 2 first push |
+| 1 | Does NOTIX want POC staging on their infra or Steve's? | Steve + NOTIX | In meeting 21.4. |
+| 2 | IP carve-out contract text — draft by Steve + Claude, then reviewed by Czech IP lawyer before meeting | Steve + external lawyer | Day 7-8 (Fri 17.4. – Sat 18.4.) |
+| 3 | Final brand decision AgentForgeOS / NotixOS / co-branded | Steve | Deferred — month 4-6 HPP |
+| 4 | Does `fix/datapalo-mobile-responsive` push target still make sense for this POC, or does it need its own remote branch (`feat/notix-poc-banking-agent`)? | Steve + Claude | Before Day 2 first push |
 
 ---
 
@@ -297,6 +297,8 @@ See `docs/superpowers/plans/2026-04-11-notix-poc-plan.md` (to be written next vi
 - **2026-04-11** — Spike shown in meeting as proof-of-capability, not finished POC. Must be framed explicitly by Steve in Czech opening of the POC section.
 - **2026-04-11** — DataPalo maintenance mode for 6-12 months accepted by Steve. Only bug fixes.
 - **2026-04-11** — Fresh worktree `feat/notix-poc-banking-agent` created off `origin/main` at `2546c91`. `.claude/` added to `.gitignore` as safety net (commit `ca6702d`).
+- **2026-04-11** — Spike code lives at `forge-tool/notix-poc/` subdirectory. Not a separate repo. Locked by Steve during spec review.
+- **2026-04-11** — Customer-facing report output: **Czech only**, no English fallback. Internal/compliance docs remain bilingual per audience. Locked by Steve during spec review.
 
 ---
 
