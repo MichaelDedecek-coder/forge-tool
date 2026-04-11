@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Environment
+.env
+.env.local
+
+# Audit log artifacts (SQLite + sidecar files)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Generated screencasts and large samples
+screencasts/
+data/samples/large_*.json
+
+# Node (for ui/)
+node_modules/
+.next/
+out/

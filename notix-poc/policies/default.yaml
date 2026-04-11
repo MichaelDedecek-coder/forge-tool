@@ -1,0 +1,7 @@
+# Governance policy for Layer 8 (Human-above-the-Loop gate).
+# Each rule classifies an agent decision as: auto | escalate | block
+# Decisions are evaluated top-down; first match wins.
+# Full content lands in Day 6 (Task 6.1).
+
+version: 1
+rules: []
