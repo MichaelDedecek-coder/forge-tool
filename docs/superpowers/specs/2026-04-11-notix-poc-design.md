@@ -239,7 +239,6 @@ Every layer has an explicit compliance justification. **This is the core differe
 | 1 | Does NOTIX want POC staging on their infra or Steve's? | Steve + NOTIX | In meeting 21.4. |
 | 2 | IP carve-out contract text — draft by Steve + Claude, then reviewed by Czech IP lawyer before meeting | Steve + external lawyer | Day 7-8 (Fri 17.4. – Sat 18.4.) |
 | 3 | Final brand decision AgentForgeOS / NotixOS / co-branded | Steve | Deferred — month 4-6 HPP |
-| 4 | Does `fix/datapalo-mobile-responsive` push target still make sense for this POC, or does it need its own remote branch (`feat/notix-poc-banking-agent`)? | Steve + Claude | Before Day 2 first push |
 
 ---
 
@@ -299,6 +298,7 @@ See `docs/superpowers/plans/2026-04-11-notix-poc-plan.md` (to be written next vi
 - **2026-04-11** — Fresh worktree `feat/notix-poc-banking-agent` created off `origin/main` at `2546c91`. `.claude/` added to `.gitignore` as safety net (commit `ca6702d`).
 - **2026-04-11** — Spike code lives at `forge-tool/notix-poc/` subdirectory. Not a separate repo. Locked by Steve during spec review.
 - **2026-04-11** — Customer-facing report output: **Czech only**, no English fallback. Internal/compliance docs remain bilingual per audience. Locked by Steve during spec review.
+- **2026-04-11** — Push target: own remote branch `feat/notix-poc-banking-agent` (mirrors local). NOT pushed to `fix/datapalo-mobile-responsive` — that branch is for DataPalo UI work and the banking POC is unrelated. Locked by Steve during spec review.
 
 ---
 
