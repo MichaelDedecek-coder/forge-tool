@@ -146,16 +146,49 @@ Every arrow in the diagram emits an audit event. The audit logger is cross-cutti
 
 ### 4.2 In scope — 4-6 week POC commitment (post-approval)
 
-- Production-grade implementation on **AWS Bedrock (Frankfurt region — EU data residency)**.
-- Integration with NOTIX Java backend stub (live ČS infra remains out of POC scope for compliance reasons; ČS will remain synthetic).
-- Full compliance artifacts package:
-  - AI Act risk classification memo (likely high-risk given credit-adjacent outputs under Annex III).
-  - DORA-aligned audit log schema.
-  - GDPR DPIA template.
-  - Threat model (STRIDE).
-- ROI calculation document: retention uplift, CSAT impact, fraud prevention value (benchmark-based, transparent sources).
-- Staging deployment on NOTIX infrastructure (or Steve's infra, TBD with NOTIX in meeting).
-- End-to-end demo + handoff documentation (Czech + English).
+#### 4.2.1 Production multi-container architecture
+
+The spike is a Python monolith (fast to build, fast to demo). The production POC breaks it into **4 isolated containers** with explicit trust boundaries, orchestrated on **AWS ECS Fargate** (not K8s — ECS eliminates cluster management overhead for this scale; architecture feedback from **Marek Brož**).
+
+| Container | Runtime | Responsibility | Scaling profile |
+|---|---|---|---|
+| **API Gateway** | TypeScript (Hono or Fastify) | Customer-facing REST API, auth, rate limiting, request routing | Horizontal, fast cold start |
+| **AI Service** | Python 3.11 | All 8 agent layers, LLM calls (Claude via AWS Bedrock Frankfurt), governance engine | Horizontal, slow cold start (LLM latency) |
+| **Audit DB** | PostgreSQL 16 | Append-only audit log, compliance queries, DORA Art. 11 exports | Vertical (RDS), read replicas for reporting |
+| **Frontend** | Next.js 14 | Report viewer, governance approval queue, metrics dashboard | Static/CDN (CloudFront) |
+
+#### 4.2.2 Infrastructure & DevOps
+
+- **Orchestration:** AWS ECS Fargate (serverless containers, no cluster ops)
+- **Load balancing:** ALB with path-based routing (`/api/*` → API Gateway, `/ai/*` → AI Service internal, `/*` → Frontend)
+- **LLM:** Claude API via **AWS Bedrock Frankfurt** — EU data sovereignty, zero cross-border PII transfer
+- **CI/CD:** GitHub Actions → ECR (container registry) → ECS (deploy)
+- **Secrets:** AWS Secrets Manager (Anthropic API key, PostgreSQL credentials, JWT signing key) — never in env files or container images
+- **Monitoring:** CloudWatch (logs, metrics, alarms) + OpenTelemetry (distributed tracing across all 4 containers)
+- **Networking:** Private VPC, AI Service not publicly accessible (only via API Gateway over internal ALB)
+
+#### 4.2.3 Inter-service communication
+
+- API Gateway → AI Service: **REST + JSON Schema validation** (typed contracts, not implicit)
+- AI Service → Audit DB: direct PostgreSQL connection (within VPC, no public exposure)
+- AI Service → Bedrock: AWS SDK, IAM role-based auth (no API keys in code)
+
+#### 4.2.4 Compliance & delivery artifacts
+
+- AI Act risk classification memo (high-risk under Annex III, point 5(b) — creditworthiness assessment)
+- DORA-aligned audit log schema (PostgreSQL, append-only, retention policy documented)
+- GDPR DPIA template
+- Threat model (STRIDE)
+- ROI calculation document: retention uplift, CSAT impact, fraud prevention value (benchmark-based, transparent sources)
+- Integration with NOTIX Java backend stub (live ČS infra remains out of POC scope for compliance reasons)
+- Staging deployment on NOTIX infrastructure (or Steve's, TBD with NOTIX in meeting)
+- End-to-end demo + handoff documentation (Czech + English)
+
+#### 4.2.5 Team for production POC
+
+- **Michael (Steve)** — CEO, strategy, marketing, client relationship, pitch, close
+- **Claude Code (Jony)** — CSO, architecture, agent code, compliance framing, spec/plan
+- **Marek Brož** — Cloud / DevOps engineer: ECS Fargate setup, CI/CD pipeline, monitoring stack, staging environment (DPP contract, post-meeting engagement)
 
 ### 4.3 Explicitly out of scope
 
@@ -299,6 +332,80 @@ See `docs/superpowers/plans/2026-04-11-notix-poc-plan.md` (to be written next vi
 - **2026-04-11** — Spike code lives at `forge-tool/notix-poc/` subdirectory. Not a separate repo. Locked by Steve during spec review.
 - **2026-04-11** — Customer-facing report output: **Czech only**, no English fallback. Internal/compliance docs remain bilingual per audience. Locked by Steve during spec review.
 - **2026-04-11** — Push target: own remote branch `feat/notix-poc-banking-agent` (mirrors local). NOT pushed to `fix/datapalo-mobile-responsive` — that branch is for DataPalo UI work and the banking POC is unrelated. Locked by Steve during spec review.
+- **2026-04-11 (evening)** — Architecture feedback from **Marek Brož** (AI Code Support student, 17): multi-container architecture for production POC (TS gateway + Python AI + PostgreSQL + Next.js frontend in separate containers). Accepted and incorporated into §4.2.
+- **2026-04-11 (evening)** — **ECS Fargate over K8s** for production POC orchestration — per Marek Brož's recommendation. K8s is overkill for this scale; ECS eliminates cluster management overhead. Accepted.
+- **2026-04-11 (evening)** — Spike remains monolith Python (fast to build, robust for meeting demo). Multi-container architecture is POC-only. Confirmed by Steve.
+- **2026-04-11 (evening)** — **Product name locked: „AI privátní bankéř"** — used in ALL external materials. NEVER use "Notix" as product name (NOTIX a.s. is the client, not our brand — trademark issue). NotixOS remains deferred. AgentForgeOS remains internal working name. Locked by Steve.
+- **2026-04-11 (evening)** — **Primary headline locked (Czech):** „První česká bankovní AI, která zná každého klienta jako privátní bankéř — a dokáže to regulátorovi."
+- **2026-04-11 (evening)** — **GNFI (Governance-Native Financial Intelligence)** adopted as category positioning term (marketing, not brand). Category-creation strategy per Perplexity competitive analysis.
+- **2026-04-11 (evening)** — Perplexity competitive analysis reviewed. Key verified takeaways: positioning map (2×2 Personalization × Compliance), StoryBrand narrative gaps, audience-specific messaging. Key claims flagged for verification: Hey George GPT-4/OpenAI hosting (may be Azure EU), KB 500M EUR budget (unverified), ČS 4.6M clients (verify in annual report), AI Act Aug 2026 enforcement (verify exact Article scope with lawyer).
+- **2026-04-12 (morning)** — **Marek Brož invited to join production POC team** as Cloud / DevOps engineer (ECS, CI/CD, monitoring). Engagement starts post-meeting (after 2026-04-21), DPP contract. Not involved in spike code.
+
+---
+
+## 14. Marketing framing
+
+### 14.1 Product identity
+
+- **Product name (external):** „AI privátní bankéř"
+- **Category term (marketing positioning):** Governance-Native Financial Intelligence (GNFI)
+- **Internal working name:** AgentForgeOS (for commits, specs, internal docs)
+- **NEVER use:** "Notix" as product name (NOTIX a.s. = client, not brand)
+
+### 14.2 Headline & positioning
+
+**Primary headline (Czech):**
+> „První česká bankovní AI, která zná každého klienta jako privátní bankéř — a dokáže to regulátorovi."
+
+**Category framing question (meeting opening):**
+> „Je váš stávající AI produkt připraven na AI Act z srpna 2026?"
+
+**Core reframe:** Compliance is the hero feature, not a burden. AI Act Art. 14 human oversight is a **trust signal**, not a checkbox obligation.
+
+### 14.3 Audience-specific messages
+
+| Audience | Key message |
+|---|---|
+| CTO / CIO | „8-vrstvá architektura s append-only audit logem. Když ČNB audituje váš AI, máte architekturní obhajobu — ne post-hoc zdůvodnění." |
+| Chief Risk Officer | „Human oversight queue pro Tier-2 rozhodnutí — žádná AI nepošle investiční doporučení bez schválení poradce. Plná forenzní sledovatelnost." |
+| CMO | „Retenční hra. Klienti, kteří denně dostávají hodnotu z George, nepřecházejí. Diferenciace, která se nedá zkopírovat za 12 měsíců." |
+| CEO | „ČS se stane první českou bankou s AI privátním bankéřem pro všech 4,6M klientů — ne jen pro VIP segment." |
+
+---
+
+## 15. Competitive positioning
+
+### 15.1 Positioning map (2×2)
+
+Two axes: **Personalization Depth** (transaction-level individualized insights) × **Compliance Readiness** (AI Act, GDPR, DORA, MiFID II architectural preparedness).
+
+| Quadrant | Player | Personalization | Compliance |
+|---|---|---|---|
+| **High / High (unique)** | **AI privátní bankéř** | High — transaction-level Czech briefings | High — AI Act, GDPR, DORA, MiFID II |
+| Low / Low | Hey George (ČS) | Low — FAQ chatbot | Low — no AI Act architecture published |
+| Low / Low | ČSOB Kate | Low — FAQ + reminders | Low — no compliance mapping |
+| Med-High / Low | Revolut AI (Apr 2026) | Med-High — agentic finance | Low — no AI Act compliance published |
+| High / Low | Cleo / Nubank | High — personalized coaching | Low — non-EU, no AI Act |
+
+**Key insight:** AI privátní bankéř is the only player in the top-right quadrant. Compliance architecture cannot be bolted on retroactively — it must be designed from the foundation up. This positioning is defensible.
+
+### 15.2 Claims requiring verification before meeting
+
+| Claim | Source | Status | Verify by |
+|---|---|---|---|
+| Hey George uses GPT-4 via OpenAI (non-EU) | Perplexity | **UNVERIFIED** — may be Azure OpenAI EU | Day 7 (check ČS public statements) |
+| KB has 500M EUR AI budget | Perplexity | **UNVERIFIED** — likely hallucinated | Day 7 (check KB annual report; if not found, drop claim) |
+| ČS has 4.6M clients / George has 3M+ active users | Perplexity | **PLAUSIBLE** — verify in ČS Annual Report 2025 | Day 7 |
+| AI Act high-risk provisions enforceable Aug 2026 | Perplexity | **PARTIALLY TRUE** — Annex III Art. 6(2) systems, Aug 2, 2026; grace periods apply to pre-existing systems | Day 7 (verify with IP lawyer) |
+
+### 15.3 Known unknowns (European competitors not covered by Perplexity)
+
+- N26 AI (Berlin, BaFin-regulated neobank)
+- Bunq AI (Netherlands, banking license)
+- Qonto / Finom (France/Germany, SME banking)
+- Solarisbank / Raisin (Germany, BaaS)
+
+If any of these have a compliance-first AI briefing product, the "only player in top-right quadrant" claim weakens. Verify before using in external materials.
 
 ---
 
