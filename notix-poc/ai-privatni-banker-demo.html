@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Privátní Bankéř — George ČS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0a1628; color: #e8edf3; min-height: 100vh; }
+
+  /* Header */
+  .header { background: #0f2035; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1a3050; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .george-logo { width: 36px; height: 36px; background: #00a3e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff; }
+  .header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+  .header-badge { background: #00c853; color: #0a1628; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.5px; }
+
+  /* Persona tabs */
+  .tabs { display: flex; gap: 8px; padding: 16px 24px; background: #0d1c30; }
+  .tab { padding: 10px 18px; border-radius: 10px; background: #152a42; color: #8899aa; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+  .tab:hover { background: #1a3354; color: #c0d0e0; }
+  .tab.active { background: #00a3e0; color: #fff; border-color: #00a3e0; }
+  .tab .tab-emoji { margin-right: 6px; }
+
+  /* Main content */
+  .main { max-width: 680px; margin: 0 auto; padding: 20px 24px 40px; }
+
+  /* Profile card */
+  .profile { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px; background: #0f2035; border-radius: 14px; border: 1px solid #1a3050; }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .profile-info h2 { font-size: 16px; font-weight: 600; color: #fff; }
+  .profile-info p { font-size: 13px; color: #6888a8; margin-top: 2px; }
+
+  /* Section heading */
+  .section-title { font-size: 13px; font-weight: 600; color: #5888b0; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px; }
+
+  /* Spending cards */
+  .spending-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .spend-card { background: #0f2035; border-radius: 12px; padding: 14px 16px; border: 1px solid #1a3050; }
+  .spend-card .cat-name { font-size: 12px; color: #6888a8; margin-bottom: 4px; }
+  .spend-card .cat-amount { font-size: 18px; font-weight: 600; color: #fff; }
+  .spend-card .cat-bar { height: 4px; border-radius: 2px; margin-top: 8px; }
+
+  /* Alert card */
+  .alert { background: linear-gradient(135deg, #2a1520 0%, #1a0a10 100%); border: 1px solid #e53935; border-radius: 14px; padding: 18px; margin-top: 16px; }
+  .alert-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .alert-icon { width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .alert-title { font-size: 14px; font-weight: 600; color: #ff6659; }
+  .alert-body { font-size: 13px; color: #d0a0a0; line-height: 1.5; }
+  .alert-body strong { color: #ff8a80; }
+  .alert-action { display: inline-block; margin-top: 12px; padding: 8px 18px; background: #e53935; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  /* Insight card */
+  .insight { background: #0f2035; border-radius: 14px; padding: 18px; margin-top: 12px; border: 1px solid #1a3050; }
+  .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .insight-icon { font-size: 20px; }
+  .insight-title { font-size: 14px; font-weight: 600; color: #fff; }
+  .insight-body { font-size: 13px; color: #8899aa; line-height: 1.6; }
+  .insight-body strong { color: #c0d8f0; }
+
+  /* Good news variant */
+  .insight.good { border-color: #1b5e20; background: linear-gradient(135deg, #0a2010 0%, #0a1628 100%); }
+  .insight.good .insight-title { color: #66bb6a; }
+
+  /* Compliance footer */
+  .compliance { display: flex; align-items: center; gap: 10px; margin-top: 24px; padding: 14px 16px; background: #081220; border-radius: 12px; border: 1px solid #0d1c30; }
+  .compliance-icon { font-size: 18px; }
+  .compliance-text { font-size: 11px; color: #4a6680; line-height: 1.4; }
+
+  /* Generation time badge */
+  .gen-badge { text-align: center; margin-top: 16px; }
+  .gen-badge span { display: inline-block; padding: 6px 16px; background: #152a42; border-radius: 20px; font-size: 12px; color: #00a3e0; font-weight: 500; }
+
+  /* Persona-specific hides */
+  .persona-content { display: none; }
+  .persona-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="george-logo">G</div>
+    <h1>AI Privátní Bankéř</h1>
+  </div>
+  <div class="header-badge">GOVERNANCE-READY</div>
+</div>
+
+<!-- Persona tabs -->
+<div class="tabs">
+  <div class="tab" data-persona="c" onclick="switchPersona('c')"><span class="tab-emoji">👴</span>Senior</div>
+  <div class="tab" data-persona="a" onclick="switchPersona('a')"><span class="tab-emoji">👨‍💻</span>Profesionál</div>
+  <div class="tab" data-persona="b" onclick="switchPersona('b')"><span class="tab-emoji">👨‍👩‍👧‍👦</span>Rodina</div>
+</div>
+
+<div class="main">
+
+<!-- ====== PERSONA C — SENIOR ====== -->
+<div class="persona-content" id="persona-c">
+  <div class="profile">
+    <div class="avatar" style="background:#1a3354;">👴</div>
+    <div class="profile-info">
+      <h2>Finanční přehled — posledních 7 dní</h2>
+      <p>Senior · 67 let · Nový Bor · Důchod 25 000 Kč/měs.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Výdaje tento týden</div>
+  <div class="spending-grid">
+    <div class="spend-card">
+      <div class="cat-name">🛒 Potraviny</div>
+      <div class="cat-amount">1 840 Kč</div>
+      <div class="cat-bar" style="width:65%; background:#4caf50;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">💊 Lékárna</div>
+      <div class="cat-amount">620 Kč</div>
+      <div class="cat-bar" style="width:30%; background:#ff9800;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">⚡ Energie</div>
+      <div class="cat-amount">3 200 Kč</div>
+      <div class="cat-bar" style="width:80%; background:#2196f3;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">🎁 Dárky</div>
+      <div class="cat-amount">450 Kč</div>
+      <div class="cat-bar" style="width:20%; background:#9c27b0;"></div>
+    </div>
+  </div>
+
+  <div class="section-title">Upozornění</div>
+  <div class="alert">
+    <div class="alert-header">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-title">Podezřelá transakce — vyžaduje ověření</div>
+    </div>
+    <div class="alert-body">
+      Dne 8. 4. proběhla platba <strong>8 500 Kč</strong> u obchodníka <strong>ElectroShop-online.ru</strong> — karta nebyla fyzicky přítomna. Tento obchodník se ve vašich transakcích dosud neobjevil.<br><br>
+      Doporučujeme ověřit, zda jste tuto platbu provedl/a vy.
+    </div>
+    <div class="alert-action">Ověřit transakci →</div>
+  </div>
+
+  <div class="section-title">Doporučení pro vás</div>
+  <div class="insight">
+    <div class="insight-header">
+      <div class="insight-icon">💊</div>
+      <div class="insight-title">Výdaje za léky rostou</div>
+    </div>
+    <div class="insight-body">
+      Za poslední 3 měsíce jste za léky utratil/a v průměru <strong>1 850 Kč měsíčně</strong>, což je o 22 % více než v předchozím čtvrtletí. Zvažte konzultaci se svým lékařem ohledně generických alternativ.
+    </div>
+  </div>
+
+  <div class="insight good">
+    <div class="insight-header">
+      <div class="insight-icon">✅</div>
+      <div class="insight-title">Rozpočet pod kontrolou</div>
+    </div>
+    <div class="insight-body">
+      Vaše celkové výdaje za tento měsíc jsou <strong>18 200 Kč</strong> — to je 73 % vašeho měsíčního příjmu. Zbývá vám <strong>6 800 Kč</strong> do konce měsíce. Jste na dobré cestě.
+    </div>
+  </div>
+
+  <div class="compliance">
+    <div class="compliance-icon">🔒</div>
+    <div class="compliance-text">Tento přehled prošel PII ochranou a governance kontrolou. Žádná osobní data neopustila území EU. Podezřelá transakce byla eskalována k lidskému schválení (AI Act Art. 14).</div>
+  </div>
+
+  <div class="gen-badge"><span>⚡ Vygenerováno za 2,4 s · 8 agentů · 0 úniků PII</span></div>
+</div>
+
+<!-- ====== PERSONA A — MLADÝ PROFESIONÁL ====== -->
+<div class="persona-content" id="persona-a">
+  <div class="profile">
+    <div class="avatar" style="background:#1a3354;">👨‍💻</div>
+    <div class="profile-info">
+      <h2>Finanční přehled — posledních 7 dní</h2>
+      <p>Mladý profesionál · 28 let · Praha · Příjem 60 000 Kč/měs.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Výdaje tento týden</div>
+  <div class="spending-grid">
+    <div class="spend-card">
+      <div class="cat-name">🏠 Nájem</div>
+      <div class="cat-amount">18 000 Kč</div>
+      <div class="cat-bar" style="width:90%; background:#e53935;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">🍽️ Restaurace</div>
+      <div class="cat-amount">3 420 Kč</div>
+      <div class="cat-bar" style="width:55%; background:#ff9800;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">📱 Předplatné</div>
+      <div class="cat-amount">1 500 Kč</div>
+      <div class="cat-bar" style="width:30%; background:#9c27b0;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">🚇 Doprava</div>
+      <div class="cat-amount">550 Kč</div>
+      <div class="cat-bar" style="width:15%; background:#2196f3;"></div>
+    </div>
+  </div>
+
+  <div class="section-title">Doporučení pro vás</div>
+  <div class="insight">
+    <div class="insight-header">
+      <div class="insight-icon">📈</div>
+      <div class="insight-title">Investiční příležitost</div>
+    </div>
+    <div class="insight-body">
+      Na vašem běžném účtu leží <strong>42 000 Kč</strong> nad rámec běžných měsíčních výdajů. Při současné úrokové sazbě na spořicím účtu (4,5 %) byste za rok získal/a <strong>1 890 Kč</strong> navíc pouhým přesunem. <br><br>
+      <em style="color:#ff9800;">⏸️ Toto doporučení čeká na schválení vaším poradcem (MiFID II).</em>
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight-header">
+      <div class="insight-icon">🍽️</div>
+      <div class="insight-title">Restaurace: +35 % oproti průměru</div>
+    </div>
+    <div class="insight-body">
+      Tento měsíc jste v restauracích utratil <strong>3 420 Kč</strong> za první týden — váš měsíční průměr je 4 200 Kč. Pokud tempo zůstane stejné, překročíte průměr o <strong>35 %</strong>.
+    </div>
+  </div>
+
+  <div class="insight good">
+    <div class="insight-header">
+      <div class="insight-icon">✅</div>
+      <div class="insight-title">Doprava pod kontrolou</div>
+    </div>
+    <div class="insight-body">
+      Přechod na Lítačku vám šetří přibližně <strong>800 Kč měsíčně</strong> oproti jednotlivým jízdenkám. Dobrá volba.
+    </div>
+  </div>
+
+  <div class="compliance">
+    <div class="compliance-icon">🔒</div>
+    <div class="compliance-text">Tento přehled prošel PII ochranou a governance kontrolou. Investiční doporučení eskalováno k lidskému schválení (MiFID II Art. 25). Žádná data neopustila EU.</div>
+  </div>
+
+  <div class="gen-badge"><span>⚡ Vygenerováno za 2,8 s · 8 agentů · 0 úniků PII</span></div>
+</div>
+
+<!-- ====== PERSONA B — RODINA ====== -->
+<div class="persona-content" id="persona-b">
+  <div class="profile">
+    <div class="avatar" style="background:#1a3354;">👨‍👩‍👧‍👦</div>
+    <div class="profile-info">
+      <h2>Finanční přehled — posledních 7 dní</h2>
+      <p>Rodina · 38 let · Brno · Příjem 110 000 Kč/měs.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Výdaje tento týden</div>
+  <div class="spending-grid">
+    <div class="spend-card">
+      <div class="cat-name">🏡 Hypotéka</div>
+      <div class="cat-amount">28 000 Kč</div>
+      <div class="cat-bar" style="width:90%; background:#e53935;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">🛒 Potraviny</div>
+      <div class="cat-amount">4 850 Kč</div>
+      <div class="cat-bar" style="width:50%; background:#4caf50;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">👧 Děti</div>
+      <div class="cat-amount">8 000 Kč</div>
+      <div class="cat-bar" style="width:60%; background:#9c27b0;"></div>
+    </div>
+    <div class="spend-card">
+      <div class="cat-name">🚗 Auto</div>
+      <div class="cat-amount">12 000 Kč</div>
+      <div class="cat-bar" style="width:70%; background:#2196f3;"></div>
+    </div>
+  </div>
+
+  <div class="section-title">Upozornění</div>
+  <div class="alert">
+    <div class="alert-header">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-title">Neobvykle vysoká transakce</div>
+    </div>
+    <div class="alert-body">
+      Dne 5. 4. proběhla platba <strong>75 000 Kč</strong> u <strong>Autosalon Porsche Praha</strong>. Tato částka je <strong>6× vyšší</strong> než váš běžný nejvyšší výdaj. Ověřte prosím, zda je v pořádku.
+    </div>
+    <div class="alert-action">Ověřit transakci →</div>
+  </div>
+
+  <div class="section-title">Doporučení pro vás</div>
+  <div class="insight">
+    <div class="insight-header">
+      <div class="insight-icon">🏖️</div>
+      <div class="insight-title">Plánujete dovolenou?</div>
+    </div>
+    <div class="insight-body">
+      Za posledních 30 dní jste provedli 2 platby cestovním kancelářím v celkové výši <strong>18 500 Kč</strong>. Na účtu zbývá dostatečná rezerva. Tip: pokud platíte kartou ČS v zahraničí, kurz je výhodnější než směnárna.
+    </div>
+  </div>
+
+  <div class="insight good">
+    <div class="insight-header">
+      <div class="insight-icon">✅</div>
+      <div class="insight-title">Energie: úspora oproti loňsku</div>
+    </div>
+    <div class="insight-body">
+      Vaše výdaje za energie jsou tento čtvrtletí o <strong>12 % nižší</strong> než ve stejném období loni. Úspora činí přibližně <strong>1 620 Kč</strong> za čtvrtletí.
+    </div>
+  </div>
+
+  <div class="compliance">
+    <div class="compliance-icon">🔒</div>
+    <div class="compliance-text">Tento přehled prošel PII ochranou a governance kontrolou. Neobvyklá transakce eskalována k lidskému ověření. Žádná data neopustila EU.</div>
+  </div>
+
+  <div class="gen-badge"><span>⚡ Vygenerováno za 2,6 s · 8 agentů · 0 úniků PII</span></div>
+</div>
+
+</div>
+
+<script>
+function switchPersona(id) {
+  document.querySelectorAll('.persona-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('persona-' + id).classList.add('active');
+  document.querySelector('.tab[data-persona="' + id + '"]').classList.add('active');
+}
+// Default: show Senior
+switchPersona('c');
+</script>
+
+</body>
+</html>
