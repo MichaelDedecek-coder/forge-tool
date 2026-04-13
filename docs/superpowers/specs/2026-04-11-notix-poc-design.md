@@ -391,12 +391,12 @@ Two axes: **Personalization Depth** (transaction-level individualized insights) 
 
 ### 15.2 Claims requiring verification before meeting
 
-| Claim | Source | Status | Verify by |
+| Claim | Source | Status (verified 2026-04-13 by Jony Twin) | Meeting action |
 |---|---|---|---|
-| Hey George uses GPT-4 via OpenAI (non-EU) | Perplexity | **UNVERIFIED** — may be Azure OpenAI EU | Day 7 (check ČS public statements) |
-| KB has 500M EUR AI budget | Perplexity | **UNVERIFIED** — likely hallucinated | Day 7 (check KB annual report; if not found, drop claim) |
-| ČS has 4.6M clients / George has 3M+ active users | Perplexity | **PLAUSIBLE** — verify in ČS Annual Report 2025 | Day 7 |
-| AI Act high-risk provisions enforceable Aug 2026 | Perplexity | **PARTIALLY TRUE** — Annex III Art. 6(2) systems, Aug 2, 2026; grace periods apply to pre-existing systems | Day 7 (verify with IP lawyer) |
+| Hey George uses GPT-4 via OpenAI (non-EU) | Perplexity | **CORRECTED:** GPT-4o (not GPT-4), since Nov 2024, via **Azure OpenAI** (EU-hosted). Non-EU attack is invalid. | Do NOT say "data goes to OpenAI outside EU". Instead attack **architecture gaps**: "Does Hey George have PII redaction before LLM? Audit log? Human oversight? We do — in every layer." |
+| KB has 500M EUR AI budget | Perplexity | **HALLUCINATION.** No such budget. SocGen group has a value creation target; KB is focused on KB+ core banking migration. | **DROP entirely.** If KB comes up in meeting, say only: "KB investuje do modernizace core bankingu, AI produkty jsou sekundární priority." |
+| ČS has 4.6M clients | Perplexity | **VERIFIED.** "Více než 4,5 milionu klientů." | Safe to use. Cite ČS Annual Report if asked. |
+| AI Act high-risk = all financial AI, Aug 2026 | Perplexity | **NUANCED.** Date correct (Aug 2, 2026). Scope: **credit scoring = explicit high-risk** (Annex III, 5b). Customer insights / spending analysis = likely NOT high-risk. | Frame as: "Credit scoring je high-risk. Ostatní finanční AI zatím ne — ale my stavíme konzervativně. Když regulátor rozšíří scope, jsme ready. Competitors budou retrofitovat." |
 
 ### 15.3 Known unknowns (European competitors not covered by Perplexity)
 
