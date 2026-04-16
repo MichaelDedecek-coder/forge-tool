@@ -58,10 +58,12 @@ PERSONA_C = Persona(
     city="Nový Bor",
     monthly_income_czk=Decimal("25000"),
     monthly_recurring_categories={
+        "Bydlení": Decimal("3500"),       # vlastní byt — SVJ + pojištění + drobné opravy
+        "Potraviny": Decimal("5500"),      # ~180 Kč/den, realistické pro seniora
         "Energie": Decimal("3200"),
         "Léky a zdravotnictví": Decimal("1800"),
     },
-    discretionary_categories=["Potraviny", "Dárky", "Drobné nákupy"],
+    discretionary_categories=["Dárky", "Drobné nákupy"],
     triggered_scenarios=["fraud_card_not_present"],
 )
 
