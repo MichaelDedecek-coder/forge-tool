@@ -33,7 +33,7 @@ class GeorgeAppReport(BaseModel):
     persona_id: str
     generated_at: datetime
     generation_time_s: float    # how long the pipeline took
-    header_cz: str              # e.g. "Finanční přehled — posledních 7 dní"
+    header_cz: str              # e.g. "Finanční přehled — poslední 3 měsíce"
     persona_label_cz: str       # e.g. "Senior · 67 let · Nový Bor · Důchod 25 000 Kč/měs."
     spending_cards: list[dict]  # [{category_cz, amount_czk, icon, bar_color, bar_width_pct}]
     sections: list[ReportSection]  # alerts, insights, recommendations
@@ -155,7 +155,7 @@ class ReportComposer:
             persona_id=insight_report.persona_id,
             generated_at=datetime.utcnow(),
             generation_time_s=generation_time_s,
-            header_cz="Finanční přehled — posledních 7 dní",
+            header_cz="Finanční přehled — poslední 3 měsíce",
             persona_label_cz=persona_labels.get(
                 insight_report.persona_id,
                 f"Klient {insight_report.persona_id}"
