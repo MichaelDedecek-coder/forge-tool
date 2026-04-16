@@ -183,18 +183,28 @@ class ReportComposer:
         return report
 
     @staticmethod
-    def _smart_title(text: str, max_len: int = 60) -> str:
-        """Extract a clean title: first sentence, cut at word boundary, add … if needed."""
-        # Take first sentence
-        first_sentence = text.split(".")[0].split("—")[0].split(":")[0].strip()
+    def _smart_title(text: str, max_len: int = 55) -> str:
+        """Extract a clean title: strip emoji, first phrase, cut at word boundary."""
+        import re
+        # Strip emoji and special markers
+        clean = re.sub(r'[\U0001f300-\U0001f9ff\U00002702-\U000027b0\U0000fe0f\u26a0\u2705\u274c\u2b50\U0001f534]', '', text)
+        # Strip bracketed prefixes like [KRITICKÉ] [VYSOKÉ] [INFO]
+        clean = re.sub(r'^\[.*?\]\s*', '', clean.strip())
+        clean = clean.strip()
 
-        if len(first_sentence) <= max_len:
-            return first_sentence
+        # Take first sentence/phrase
+        for sep in [".", "—", ";", ":"]:
+            if sep in clean:
+                clean = clean.split(sep)[0].strip()
+                break
+
+        if len(clean) <= max_len:
+            return clean
 
         # Cut at last space before max_len
-        truncated = first_sentence[:max_len]
+        truncated = clean[:max_len]
         last_space = truncated.rfind(" ")
-        if last_space > 20:
+        if last_space > 15:
             truncated = truncated[:last_space]
 
         return truncated + "…"
