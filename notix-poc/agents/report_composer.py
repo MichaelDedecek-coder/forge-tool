@@ -25,6 +25,7 @@ class ReportSection(BaseModel):
     title_cz: str       # Czech section title
     content_cz: str     # Czech content (may contain markdown)
     severity: str = "info"  # "info" | "warning" | "critical" | "success"
+    requires_approval: bool = False  # True for MiFID II Art. 25 escalated items
 
 
 class GeorgeAppReport(BaseModel):
@@ -113,6 +114,7 @@ class ReportComposer:
                 title_cz=rec.get("text_cz", "Doporučení")[:50],
                 content_cz=content,
                 severity=severity,
+                requires_approval=requires_approval,
             ))
 
         # Summary as success section
