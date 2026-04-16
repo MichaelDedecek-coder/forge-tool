@@ -1,7 +1,34 @@
 # Governance policy for Layer 8 (Human-above-the-Loop gate).
 # Each rule classifies an agent decision as: auto | escalate | block
 # Decisions are evaluated top-down; first match wins.
-# Full content lands in Day 6 (Task 6.1).
+# AI Act Art. 14 human oversight implemented as architecture.
 
 version: 1
-rules: []
+rules:
+  - id: investment_recommendation_requires_approval
+    matches:
+      recommendation_tier: 2
+      keywords_cz: ["investic", "akci", "podílový fond", "ETF", "burza", "spořic", "úrok"]
+    classification: escalate
+    rationale_cz: "Investiční doporučení vyžaduje schválení poradcem podle MiFID II Art. 25."
+    compliance_refs: ["MiFID II Art. 25", "AI Act Art. 14"]
+
+  - id: critical_fraud_flag
+    matches:
+      anomaly_severity: critical
+    classification: escalate
+    rationale_cz: "Kritická podezřelá transakce — vyžaduje lidskou kontrolu před informováním zákazníka."
+    compliance_refs: ["AI Act Art. 14"]
+
+  - id: high_value_anomaly
+    matches:
+      anomaly_severity: high
+    classification: escalate
+    rationale_cz: "Vysoce neobvyklá transakce — informujte zákazníka jen po lidské kontrole."
+    compliance_refs: ["AI Act Art. 14"]
+
+  - id: default_auto_execute
+    matches: {}
+    classification: auto
+    rationale_cz: "Standardní doporučení tier 1 — bez rizika, automaticky."
+    compliance_refs: []
