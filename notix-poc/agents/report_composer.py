@@ -89,8 +89,7 @@ class ReportComposer:
 
         # Anomaly alerts first (most urgent)
         for i, anomaly_text in enumerate(insight_report.anomalies_cz):
-            # Extract a specific title from the anomaly text (first ~50 chars or first sentence)
-            title = anomaly_text.split(".")[0][:60] if "." in anomaly_text else anomaly_text[:60]
+            title = self._smart_title(anomaly_text)
             sections.append(ReportSection(
                 icon="⚠️",
                 title_cz=title,
@@ -111,7 +110,7 @@ class ReportComposer:
 
             sections.append(ReportSection(
                 icon=icon,
-                title_cz=rec.get("text_cz", "Doporučení")[:50],
+                title_cz=self._smart_title(rec.get("text_cz", "Doporučení")),
                 content_cz=content,
                 severity=severity,
                 requires_approval=requires_approval,
@@ -182,6 +181,23 @@ class ReportComposer:
             )
 
         return report
+
+    @staticmethod
+    def _smart_title(text: str, max_len: int = 60) -> str:
+        """Extract a clean title: first sentence, cut at word boundary, add … if needed."""
+        # Take first sentence
+        first_sentence = text.split(".")[0].split("—")[0].split(":")[0].strip()
+
+        if len(first_sentence) <= max_len:
+            return first_sentence
+
+        # Cut at last space before max_len
+        truncated = first_sentence[:max_len]
+        last_space = truncated.rfind(" ")
+        if last_space > 20:
+            truncated = truncated[:last_space]
+
+        return truncated + "…"
 
     def _build_spending_cards(self, categories) -> list[dict]:
         """Aggregate spending by category for the card display."""
