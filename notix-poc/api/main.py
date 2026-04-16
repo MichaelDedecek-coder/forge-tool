@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 
 # Ensure notix-poc is in Python path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -29,15 +30,21 @@ app.add_middleware(
 )
 
 # Initialize pipeline (singleton for the app lifecycle)
+# Vercel serverless has read-only filesystem — SQLite must go to /tmp
+_is_vercel = os.environ.get("VERCEL", "")
+_audit_db = "/tmp/audit.db" if _is_vercel else os.environ.get("AUDIT_LOG_DB", "audit.db")
+
 pipeline = Pipeline(
     samples_dir=str(Path(__file__).resolve().parent.parent / "data" / "samples"),
     categorization_strategy=os.environ.get("CATEGORIZATION_STRATEGY", "rules"),
+    audit_db_path=_audit_db,
 )
 
 
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
+
 
 
 @app.get("/api/poc/analyze/{persona_id}")
@@ -55,6 +62,13 @@ async def analyze_persona(persona_id: str):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_demo():
+    """Serve the demo HTML page."""
+    demo_path = Path(__file__).resolve().parent.parent / "demo.html"
+    return demo_path.read_text(encoding="utf-8")
 
 
 @app.get("/api/poc/personas")

@@ -27,3 +27,4 @@ data/samples/large_*.json
 node_modules/
 .next/
 out/
+.vercel

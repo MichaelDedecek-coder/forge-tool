@@ -1,0 +1,11 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY pyproject.toml .
+RUN pip install --no-cache-dir . \
+    && pip install --no-cache-dir pytest>=8.3.0 pytest-asyncio>=0.24.0 ruff>=0.7.0
+
+COPY . .
+
+CMD ["python3", "-m", "pytest", "tests/", "-v"]
