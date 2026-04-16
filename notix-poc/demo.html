@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Privátní Bankéř — Live Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0a1628; color: #e8edf3; min-height: 100vh; }
+
+  /* Header */
+  .header { background: #0f2035; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1a3050; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .george-logo { width: 36px; height: 36px; background: #00a3e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff; }
+  .header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+  .header-badge { background: #00c853; color: #0a1628; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.5px; }
+
+  /* Persona tabs */
+  .tabs { display: flex; gap: 8px; padding: 16px 24px; background: #0d1c30; }
+  .tab { padding: 10px 18px; border-radius: 10px; background: #152a42; color: #8899aa; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+  .tab:hover { background: #1a3354; color: #c0d0e0; }
+  .tab.active { background: #00a3e0; color: #fff; border-color: #00a3e0; }
+  .tab .tab-emoji { margin-right: 6px; }
+
+  /* Main content */
+  .main { max-width: 680px; margin: 0 auto; padding: 20px 24px 40px; }
+
+  /* Profile card */
+  .profile { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 16px; background: #0f2035; border-radius: 14px; border: 1px solid #1a3050; }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .profile-info h2 { font-size: 16px; font-weight: 600; color: #fff; }
+  .profile-info p { font-size: 13px; color: #6888a8; margin-top: 2px; }
+
+  /* Section heading */
+  .section-title { font-size: 13px; font-weight: 600; color: #5888b0; text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 12px; }
+
+  /* Spending cards */
+  .spending-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .spend-card { background: #0f2035; border-radius: 12px; padding: 14px 16px; border: 1px solid #1a3050; }
+  .spend-card .cat-name { font-size: 12px; color: #6888a8; margin-bottom: 4px; }
+  .spend-card .cat-amount { font-size: 18px; font-weight: 600; color: #fff; }
+  .spend-card .cat-bar { height: 4px; border-radius: 2px; margin-top: 8px; }
+
+  /* Alert card */
+  .alert { background: linear-gradient(135deg, #2a1520 0%, #1a0a10 100%); border: 1px solid #e53935; border-radius: 14px; padding: 18px; margin-top: 16px; }
+  .alert-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .alert-icon { width: 32px; height: 32px; background: #e53935; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .alert-title { font-size: 14px; font-weight: 600; color: #ff6659; }
+  .alert-body { font-size: 13px; color: #d0a0a0; line-height: 1.5; }
+  .alert-body strong { color: #ff8a80; }
+  .alert-action { display: inline-block; margin-top: 12px; padding: 8px 18px; background: #e53935; color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  /* Insight card */
+  .insight { background: #0f2035; border-radius: 14px; padding: 18px; margin-top: 12px; border: 1px solid #1a3050; }
+  .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .insight-icon { font-size: 20px; }
+  .insight-title { font-size: 14px; font-weight: 600; color: #fff; }
+  .insight-body { font-size: 13px; color: #8899aa; line-height: 1.6; }
+  .insight-body strong { color: #c0d8f0; }
+
+  /* Good news variant */
+  .insight.good { border-color: #1b5e20; background: linear-gradient(135deg, #0a2010 0%, #0a1628 100%); }
+  .insight.good .insight-title { color: #66bb6a; }
+
+  /* Compliance footer */
+  .compliance { display: flex; align-items: center; gap: 10px; margin-top: 24px; padding: 14px 16px; background: #081220; border-radius: 12px; border: 1px solid #0d1c30; }
+  .compliance-icon { font-size: 18px; }
+  .compliance-text { font-size: 11px; color: #4a6680; line-height: 1.4; }
+
+  /* Generation time badge */
+  .gen-badge { text-align: center; margin-top: 16px; }
+  .gen-badge span { display: inline-block; padding: 6px 16px; background: #152a42; border-radius: 20px; font-size: 12px; color: #00a3e0; font-weight: 500; }
+
+  /* Persona-specific hides */
+  .persona-content { display: none; }
+  .persona-content.active { display: block; }
+
+  /* Loading spinner */
+  .loading { text-align: center; padding: 60px 20px; }
+  .loading .spinner {
+    width: 40px; height: 40px; border: 3px solid #1a3050;
+    border-top-color: #00a3e0; border-radius: 50%;
+    animation: spin 1s linear infinite; margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: #5888b0; font-size: 14px; }
+
+  /* Error */
+  .error { background: #2a1520; border: 1px solid #e53935; border-radius: 14px; padding: 18px; margin: 20px 0; color: #ff6659; }
+
+  /* MiFID II badge */
+  .mifid-badge { display: inline-block; margin-left: 8px; padding: 2px 7px; background: #1a3354; border: 1px solid #00a3e0; border-radius: 8px; font-size: 10px; color: #00a3e0; font-weight: 600; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="george-logo">G</div>
+    <h1>AI Privátní Bankéř</h1>
+  </div>
+  <div class="header-badge">LIVE DEMO</div>
+</div>
+
+<!-- Persona tabs -->
+<div class="tabs">
+  <div class="tab" data-persona="persona_c" onclick="loadPersona('persona_c')"><span class="tab-emoji">👴</span>Senior</div>
+  <div class="tab" data-persona="persona_a" onclick="loadPersona('persona_a')"><span class="tab-emoji">👨‍💻</span>Profesionál</div>
+  <div class="tab" data-persona="persona_b" onclick="loadPersona('persona_b')"><span class="tab-emoji">👨‍👩‍👧‍👦</span>Rodina</div>
+</div>
+
+<div class="main" id="content">
+  <div class="loading">
+    <p class="loading-text">Vyberte personu pro zobrazení finančního přehledu.</p>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:8000';
+
+async function loadPersona(personaId) {
+  // Update active tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-persona="${personaId}"]`).classList.add('active');
+
+  const content = document.getElementById('content');
+
+  // Show loading
+  content.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <p class="loading-text">8 AI agentů generuje váš finanční přehled...</p>
+    </div>
+  `;
+
+  try {
+    const start = performance.now();
+    const res = await fetch(`${API_BASE}/api/poc/analyze/${personaId}`);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const data = await res.json();
+    const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+
+    renderReport(data, elapsed);
+  } catch (err) {
+    content.innerHTML = `<div class="error">
+      <strong>Chyba:</strong> ${err.message}<br>
+      <small>Ujistěte se, že API běží na ${API_BASE} (spusťte ./run-demo.sh)</small>
+    </div>`;
+  }
+}
+
+function renderReport(data, clientElapsed) {
+  const content = document.getElementById('content');
+
+  // Profile card
+  let html = `
+    <div class="profile">
+      <div class="avatar" style="background:#1a3354;">
+        ${data.persona_id === 'persona_c' ? '👴' : data.persona_id === 'persona_a' ? '👨‍💻' : '👨‍👩‍👧‍👦'}
+      </div>
+      <div class="profile-info">
+        <h2>${data.header_cz || 'Finanční přehled'}</h2>
+        <p>${data.persona_label_cz || ''}</p>
+      </div>
+    </div>
+  `;
+
+  // Spending cards
+  if (data.spending_cards && data.spending_cards.length > 0) {
+    html += '<div class="section-title">Výdaje</div><div class="spending-grid">';
+    for (const card of data.spending_cards.slice(0, 6)) {
+      html += `
+        <div class="spend-card">
+          <div class="cat-name">${card.icon || '📦'} ${card.category_cz}</div>
+          <div class="cat-amount">${Number(card.amount_czk).toLocaleString('cs-CZ')} Kč</div>
+          <div class="cat-bar" style="width:${card.bar_width_pct}%; background:${card.bar_color || '#2196f3'};"></div>
+        </div>
+      `;
+    }
+    html += '</div>';
+  }
+
+  // Sections (alerts, recommendations, summary)
+  if (data.sections) {
+    // Critical alerts first
+    const alerts = data.sections.filter(s => s.severity === 'critical');
+    if (alerts.length > 0) {
+      html += '<div class="section-title">Upozornění</div>';
+      for (const alert of alerts) {
+        html += `
+          <div class="alert">
+            <div class="alert-header">
+              <div class="alert-icon">⚠️</div>
+              <div class="alert-title">${alert.title_cz}</div>
+            </div>
+            <div class="alert-body">${alert.content_cz}</div>
+          </div>
+        `;
+      }
+    }
+
+    // Recommendations and info
+    const recs = data.sections.filter(s => s.severity === 'warning' || s.severity === 'info');
+    if (recs.length > 0) {
+      html += '<div class="section-title">Doporučení</div>';
+      for (const rec of recs) {
+        const cls = rec.severity === 'warning' ? '' : ' good';
+        const mifidBadge = rec.requires_approval ? '<span class="mifid-badge">MiFID II</span>' : '';
+        html += `
+          <div class="insight${cls}">
+            <div class="insight-header">
+              <div class="insight-icon">${rec.icon || '💡'}</div>
+              <div class="insight-title">${rec.title_cz}${mifidBadge}</div>
+            </div>
+            <div class="insight-body">${rec.content_cz}</div>
+          </div>
+        `;
+      }
+    }
+
+    // Summary (success)
+    const summaries = data.sections.filter(s => s.severity === 'success');
+    for (const s of summaries) {
+      html += `
+        <div class="insight good">
+          <div class="insight-header">
+            <div class="insight-icon">${s.icon || '✅'}</div>
+            <div class="insight-title">${s.title_cz}</div>
+          </div>
+          <div class="insight-body">${s.content_cz}</div>
+        </div>
+      `;
+    }
+  }
+
+  // Compliance footer
+  html += `
+    <div class="compliance">
+      <div class="compliance-icon">🔒</div>
+      <div class="compliance-text">${data.compliance_footer_cz || ''}</div>
+    </div>
+  `;
+
+  // Generation time badge
+  const serverTime = (data.generation_time_s || 0).toFixed(1);
+  html += `
+    <div class="gen-badge">
+      <span>⚡ Vygenerováno za ${serverTime}s (server) / ${clientElapsed}s (klient) · ${data.agent_count || 8} agentů · ${data.pii_leakage_count || 0} úniků PII</span>
+    </div>
+  `;
+
+  content.innerHTML = html;
+}
+</script>
+</body>
+</html>

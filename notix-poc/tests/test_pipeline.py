@@ -55,3 +55,23 @@ def test_pipeline_raises_for_unknown_persona(tmp_path):
     )
     with pytest.raises(ValueError, match="Unknown persona"):
         pipeline.run("persona_z")
+
+
+def test_pipeline_governance_marks_escalated(tmp_path):
+    """Pipeline should include governance decisions in the output."""
+    import os
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        pytest.skip("ANTHROPIC_API_KEY not set")
+
+    from agents.pipeline import Pipeline
+    pipeline = Pipeline(
+        samples_dir="data/samples",
+        categorization_strategy="rules",
+        audit_db_path=str(tmp_path / "test_audit.db"),
+    )
+    result = pipeline.run("persona_c")
+
+    # Persona C should have at least one escalated item (fraud)
+    assert result.get("governance_summary") or any(
+        s.get("severity") == "critical" for s in result.get("sections", [])
+    )
