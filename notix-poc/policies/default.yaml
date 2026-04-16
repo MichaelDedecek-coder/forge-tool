@@ -8,7 +8,6 @@ rules:
   - id: investment_recommendation_requires_approval
     matches:
       recommendation_tier: 2
-      keywords_cz: ["investic", "akci", "podílový fond", "ETF", "burza", "spořic", "úrok"]
     classification: escalate
     rationale_cz: "Investiční doporučení vyžaduje schválení poradcem podle MiFID II Art. 25."
     compliance_refs: ["MiFID II Art. 25", "AI Act Art. 14"]

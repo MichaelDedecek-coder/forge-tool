@@ -87,10 +87,12 @@ class ReportComposer:
         sections = []
 
         # Anomaly alerts first (most urgent)
-        for anomaly_text in insight_report.anomalies_cz:
+        for i, anomaly_text in enumerate(insight_report.anomalies_cz):
+            # Extract a specific title from the anomaly text (first ~50 chars or first sentence)
+            title = anomaly_text.split(".")[0][:60] if "." in anomaly_text else anomaly_text[:60]
             sections.append(ReportSection(
                 icon="⚠️",
-                title_cz="Upozornění",
+                title_cz=title,
                 content_cz=anomaly_text,
                 severity="critical",
             ))
