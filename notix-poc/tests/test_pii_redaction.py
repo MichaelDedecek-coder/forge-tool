@@ -16,6 +16,27 @@ def test_redacts_iban():
     assert "[IBAN_REDACTED]" in result
 
 
+def test_valid_iban_is_redacted_invalid_iban_is_not():
+    """IBAN with correct format but failed mod-97 checksum must NOT be
+    redacted — it is a false positive (random number sequence), not real PII.
+
+    Checksum check prevents spurious redactions that degrade downstream
+    text quality without improving privacy.
+    """
+    redactor = PIIRedactor()
+
+    valid = "CZ6508000000192000145399"    # real, checksum passes
+    invalid = "CZ9999000000192000145399"  # correct format, checksum fails
+
+    valid_result = redactor.redact_with_counts(f"Platba {valid} proběhla.")
+    assert valid not in valid_result.text
+    assert valid_result.redactions_by_type.get("iban") == 1
+
+    invalid_result = redactor.redact_with_counts(f"Číslo {invalid} je náhoda.")
+    assert "[IBAN_REDACTED]" not in invalid_result.text
+    assert "iban" not in invalid_result.redactions_by_type
+
+
 def test_redacts_rc():
     redactor = PIIRedactor()
     result = redactor.redact_with_counts("Klient 850101/2345 si vyžádal výpis.")

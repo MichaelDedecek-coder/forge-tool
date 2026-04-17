@@ -37,14 +37,35 @@ class PIIRedactor:
     def __init__(self, known_names: list[str] | None = None):
         self.known_names = known_names or []
 
+    @staticmethod
+    def _iban_is_valid(iban: str) -> bool:
+        """ISO 13616 mod-97 checksum. Prevents redaction of 26-char number
+        sequences that happen to start with CZ but aren't real IBANs."""
+        normalized = re.sub(r"\s", "", iban).upper()
+        rearranged = normalized[4:] + normalized[:4]
+        numeric = "".join(
+            str(ord(ch) - 55) if ch.isalpha() else ch for ch in rearranged
+        )
+        try:
+            return int(numeric) % 97 == 1
+        except ValueError:
+            return False
+
     def redact_text(self, text: str) -> str:
         return self.redact_with_counts(text).text
 
     def redact_with_counts(self, text: str) -> RedactionResult:
         counts: dict[str, int] = {}
 
-        text, n = self.IBAN_RE.subn("[IBAN_REDACTED]", text)
-        if n: counts["iban"] = n
+        iban_count = 0
+        def _iban_repl(match: re.Match) -> str:
+            nonlocal iban_count
+            if self._iban_is_valid(match.group(0)):
+                iban_count += 1
+                return "[IBAN_REDACTED]"
+            return match.group(0)
+        text = self.IBAN_RE.sub(_iban_repl, text)
+        if iban_count: counts["iban"] = iban_count
 
         text, n = self.RC_RE.subn("[RC_REDACTED]", text)
         if n: counts["rc"] = n
