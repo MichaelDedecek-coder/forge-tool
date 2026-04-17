@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 
 # Ensure notix-poc is in Python path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -69,6 +69,13 @@ async def serve_demo():
     """Serve the demo HTML page."""
     demo_path = Path(__file__).resolve().parent.parent / "demo.html"
     return demo_path.read_text(encoding="utf-8")
+
+
+@app.get("/static/alan.png")
+async def serve_alan_portrait():
+    """Serve the Alan AI private banker portrait."""
+    image_path = Path(__file__).resolve().parent.parent / "ui" / "alan.png"
+    return FileResponse(image_path, media_type="image/png")
 
 
 @app.get("/api/poc/personas")

@@ -71,6 +71,32 @@
   .gen-badge { text-align: center; margin-top: 16px; }
   .gen-badge span { display: inline-block; padding: 6px 16px; background: #152a42; border-radius: 20px; font-size: 12px; color: #00a3e0; font-weight: 500; }
 
+  /* Hero: Alan introduction before persona selected */
+  .hero { text-align: center; padding: 32px 20px 20px; }
+  .hero-portrait {
+    width: 160px; height: 160px; border-radius: 50%;
+    object-fit: cover; object-position: center top;
+    border: 3px solid #00a3e0;
+    box-shadow: 0 8px 24px rgba(0, 163, 224, 0.25);
+    margin-bottom: 18px;
+  }
+  .hero-name { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 0.3px; }
+  .hero-tagline { font-size: 14px; color: #6888a8; margin-top: 4px; }
+  .hero-cta { font-size: 13px; color: #5888b0; margin-top: 18px; font-style: italic; }
+
+  /* Loading: Alan "thinking" */
+  .alan-thinking {
+    width: 72px; height: 72px; border-radius: 50%;
+    object-fit: cover; object-position: center top;
+    border: 2px solid #00a3e0;
+    margin: 0 auto 16px;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 163, 224, 0.5); }
+    50%      { box-shadow: 0 0 0 10px rgba(0, 163, 224, 0); }
+  }
+
   /* Persona-specific hides */
   .persona-content { display: none; }
   .persona-content.active { display: block; }
@@ -111,8 +137,11 @@
 </div>
 
 <div class="main" id="content">
-  <div class="loading">
-    <p class="loading-text">Vyberte personu pro zobrazení finančního přehledu.</p>
+  <div class="hero">
+    <img src="/static/alan.png" alt="Alan — AI privátní bankéř" class="hero-portrait">
+    <div class="hero-name">Alan</div>
+    <div class="hero-tagline">Váš AI privátní bankéř</div>
+    <div class="hero-cta">Vyberte personu a uvidíte personalizovaný finanční přehled.</div>
   </div>
 </div>
 
@@ -126,11 +155,11 @@ async function loadPersona(personaId) {
 
   const content = document.getElementById('content');
 
-  // Show loading
+  // Show loading with Alan "thinking"
   content.innerHTML = `
     <div class="loading">
-      <div class="spinner"></div>
-      <p class="loading-text">8 AI agentů generuje váš finanční přehled...</p>
+      <img src="/static/alan.png" alt="Alan přemýšlí" class="alan-thinking">
+      <p class="loading-text">Alan analyzuje vaše transakce — 8 AI agentů pracuje...</p>
     </div>
   `;
 
