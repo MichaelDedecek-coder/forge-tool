@@ -3,6 +3,7 @@
 import "./globals.css";
 import "./print.css";
 import Script from "next/script";
+import { Analytics } from '@vercel/analytics/react';
 import { Providers } from "./providers";
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -102,7 +103,10 @@ export default function RootLayout({ children }) {
             })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
           `}
         </Script>
-        
+
+        {/* --- VERCEL ANALYTICS (Traffic) --- */}
+        <Analytics />
+
       </body>
     </html>
   );
